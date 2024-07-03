@@ -12,7 +12,7 @@ EXPOSE 8080
 # Adds openTelemetry metrics and tracing: https://aws-otel.github.io/docs/getting-started/java-sdk/trace-auto-instr
 # REQUIRES YOU TO ADD AN OTEL COLLECTOR SIDECAR IN AWS CDK!
 ENV OTEL_TRACES_SAMPLER parentbased_traceidratio
-ENV OTEL_TRACES_SAMPLER_ARG 0.1
+ENV OTEL_TRACES_SAMPLER_ARG 1
 # Change if you are not using xray tracing and let xray generate Trace IDs
 ENV OTEL_PROPAGATORS xray
 ENV OTEL_METRICS_EXPORTER otlp
