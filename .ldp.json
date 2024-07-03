@@ -1,14 +1,12 @@
 {
   "version": "0.1",
-  "accountId": "<AWS Build account ID>",
+  "accountId": "451781358047",
   "roleName": "github-actions-role",
   "limitedRoleName": "github-actions-limited-role",
-  "artifactBucket": "<AWS build account artifact S3 bucket name>",
-  "ecrRepository": "",
-  "devPipelines": [
-    "<your-cdk-apps-dev>"
-  ],
+  "artifactBucket": "experiments-build-artifacts-451781358047-eu-west-1",
+  "ecrRepository": "experiments-build-artifacts",
+  "devPipelines": [],
   "prodPipelines": [
-    "<your-cdk-apps-prod>"
+    "experiments-apps"
   ]
 }

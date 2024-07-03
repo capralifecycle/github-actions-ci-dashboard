@@ -1,13 +1,3 @@
-# Liflig REST baseline
-
-Replace any sample values inside `< >` in these files:
-
-- README.md
-- [.github/workflows/ci.yaml.template](.github/workflows/ci.yaml.template), and rename to `ci.yaml`
-- [.ldp.json](.ldp.json)
-
----
-
 # GitHub Actions CI-Dashboard
 
 ![Java Badge](https://img.shields.io/badge/java-17-blue?logo=java)
