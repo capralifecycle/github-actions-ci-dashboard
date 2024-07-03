@@ -6,12 +6,6 @@ Replace any sample values inside `< >` in these files:
 - [.github/workflows/ci.yaml.template](.github/workflows/ci.yaml.template), and rename to `ci.yaml`
 - [.ldp.json](.ldp.json)
 
-You might have success with this script: https://gist.github.com/stekern/23e4804c0801520b50c0c3e5b3822138
-to replace placeholders.
-
-Refactor the package name to suit your needs.
-Then update the [pom.xml](pom.xml)'s package for `MainKt` (`maven-shade-plugin`)
-
 ---
 
 # GitHub Actions CI-Dashboard
