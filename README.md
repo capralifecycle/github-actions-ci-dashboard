@@ -22,6 +22,7 @@ Responsible for collecting GitHub Actions `workflow_run` webhook data and provid
 
 More information is found here:
 
+- [Requirements (Norwegian)](./docs/requirements.md)
 - [Solution specification/architecture (Confluence)](https://liflig.atlassian.net/l/cp/Qc1oFmJF)
 - [Overview of the design process (Confluence)](https://liflig.atlassian.net/wiki/x/PgBSDg)
 
