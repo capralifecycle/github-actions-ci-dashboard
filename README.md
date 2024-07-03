@@ -5,13 +5,6 @@ Replace any sample values inside `< >` in these files:
 - README.md
 - [.github/workflows/ci.yaml.template](.github/workflows/ci.yaml.template), and rename to `ci.yaml`
 - [.ldp.json](.ldp.json)
-- [test-docker.sh](test-docker.sh)
-- [Dockerfile](Dockerfile)
-- [pom.xml](pom.xml): `<groupId>` `<artifactId>`, `<name>`, `<sonar.projectKey>`
-- [src/main/resources/logback.xml](src/main/resources/logback.xml) `<logger name="no.liflig" level="DEBUG"/>`
-- [src/main/resources/logback-container.xml](src/main/resources/logback-container.xml) `<logger name="no.liflig" level="DEBUG"/>`
-- [src/main/kotlin/no/liflig/baseline/support/observability/OpenTelemetryConfig.kt](src/main/kotlin/no/liflig/cidashboard/common/observability/OpenTelemetryConfig.kt)
-- [src/main/resources-filtered/application.properties](src/main/resources-filtered/application.properties) `service.name`
 
 You might have success with this script: https://gist.github.com/stekern/23e4804c0801520b50c0c3e5b3822138
 to replace placeholders.

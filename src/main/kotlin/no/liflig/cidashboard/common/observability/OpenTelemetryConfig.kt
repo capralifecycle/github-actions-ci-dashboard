@@ -23,9 +23,7 @@ class OpenTelemetryConfig {
 
   companion object {
     private const val INSTRUMENTATION_NAME =
-        "opentelemetry-instrumentation-" +
-            "<service-name>" // Change this <service-name> to the same as service.name in
-    // application.properties
+        "opentelemetry-instrumentation-GitHubActionsCiDashboard"
     private const val INSTRUMENTATION_VERSION = "1.0.0"
 
     val meter: Meter by lazy {
