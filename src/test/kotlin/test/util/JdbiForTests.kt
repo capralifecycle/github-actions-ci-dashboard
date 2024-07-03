@@ -2,8 +2,8 @@ package test.util
 
 import java.io.File
 import mu.KotlinLogging
-import no.liflig.baseline.common.config.Config
-import no.liflig.baseline.common.config.DbConfig
+import no.liflig.cidashboard.common.config.Config
+import no.liflig.cidashboard.common.config.DbConfig
 import org.jdbi.v3.core.Jdbi
 import org.testcontainers.containers.PostgreSQLContainer
 

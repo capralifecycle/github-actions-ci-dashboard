@@ -465,7 +465,7 @@
                 <transformer
                   implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <manifestEntries>
-                    <Main-Class>no.liflig.baseline.MainKt</Main-Class>
+                    <Main-Class>no.liflig.cidashboard.MainKt</Main-Class>
                   </manifestEntries>
                 </transformer>
                 <transformer
