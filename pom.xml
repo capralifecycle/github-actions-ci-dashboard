@@ -12,11 +12,11 @@
   </parent>
 
   <groupId>no.liflig</groupId>
-  <artifactId>liflig-rest-service-baseline</artifactId>
+  <artifactId>github-actions-ci-dashboard</artifactId>
   <packaging>jar</packaging>
   <version>${revision}</version>
 
-  <name>liflig-rest-baseline</name>
+  <name>github-actions-ci-dashboard</name>
 
   <properties>
     <major-version>1</major-version>
@@ -94,7 +94,7 @@
       <properties>
         <sonar.organization>capralifecycle</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.projectKey></sonar.projectKey>
+        <sonar.projectKey>capralifecycle_github-actions-ci-dashboard</sonar.projectKey>
         <sonar.token>${env.SONARCLOUD_TOKEN}</sonar.token>
       </properties>
       <build>

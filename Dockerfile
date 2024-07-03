@@ -26,8 +26,8 @@ ENV OTEL_JAVAAGENT_ENABLED false
 ADD https://github.com/aws-observability/aws-otel-java-instrumentation/releases/download/v1.31.1/aws-opentelemetry-agent.jar /aws-opentelemetry-agent.jar
 RUN chmod 777 /aws-opentelemetry-agent.jar
 
-ARG service_name=<ServiceName>
-ARG service_namespace=<customer-or-service-namespace>
+ARG service_name=GitHubActionsCiDashboard
+ARG service_namespace=ci-dashboard
 ARG service_version=git_commit_hash
 ENV OTEL_RESOURCE_ATTRIBUTES service.name=$service_name,service.namespace=$service_namespace,service.version=$service_version,service=$service_name,version=$service_version
 

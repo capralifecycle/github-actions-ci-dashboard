@@ -2,7 +2,7 @@
 
 set -e
 
-SERVICE_NAME="<Service>"
+SERVICE_NAME="GitHubActionsCiDashboard"
 GIT_COMMIT_HASH="$(git rev-parse HEAD)"
 
 if test ! -d "./target"; then

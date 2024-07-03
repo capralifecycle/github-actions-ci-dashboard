@@ -21,46 +21,28 @@ Then update the [pom.xml](pom.xml)'s package for `MainKt` (`maven-shade-plugin`)
 
 ---
 
-# \<Title of the Project>
+# GitHub Actions CI-Dashboard
 
-<!--
-Using this README template:
-Replace any text <inside tags> with something that suits your project.
-Remove any sections that do not fit.
-Remove or modify the Badges with the correct links and artifact urls.
-Update any visible text or links to Confluence etc. with your details.
-Write the appropriate dependencies and steps for getting started.
--->
-
-<!-- Keep/add/modify the badges you want -->
 ![Java Badge](https://img.shields.io/badge/java-17-blue?logo=java)
 ![Kotlin Badge](https://img.shields.io/badge/kotlin--blue?logo=kotlin)
-[![Build Status](https://github.com/capralifecycle/<repo-name>/actions/workflows/ci.yaml/badge.svg)](https://github.com/capralifecycle/<repo-name>/actions/workflows/ci.yaml)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=capralifecycle_<repo-name>&metric=sqale_index&token=c4c5c941805bfa8cd296947dd001e37c853e4e86)](https://sonarcloud.io/summary/new_code?id=capralifecycle_<repo-name>)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=capralifecycle_<repo-name>&metric=code_smells&token=c4c5c941805bfa8cd296947dd001e37c853e4e86)](https://sonarcloud.io/summary/new_code?id=capralifecycle_<repo-name>)
+[![Build Status](https://github.com/capralifecycle/github-actions-ci-dashboard/actions/workflows/ci.yaml/badge.svg)](https://github.com/capralifecycle/github-actions-ci-dashboard/actions/workflows/ci.yaml)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=capralifecycle_github-actions-ci-dashboard&metric=sqale_index&token=c098b4d25bf2f8a05ee55cb9aeb4b84eb1329689)](https://sonarcloud.io/summary/new_code?id=capralifecycle_github-actions-ci-dashboard)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=capralifecycle_github-actions-ci-dashboard&metric=code_smells&token=c098b4d25bf2f8a05ee55cb9aeb4b84eb1329689)](https://sonarcloud.io/summary/new_code?id=capralifecycle_github-actions-ci-dashboard)
 
-<!-- Pick a badge that matches how you release your application/lib -->
-[![Docker Badge](https://img.shields.io/docker/v/azul/zulu-openjdk-alpine/17-jre-headless)](https://hub.docker.com/layers/azul/zulu-openjdk-alpine/17-jre-headless/images/sha256-fc9db671e88f11569c49f0665506a460a576340d480e5604779a1c404890603d?context=explore)
-[![Central Repository](https://img.shields.io/maven-central/v/no.capraconsulting/siren-util?label=release)](https://search.maven.org/search?q=g:no.capraconsulting%20AND%20a:siren-util)
-[![NPM Badge](https://img.shields.io/npm/v/@liflig/cdk)](https://www.npmjs.com/package/@liflig/cdk)
-
-Responsible for &lt;transforming source data into a domain model, persisting the data, publish updates to SNS topic for
-subscribers and providing APIs for lookup of these entities.>
+Responsible for collecting GitHub Actions `workflow_run` webhook data and providing a web dashboard with recent CI build status.
 
 ## Documentation
 
-<!-- Optional links to other pages -->
 More information is found here:
 
-<!-- Add links that suits your project. These are just exammples: -->
+- [Solution specification/architecture (Confluence)](https://liflig.atlassian.net/l/cp/Qc1oFmJF)
+- [Overview of the design process (Confluence)](https://liflig.atlassian.net/wiki/x/PgBSDg)
 
-- [Main confluence page](https://confluence.capraconsulting.no/display/<Customer>/<Service>)
-- [API Docs]()
-- [Javadocs]()
+### Architecture
+
+![AWS infra architecture](./docs/infrastructure-architecture.png)
 
 ## Contributing
-
-<!-- If this section gets long, you can use a CONTRIBUTING.md file and link to it here instead. -->
 
 ### Getting started
 
@@ -69,7 +51,6 @@ More information is found here:
 You need to install:
 
 - Docker
-- docker-compose (optional)
 - Maven (or run maven through IntelliJ)
 - JDK 17
     - `brew tap homebrew/cask-versions` and then`brew install --cask temurin17`
@@ -87,14 +68,7 @@ You need to install:
 ### Running the application
 
 1. Build the jar: `mvn package`
-2. Build the docker image with `./test-docker.sh`.
-3. Run the app
-   - Start `docker-compose`:
-      ```shell
-      docker-compose -f docker-compose.yml up -d --build
-      ```
-   - Or run `no.liflig.baseline.Main.main()`
-   - Or `cd docker && ./test-docker.sh`
+2. Build and run the docker image with `./test-docker.sh`.
 
 You can test the API with [src/test/http/health.http](src/test/http/health.http)
 
@@ -116,10 +90,9 @@ Fix: `mvn spotless:apply`
 ### Deploying
 
 Push the master branch.
-You can track the progress in [GitHub Actions](https://github.com/capralifecycle/<repo-name>/actions/workflows/ci.yaml)
+You can track the progress in [GitHub Actions](https://github.com/capralifecycle/github-actions-ci-dashboard/actions/workflows/ci.yaml)
 and in
-the [AWS CodePipeline](https://eu-west-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/<CUSTOMER>-apps-prod/view?region=eu-west-1) (`<customer>-build-admin`)
-.
+the [AWS CodePipeline](https://eu-west-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/experiments-apps/view?region=eu-west-1) (`liflig-experiments`).
 
 ## Open Telemetry
 
@@ -129,13 +102,8 @@ You can collect data by attaching a sidecar in ECS with the AWS Distro of Otel C
 
 ## License
 
-&lt;Private project. No reuse.>
-<!-- Or -->
-Apache 2.0, see [LICENSE](./LICENSE).
-<!-- Or this, where you update year, and perhaps add any customer that wanted this proejct to Copyright holder -->
-
 ```text
-Copyright 2022 Liflig By Capra AS
+Copyright 2024 Liflig By Capra AS
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

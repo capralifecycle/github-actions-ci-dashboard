@@ -12,9 +12,9 @@ on:
         default: false
 
 env:
-  APPLICATION_NAME: "<my-service-name-for-Docker-Image-Tags>"
-  CDK_ECR_TAG_NAME: "<MyService>"
-  BUILD_FAILURE_SLACK_CHANNEL: "<#my-channel-dev-info>"
+  APPLICATION_NAME: "GitHubActionsCiDashboard"
+  CDK_ECR_TAG_NAME: "GitHubActionsCiDashboard"
+  BUILD_FAILURE_SLACK_CHANNEL: "#experiments-dev-info"
 
 defaults:
   run:
