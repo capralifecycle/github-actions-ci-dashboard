@@ -1,2 +1,0 @@
-GET http://localhost:8080/docs/openapi-schema.json
-Authorization: Basic admin not-so-secret-password
