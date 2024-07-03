@@ -13,13 +13,19 @@ EXPOSE 8080
 # REQUIRES YOU TO ADD AN OTEL COLLECTOR SIDECAR IN AWS CDK!
 ENV OTEL_TRACES_SAMPLER parentbased_traceidratio
 ENV OTEL_TRACES_SAMPLER_ARG 1
-# Change if you are not using xray tracing and let xray generate Trace IDs
+# Change if you are not using xray tracing and let xray generate Trace IDs:
 ENV OTEL_PROPAGATORS xray
+# Disable all traces. Remove the line if you want tracing:
+ENV OTEL_TRACES_EXPORTER none
+
 ENV OTEL_METRICS_EXPORTER otlp
 ENV OTEL_EXPORTER_OTLP_ENDPOINT http://127.0.0.1:4317
 ENV OTEL_EXPORTER_OTLP_COMPRESSION gzip
 ENV OTEL_METRIC_EXPORT_INTERVAL 15000
+
+# Disable logs. We use stdout and CloudWatch logs instead.
 ENV OTEL_LOGS_EXPORTER none
+
 # Disables the entire agent. Use your AWS ECS config to enable the agent by overriding this to true
 ENV OTEL_JAVAAGENT_ENABLED false
 
