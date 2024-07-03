@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        service_version: local
+    ports:
+      - "8080:8080" # http://localhost:8080/health
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel:4317"
+    links:
+      - db:db
+      - otel:otel
+  db:
+    image: postgres:16
+    ports:
+      - "127.0.0.1:5433:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=app
+  otel:
+    # open-telemetry is for collecting metrics and traces from the application. The app must use the java agent or otel SDK.
+    image: "ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.54.0"
+    ports:
+      - "4317:4317"
+      - "1777:1777" # pprof
+      - "13133:13133" # health_check
+      - "55679:55679" # zpages: http://localhost:55679/debug/servicez https://github.com/open-telemetry/opentelemetry-collector/tree/main/extension/zpagesextension#exposed-zpages-routes
+

@@ -1,0 +1,151 @@
+name: ci
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+    inputs:
+      deploy-to-dev:
+        description: "Whether to deploy to dev"
+        type: boolean
+        required: true
+        default: false
+
+env:
+  APPLICATION_NAME: "<my-service-name-for-Docker-Image-Tags>"
+  CDK_ECR_TAG_NAME: "<MyService>"
+  BUILD_FAILURE_SLACK_CHANNEL: "<#my-channel-dev-info>"
+
+defaults:
+  run:
+    # NOTE: A bit stricter than the default bash options used by GitHub Actions
+    # (bash --noprofile --norc -e -o pipefail {0})
+    shell: bash --noprofile --norc -euo pipefail {0}
+
+# NOTE: Set concurrency for the current workflow to 1
+concurrency: ci-${{ github.ref }}-${{ github.workflow }}
+
+jobs:
+  build-and-deploy:
+    timeout-minutes: 60
+    runs-on: ubuntu-22.04
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      packages: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - uses: capralifecycle/actions-lib/check-runtime-dependencies@6eec40efec972ae86feb9dac823a34067f1d2384 # v1.3.0
+
+      - uses: capralifecycle/actions-lib/parse-config@6eec40efec972ae86feb9dac823a34067f1d2384 # v1.3.0
+        id: config
+        with:
+          config-file: ".ldp.json"
+
+      - uses: actions/setup-java@9704b39bf258b59bc04b50fa2dd55e9ed76b47a8 # v4
+        with:
+          distribution: "zulu"
+          java-version: "17.0.9"
+          java-package: jdk
+
+      - name: cache mvn
+        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: build and test
+        env:
+          SONARCLOUD_TOKEN: ${{ secrets.SHARED_SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.SHARED_GITHUB_PACKAGES_TOKEN }}
+          GIT_COMMIT_SHA: ${{ github.sha }}
+          RUN_NUMBER: ${{ github.run_number }}
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        run: mvn -B -U verify
+
+      - name: show errors
+        if: ${{ failure() }}
+        env:
+          FAILS_FILE: ${{ runner.temp }}/fails.txt
+        run: |
+          echo '## Build failure  ' >> $GITHUB_STEP_SUMMARY
+          { find . -type f -path '*target/surefire-reports/*.txt' -exec grep -l -E '(Failures: [^0]|Errors: [^0])' {} >> "${FAILS_FILE}" \; || :; }
+          { find . -type f -path '*target/failsafe-reports/*.txt' -exec grep -l -E '(Failures: [^0]|Errors: [^0])' {} >> "${FAILS_FILE}" \; || :; }
+
+          while IFS="" read -r errorFile || [ -n "$errorFile" ]; do
+            echo "**${errorFile}**  " >> $GITHUB_STEP_SUMMARY
+            echo '```text' >> $GITHUB_STEP_SUMMARY
+            cat "${errorFile}" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo '---' >> $GITHUB_STEP_SUMMARY
+          done < "${FAILS_FILE}"
+
+      - uses: capralifecycle/actions-lib/configure-aws-credentials@6eec40efec972ae86feb9dac823a34067f1d2384 # v1.3.0
+        id: aws
+        with:
+          aws-account-id: ${{ steps.config.outputs.accountId }}
+          # NOTE: We use different roles on default and non-default branches
+          aws-iam-role-name: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && steps.config.outputs.roleName || steps.config.outputs.limitedRoleName }}
+          authenticate-to-ecr: true
+
+      - uses: capralifecycle/actions-lib/generate-tag@6eec40efec972ae86feb9dac823a34067f1d2384 # v1.3.0
+        id: tag
+        with:
+          tag-prefix: "${{ env.APPLICATION_NAME }}"
+
+      - name: build and conditionally push docker image
+        env:
+          ECR_REPOSITORY_URI: "${{ steps.config.outputs.accountId }}.dkr.ecr.eu-west-1.amazonaws.com/${{ steps.config.outputs.ecrRepository }}"
+          DEFAULT_TAG: "${{ steps.tag.outputs.tag }}"
+          CONDITIONAL_PUSH: "${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) || inputs.deploy-to-dev }}"
+          GIT_COMMIT_SHA: "${{ github.sha }}"
+        run: |
+          image_id="$(docker build -q --build-arg service_version=$GIT_COMMIT_SHA .)"
+          if [ "$CONDITIONAL_PUSH" = "true" ]; then
+            docker tag "$image_id" "$ECR_REPOSITORY_URI:$DEFAULT_TAG"
+            docker push "$ECR_REPOSITORY_URI:$DEFAULT_TAG"
+          fi
+
+      - name: trigger development deployment pipelines
+        uses: capralifecycle/actions-lib/trigger-deployment-pipeline@6eec40efec972ae86feb9dac823a34067f1d2384 # v1.3.0
+        if: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) || inputs.deploy-to-dev }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ steps.aws.outputs.aws-access-key-id }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.aws.outputs.aws-secret-access-key }}
+          AWS_SESSION_TOKEN: ${{ steps.aws.outputs.aws-session-token }}
+        with:
+          pipelines: ${{ steps.config.outputs.devPipelines }}
+          aws-s3-bucket-name: ${{ steps.config.outputs.artifactBucket }}
+          trigger-type: "artifact"
+          # NOTE: The key passed to artifact-parameters will be the name of
+          # the SSM parameter where the reference to the artifact is stored.
+          artifact-parameters: "dev${{ env.CDK_ECR_TAG_NAME }}EcrTag=${{ steps.tag.outputs.tag }}"
+
+      - name: trigger production deployment pipelines
+        uses: capralifecycle/actions-lib/trigger-deployment-pipeline@6eec40efec972ae86feb9dac823a34067f1d2384 # v1.3.0
+        if: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ steps.aws.outputs.aws-access-key-id }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.aws.outputs.aws-secret-access-key }}
+          AWS_SESSION_TOKEN: ${{ steps.aws.outputs.aws-session-token }}
+        with:
+          pipelines: ${{ steps.config.outputs.prodPipelines }}
+          aws-s3-bucket-name: ${{ steps.config.outputs.artifactBucket }}
+          trigger-type: "artifact"
+          artifact-parameters: "prod${{ env.CDK_ECR_TAG_NAME }}EcrTag=${{ steps.tag.outputs.tag }}"
+
+      - uses: capralifecycle/actions-lib/slack-notify@6eec40efec972ae86feb9dac823a34067f1d2384 # v1.3.0
+        # NOTE: We only want to be notified about failures on the default branch
+        if: ${{ failure() && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+        with:
+          bot-token: ${{ secrets.SHARED_SLACK_BOT_TOKEN }}
+          channel: ${{ env.BUILD_FAILURE_SLACK_CHANNEL }}
+
+      - uses: capralifecycle/actions-lib/configure-github-deployment@6eec40efec972ae86feb9dac823a34067f1d2384 # v1.3.0
+        # NOTE: Create GitHub deployment on default branch regardless of job status
+        if: ${{ always() && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}

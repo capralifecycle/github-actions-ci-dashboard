@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>no.liflig</groupId>
+    <artifactId>kotlin-parent</artifactId>
+    <version>2.20240430.033332</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>no.liflig</groupId>
+  <artifactId>liflig-rest-service-baseline</artifactId>
+  <packaging>jar</packaging>
+  <version>${revision}</version>
+
+  <name>liflig-rest-baseline</name>
+
+  <properties>
+    <major-version>1</major-version>
+    <revision>${major-version}.local-SNAPSHOT</revision>
+
+    <!-- Overwritten in jenkins-build profile -->
+    <build.commit>LOCAL</build.commit>
+    <build.branch>LOCAL</build.branch>
+    <build.number>0</build.number>
+
+    <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
+    <java.version>17</java.version>
+
+    <!-- Liflig-dependencies -->
+    <liflig-document-store.version>1.20240606.134512</liflig-document-store.version>
+    <liflig-properties.version>2.20240520.022316</liflig-properties.version>
+    <liflig-http4k-setup.version>1.20240606.051645</liflig-http4k-setup.version>
+    <liflig-snapshot-test.version>1.20240519.232118</liflig-snapshot-test.version>
+
+    <!-- App -->
+    <kotlinx-serialization.version>1.7.0</kotlinx-serialization.version>
+    <kotlin-logging.version>3.0.5</kotlin-logging.version>
+    <slf4j.version>2.0.13</slf4j.version>
+    <logback-classic.version>1.5.6</logback-classic.version>
+    <logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
+    <opentelemetry.version>1.39.0</opentelemetry.version>
+    <http4k.version>5.22.0.0</http4k.version>
+    <postgresql.version>42.7.3</postgresql.version>
+    <hikari-connectionpool.version>5.1.0</hikari-connectionpool.version>
+    <jdbi.version>3.45.1</jdbi.version>
+    <flyway.version>10.14.0</flyway.version>
+
+
+    <!-- Test-dependencies -->
+    <junit.version>5.10.2</junit.version>
+    <mockk.version>1.13.11</mockk.version>
+    <assertj-core.version>3.26.0</assertj-core.version>
+    <http4k-testing-kotest.version>5.22.0.0</http4k-testing-kotest.version>
+    <rest-assured.version>5.4.0</rest-assured.version>
+    <testcontainers.postgresql.version>1.19.8</testcontainers.postgresql.version>
+
+    <!-- Maven -->
+    <ktfmt.version>0.43</ktfmt.version>
+    <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+    <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
+    <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
+    <sonar.version>3.11.0.3922</sonar.version>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>ci-build</id>
+      <activation>
+        <property>
+          <name>env.CI</name>
+        </property>
+      </activation>
+      <properties>
+        <!--suppress UnresolvedMavenProperty -->
+        <build.commit>${env.GIT_COMMIT_SHA}</build.commit>
+        <!--suppress UnresolvedMavenProperty -->
+        <build.branch>${env.BRANCH_NAME}</build.branch>
+        <!--suppress UnresolvedMavenProperty -->
+        <build.number>${env.RUN_NUMBER}</build.number>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>sonarcloud</id>
+      <activation>
+        <property>
+          <name>env.SONARCLOUD_TOKEN</name>
+        </property>
+      </activation>
+      <properties>
+        <sonar.organization>capralifecycle</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.projectKey></sonar.projectKey>
+        <sonar.token>${env.SONARCLOUD_TOKEN}</sonar.token>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonarsource.scanner.maven</groupId>
+            <artifactId>sonar-maven-plugin</artifactId>
+            <version>${sonar.version}</version>
+            <executions>
+              <execution>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sonar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <repositories>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/capralifecycle/*</url>
+    </repository>
+  </repositories>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.http4k</groupId>
+        <artifactId>http4k-bom</artifactId>
+        <version>${http4k.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${junit.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!--        Kotlin          -->
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib-jdk8</artifactId>
+      <version>${kotlin.version}</version>
+    </dependency>
+
+    <!--        Logging         -->
+    <dependency>
+      <groupId>io.github.microutils</groupId>
+      <artifactId>kotlin-logging-jvm</artifactId>
+      <version>${kotlin-logging.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback-classic.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.logstash.logback</groupId>
+      <artifactId>logstash-logback-encoder</artifactId>
+      <version>${logstash-logback-encoder.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+
+    <!--        Liflig          -->
+    <dependency>
+      <groupId>no.liflig</groupId>
+      <artifactId>liflig-http4k-setup</artifactId>
+      <version>${liflig-http4k-setup.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>no.liflig</groupId>
+      <artifactId>liflig-document-store</artifactId>
+      <version>${liflig-document-store.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>no.liflig</groupId>
+      <artifactId>properties</artifactId>
+      <version>${liflig-properties.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>no.liflig</groupId>
+      <artifactId>snapshot-test</artifactId>
+      <version>${liflig-snapshot-test.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+
+    <!--        HTTP4K          -->
+    <dependency>
+      <groupId>org.http4k</groupId>
+      <artifactId>http4k-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.http4k</groupId>
+      <artifactId>http4k-contract</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.http4k</groupId>
+      <artifactId>http4k-server-jetty</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.http4k</groupId>
+      <artifactId>http4k-format-kotlinx-serialization</artifactId>
+    </dependency>
+
+
+    <!--        Serialization           -->
+    <dependency>
+      <groupId>org.jetbrains.kotlinx</groupId>
+      <artifactId>kotlinx-serialization-json</artifactId>
+      <version>${kotlinx-serialization.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.http4k</groupId>
+      <artifactId>http4k-format-jackson</artifactId>
+    </dependency>
+
+    <!-- Database -->
+    <dependency>
+      <!-- Postgres JDBC Driver-->
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${postgresql.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>${hikari-connectionpool.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jdbi</groupId>
+      <artifactId>jdbi3-core</artifactId>
+      <version>${jdbi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jdbi</groupId>
+      <artifactId>jdbi3-postgres</artifactId>
+      <version>${jdbi.version}</version>
+    </dependency>
+    <dependency>
+      <!-- Database migrations -->
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+      <version>${flyway.version}</version>
+    </dependency>
+    <dependency>
+      <!-- Flyway needs this explicit dependency as of version 10-->
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+      <version>${flyway.version}</version>
+    </dependency>
+
+    <!-- For observability using OpenTelemetry metrics and tracing -->
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-api</artifactId>
+      <version>${opentelemetry.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.http4k</groupId>
+      <artifactId>http4k-opentelemetry</artifactId>
+    </dependency>
+
+    <!--        Testing         -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- For @Parameterized tests -->
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <!-- For Assertions.assertThat() -->
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>${assertj-core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- For mocking and spyk -->
+      <groupId>io.mockk</groupId>
+      <artifactId>mockk-jvm</artifactId>
+      <version>${mockk.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.http4k</groupId>
+      <artifactId>http4k-testing-kotest</artifactId>
+      <version>${http4k-testing-kotest.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- For testing your API -->
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>${rest-assured.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${testcontainers.postgresql.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src/main/kotlin</sourceDirectory>
+    <testSourceDirectory>src/test/kotlin</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>${project.basedir}/src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>${project.basedir}/src/main/resources-filtered</directory>
+        <!--
+        Ensure variables are replaced in application.properties
+        For more details, see:
+        https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html
+        -->
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-maven-plugin</artifactId>
+        <version>${kotlin.version}</version>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <configuration>
+              <sourceDirs>
+                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+              </sourceDirs>
+            </configuration>
+          </execution>
+          <execution>
+            <id>test-compile</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>test-compile</goal>
+            </goals>
+            <configuration>
+              <sourceDirs>
+                <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+              </sourceDirs>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <jvmTarget>${java.version}</jvmTarget>
+          <compilerPlugins>
+            <plugin>kotlinx-serialization</plugin>
+          </compilerPlugins>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-maven-serialization</artifactId>
+            <version>${kotlin.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+      <!-- Jacoco for test coverage reports. Can be used by sonarcloud.io -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>jacoco-initialize</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>jacoco-site</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven-shade-plugin.version}</version>
+        <configuration>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <!-- Always use the file target/app.jar, whatever version/name we have. -->
+              <finalName>app</finalName>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <transformers>
+                <transformer
+                  implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <manifestEntries>
+                    <Main-Class>no.liflig.baseline.MainKt</Main-Class>
+                  </manifestEntries>
+                </transformer>
+                <transformer
+                  implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!-- Unit tests. -DskipTests to skip. Runs in mvn test. -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- Automatically runs *Test files. -->
+          <excludedGroups>integration</excludedGroups>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!-- Integration tests. -DskipTests or -DskipITs to skip. Runs in mvn verify. -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${maven-failsafe-plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <!-- Automatically runs *IT files. -->
+          <includes>
+            <include>*Test</include>
+          </includes>
+          <groups>integration</groups>
+        </configuration>
+      </plugin>
+
+      <!-- spotless with ktfmt for code style -->
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>${spotless-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <phase>validate</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <formats>
+            <format>
+              <includes>
+                <include>*.md</include>
+                <include>.gitignore</include>
+              </includes>
+              <trimTrailingWhitespace/>
+              <endWithNewline/>
+              <indent>
+                <spaces>true</spaces>
+                <spacesPerTab>2</spacesPerTab>
+              </indent>
+            </format>
+          </formats>
+          <kotlin>
+            <ktfmt>
+              <version>${ktfmt.version}</version>
+              <style>DEFAULT</style>
+            </ktfmt>
+          </kotlin>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
