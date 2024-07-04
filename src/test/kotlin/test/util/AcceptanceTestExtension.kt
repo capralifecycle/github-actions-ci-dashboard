@@ -53,6 +53,7 @@ class AcceptanceTestExtension : Extension, BeforeAllCallback, AfterAllCallback, 
   }
 
   override fun afterAll(context: ExtensionContext) {
+    app.stop()
     database.stop()
   }
 
