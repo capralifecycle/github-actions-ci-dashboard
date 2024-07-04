@@ -1,5 +1,10 @@
 package test.util
 
+import com.microsoft.playwright.Browser
+import com.microsoft.playwright.BrowserContext
+import com.microsoft.playwright.Page
+import com.microsoft.playwright.Playwright
+import com.microsoft.playwright.assertions.PlaywrightAssertions
 import io.restassured.RestAssured
 import io.restassured.builder.RequestSpecBuilder
 import io.restassured.http.ContentType
@@ -49,12 +54,13 @@ class AcceptanceTestExtension : Extension, BeforeAllCallback, AfterAllCallback, 
         webhookPath = config.webhookOptions.path,
         webhookSecret = config.webhookOptions.secret)
 
-    tvBrowser.initialize(config.apiOptions.serverPort)
+    tvBrowser.initialize(port = config.apiOptions.serverPort, authToken = "", dashboardId = "abc")
   }
 
   override fun afterAll(context: ExtensionContext) {
     app.stop()
     database.stop()
+    tvBrowser.close()
   }
 
   override fun beforeEach(context: ExtensionContext) {
@@ -157,16 +163,52 @@ END${'$'}${'$'};""")
     }
   }
 
-  class TvBrowser {
-    private var dashboardServerPort: Port = Port(8080)
+  class TvBrowser : AutoCloseable {
+    private val log = KotlinLogging.logger {}
 
-    fun initialize(port: Port) {
+    // Failed Playwright Traces can be viewed in https://trace.playwright.dev/
+    private val playwright: Playwright = Playwright.create()
+    private val browser: Browser =
+        playwright
+            .chromium()
+            .launch(
+                // Uncomment for manual testing:
+                /* BrowserType.LaunchOptions().setHeadless(false).setSlowMo(1000.0) */
+                )
+    private val context: BrowserContext =
+        browser.newContext(
+            Browser.NewContextOptions().setLocale("no-nb").setTimezoneId("Europe/Oslo"))
+
+    val page: Page = context.newPage()
+
+    private var dashboardServerPort: Port = Port(8080)
+    private lateinit var authToken: String
+    private lateinit var dashboardId: String
+
+    fun initialize(port: Port, authToken: String, dashboardId: String) {
       this.dashboardServerPort = port
+      this.authToken = authToken
+      this.dashboardId = dashboardId
     }
 
-    fun navigateToDashboard() {}
+    override fun close() {
+      playwright.close()
+    }
 
-    fun verifyDashboardIsEmpty() {}
+    private fun path(path: String): String =
+        "http://localhost:${dashboardServerPort.value}/$path?token=${authToken}&id=${dashboardId}"
+
+    fun navigateToDashboard() {
+      log.info { "Navigating to dashboard /index.html" }
+      page.navigate(path("index.html"))
+      PlaywrightAssertions.assertThat(page).hasTitle("CI Dashboard")
+    }
+
+    fun verifyDashboardIsEmpty() {
+      PlaywrightAssertions.assertThat(page).hasURL(path("index.html"))
+      PlaywrightAssertions.assertThat(page.locator("#statuses")).isVisible()
+      PlaywrightAssertions.assertThat(page.locator("#statuses > div")).hasCount(0)
+    }
 
     fun verifyDashboardHasRepoInProgress(repoName: String) {}
 
