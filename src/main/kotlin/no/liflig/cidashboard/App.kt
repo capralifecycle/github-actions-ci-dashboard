@@ -2,17 +2,16 @@ package no.liflig.cidashboard
 
 import mu.KotlinLogging
 import net.logstash.logback.marker.Markers
-import no.liflig.cidashboard.api.ApiServer
 import no.liflig.cidashboard.api.ApiServices
-import no.liflig.cidashboard.api.HealthService
+import no.liflig.cidashboard.api.asJettyServer
+import no.liflig.cidashboard.api.createApiServer
 import no.liflig.cidashboard.common.config.Config
 import no.liflig.cidashboard.common.database.DatabaseConfigurator
 import no.liflig.cidashboard.common.database.DbPassword
 import no.liflig.cidashboard.common.database.DbUrl
 import no.liflig.cidashboard.common.database.DbUsername
 import no.liflig.cidashboard.common.observability.OpenTelemetryConfig
-import no.liflig.cidashboard.examplefeature.MyOtherService
-import no.liflig.cidashboard.examplefeature.MyService
+import no.liflig.cidashboard.health.HealthService
 import org.jdbi.v3.core.Jdbi
 
 /**
@@ -42,11 +41,9 @@ class App(val config: Config) {
     val apiOptions = config.apiOptions
 
     val healthService = HealthService(apiOptions.applicationName, config.buildInfo)
-    val myService = MyService(jdbi)
-    val myOtherService = MyOtherService(jdbi)
-    val services = ApiServices(healthService, myService, myOtherService)
+    val services = ApiServices(healthService)
 
-    val server = ApiServer(apiOptions, services).create()
+    val server = createApiServer(apiOptions, services).asJettyServer(config.apiOptions)
     server.start()
     runningTasks.add(server)
     logger.info { "Server started on http://0.0.0.0:${apiOptions.serverPort.value}" }

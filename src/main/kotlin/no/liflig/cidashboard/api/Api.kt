@@ -1,92 +1,55 @@
 package no.liflig.cidashboard.api
 
-import com.fasterxml.jackson.databind.JsonNode
 import no.liflig.cidashboard.common.config.ApiOptions
-import no.liflig.cidashboard.common.http4k.CustomJacksonConfig
-import no.liflig.cidashboard.examplefeature.api.ExampleApi
+import no.liflig.cidashboard.common.http4k.httpNoServerVersionHeader
+import no.liflig.cidashboard.dashboard.DashboardUpdatesEndpoint
+import no.liflig.cidashboard.dashboard.IndexEndpoint
+import no.liflig.cidashboard.health.HealthEndpoint
+import no.liflig.cidashboard.health.HealthService
+import no.liflig.cidashboard.webhook.WebhookEndpoint
 import no.liflig.http4k.setup.LifligBasicApiSetup
-import no.liflig.http4k.setup.LifligUserPrincipalLog
-import no.liflig.http4k.setup.errorhandling.ContractLensErrorResponseRenderer
-import org.http4k.contract.ContractRoutingHttpHandler
-import org.http4k.contract.bind
-import org.http4k.contract.contract
-import org.http4k.contract.div
-import org.http4k.contract.jsonschema.v3.AutoJsonToJsonSchema
-import org.http4k.contract.openapi.ApiInfo
-import org.http4k.contract.openapi.ApiRenderer
-import org.http4k.contract.openapi.cached
-import org.http4k.contract.openapi.v3.Api
+import no.liflig.http4k.setup.logging.LoggingFilter
 import org.http4k.contract.openapi.v3.ApiServer
-import org.http4k.contract.openapi.v3.OpenApi3
-import org.http4k.contract.security.BasicAuthSecurity
-import org.http4k.contract.ui.swaggerUiLite
 import org.http4k.core.Method
-import org.http4k.core.Uri
 import org.http4k.core.then
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
+import org.http4k.server.Http4kServer
+import org.http4k.server.Jetty
+import org.http4k.server.asServer
 
 /**
- * Api setup containing the following :
- * - Contract (openapi-schema) related setup
- * - Any additional filters. e.g. auth filter.
- * - Mapping to [LifligUserPrincipalLog] if needed (in combination with auth filter)
+ * Api setup containing the following:
+ * - Any additional filters, e.g., an auth filter.
  * - Routes
  *
  * Try to keep the more technical stuff/noise in [ApiServer] to avoid code overload.
  */
-class Api(
-    private val basicApiSetup: LifligBasicApiSetup,
-    private val options: ApiOptions,
-    private val services: ApiServices,
-) {
-  fun create(): RoutingHttpHandler {
-    /*
-     TODO: Add auth lens and logic for principal log mapping if needed.
-       Also requires auth filter that puts auth context in lens.
-     fun MyAuthLens.toPrincipalLog(): (Request) -> LifligUserPrincipalLog? = ..
-     val myAuthLens: MyAuthLens = RequestContextKey.optional(contexts)
-     val principalLog = myAuthLens.toPrincipalLog()
-    */
-    val (coreFilters, errorResponseRenderer) = basicApiSetup.create(principalLog = { null })
+fun createApiServer(options: ApiOptions, services: ApiServices): RoutingHttpHandler {
+  val basicApiSetup =
+      LifligBasicApiSetup(
+          logHandler = LoggingFilter.createLogHandler(suppressSuccessfulHealthChecks = true),
+          logHttpBody = options.logHttpBody,
+          corsPolicy = options.corsPolicy)
 
-    return coreFilters
-        // TODO: Add additional filters not provided by coreFilters here. E.g. authFilter.
-        .then(
-            routes(
-                "/api" / "v1" bind contractApi(errorResponseRenderer),
-                "/health" bind Method.GET to services.healthService.endpoint(),
-                swaggerUiLite { url = "/api/docs/openapi-schema.json" }))
-  }
+  val (coreFilters) = basicApiSetup.create(principalLog = { null })
 
-  private fun contractApi(
-      errorResponseRenderer: ContractLensErrorResponseRenderer,
-  ): ContractRoutingHttpHandler = contract {
-    renderer = openApi3Renderer(errorResponseRenderer)
-    descriptionPath = "/docs/openapi-schema.json"
-    descriptionSecurity = BasicAuthSecurity("master", options.openApiCredentials)
-    routes += ExampleApi(services.myService).routes
-  }
-
-  private fun openApi3Renderer(
-      errorResponseRenderer: ContractLensErrorResponseRenderer
-  ): OpenApi3<JsonNode> {
-    val jacksonConfig = CustomJacksonConfig
-    return OpenApi3(
-        apiInfo =
-            ApiInfo(
-                title = options.applicationName,
-                version = "1",
-                description = "A REST API for my service",
-            ),
-        servers = listOf(ApiServer(Uri.of(options.serverBaseUrl))),
-        json = jacksonConfig,
-        apiRenderer =
-            ApiRenderer.Auto<Api<JsonNode>, JsonNode>(
-                    jacksonConfig, schema = AutoJsonToJsonSchema(jacksonConfig))
-                .cached(),
-        errorResponseRenderer = errorResponseRenderer,
-    )
-  }
+  return coreFilters.then(
+      routes(
+          "/" bind Method.GET to IndexEndpoint(),
+          "/index.html" bind Method.GET to IndexEndpoint(),
+          "/dashboard-updates" bind Method.GET to DashboardUpdatesEndpoint(),
+          "/webhook" bind Method.POST to WebhookEndpoint(),
+          "/health" bind Method.GET to HealthEndpoint(services.healthService),
+      ))
 }
+
+fun RoutingHttpHandler.asJettyServer(options: ApiOptions): Http4kServer =
+    this.asServer(
+        Jetty(options.serverPort.value, httpNoServerVersionHeader(options.serverPort.value)))
+
+/** Service registry for creating endpoints. */
+data class ApiServices(
+    val healthService: HealthService,
+)

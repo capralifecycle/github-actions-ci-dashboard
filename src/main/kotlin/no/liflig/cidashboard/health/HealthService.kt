@@ -1,6 +1,6 @@
 @file:UseSerializers(InstantSerializer::class)
 
-package no.liflig.cidashboard.api
+package no.liflig.cidashboard.health
 
 import java.lang.management.ManagementFactory
 import java.time.Instant
@@ -10,13 +10,7 @@ import kotlinx.serialization.UseSerializers
 import no.liflig.cidashboard.common.config.BuildInfo
 import no.liflig.cidashboard.common.serialization.InstantSerializer
 import org.http4k.core.Body
-import org.http4k.core.HttpHandler
-import org.http4k.core.Response
-import org.http4k.core.Status
-import org.http4k.core.with
 import org.http4k.format.KotlinxSerialization.auto
-
-private val jsonLens = Body.auto<HealthStatus>().toLens()
 
 class HealthService(
     private val applicationName: String,
@@ -24,9 +18,7 @@ class HealthService(
 ) {
   private val runningSince: Instant = getRunningSince()
 
-  fun endpoint(): HttpHandler = { Response(Status.OK).with(jsonLens of healthStatus()) }
-
-  private fun healthStatus() =
+  fun status() =
       HealthStatus(
           name = applicationName,
           timestamp = Instant.now(),
@@ -46,4 +38,8 @@ data class HealthStatus(
     val timestamp: Instant,
     val runningSince: Instant,
     val build: BuildInfo,
-)
+) {
+  companion object {
+    val bodyLens = Body.auto<HealthStatus>().toLens()
+  }
+}
