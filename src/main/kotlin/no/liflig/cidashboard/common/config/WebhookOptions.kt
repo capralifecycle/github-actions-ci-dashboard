@@ -3,7 +3,16 @@ package no.liflig.cidashboard.common.config
 import java.util.Properties
 import no.liflig.properties.stringNotEmpty
 
-data class WebhookOptions(val path: String, val secret: Secret) {
+data class WebhookOptions(
+    /** Full path to webhook. Must start with `/`. */
+    val path: String,
+    val secret: Secret
+) {
+
+  init {
+    require(path.isNotBlank()) { "Webhook path cannot be blank" }
+    require(path.startsWith("/")) { "Webhook path must start with a /" }
+  }
 
   /**
    * Used for a webhook submitter (GitHub) to authenticate itself. Prevents anyone from posting

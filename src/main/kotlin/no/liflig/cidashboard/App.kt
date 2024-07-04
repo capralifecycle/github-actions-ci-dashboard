@@ -43,7 +43,9 @@ class App(val config: Config) {
     val healthService = HealthService(apiOptions.applicationName, config.buildInfo)
     val services = ApiServices(healthService)
 
-    val server = createApiServer(apiOptions, services).asJettyServer(config.apiOptions)
+    val server =
+        createApiServer(apiOptions, config.webhookOptions, services)
+            .asJettyServer(config.apiOptions)
     server.start()
     runningTasks.add(server)
     logger.info { "Server started on http://0.0.0.0:${apiOptions.serverPort.value}" }

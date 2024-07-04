@@ -1,6 +1,5 @@
 package acceptancetests
 
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -19,7 +18,6 @@ class CiDashboardTest {
   }
 
   @Test
-  @Disabled("WIP CALS-813 CALS-808")
   fun `should ingest webhook data and present it to dashboards when they poll`() {
     infra.tvBrowser.navigateToDashboard()
     infra.tvBrowser.verifyDashboardIsEmpty()

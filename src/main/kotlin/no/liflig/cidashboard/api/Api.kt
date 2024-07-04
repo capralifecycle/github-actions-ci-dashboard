@@ -1,6 +1,7 @@
 package no.liflig.cidashboard.api
 
 import no.liflig.cidashboard.common.config.ApiOptions
+import no.liflig.cidashboard.common.config.WebhookOptions
 import no.liflig.cidashboard.common.http4k.httpNoServerVersionHeader
 import no.liflig.cidashboard.dashboard.DashboardUpdatesEndpoint
 import no.liflig.cidashboard.dashboard.IndexEndpoint
@@ -26,7 +27,11 @@ import org.http4k.server.asServer
  *
  * Try to keep the more technical stuff/noise in [ApiServer] to avoid code overload.
  */
-fun createApiServer(options: ApiOptions, services: ApiServices): RoutingHttpHandler {
+fun createApiServer(
+    options: ApiOptions,
+    webhookOptions: WebhookOptions,
+    services: ApiServices
+): RoutingHttpHandler {
   val basicApiSetup =
       LifligBasicApiSetup(
           logHandler = LoggingFilter.createLogHandler(suppressSuccessfulHealthChecks = true),
@@ -40,7 +45,7 @@ fun createApiServer(options: ApiOptions, services: ApiServices): RoutingHttpHand
           "/" bind Method.GET to IndexEndpoint(),
           "/index.html" bind Method.GET to IndexEndpoint(),
           "/dashboard-updates" bind Method.GET to DashboardUpdatesEndpoint(),
-          "/webhook" bind Method.POST to WebhookEndpoint(),
+          webhookOptions.path bind Method.POST to WebhookEndpoint(),
           "/health" bind Method.GET to HealthEndpoint(services.healthService),
       ))
 }

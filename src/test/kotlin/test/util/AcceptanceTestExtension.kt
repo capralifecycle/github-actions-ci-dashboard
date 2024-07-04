@@ -71,10 +71,15 @@ class AcceptanceTestExtension : Extension, BeforeAllCallback, AfterAllCallback, 
     private val log = KotlinLogging.logger {}
 
     private var webhookDestinationPort: Port = Port(8080)
+    private lateinit var webhookPath: String
+    private var webhookSecret: WebhookOptions.Secret = WebhookOptions.Secret("unknown")
+
     private lateinit var webhookPostRequest: RequestSpecification
 
     fun initialize(port: Port, webhookPath: String, webhookSecret: WebhookOptions.Secret) {
       this.webhookDestinationPort = port
+      this.webhookPath = webhookPath
+      this.webhookSecret = webhookSecret
 
       webhookPostRequest =
           RequestSpecBuilder()
@@ -90,7 +95,7 @@ class AcceptanceTestExtension : Extension, BeforeAllCallback, AfterAllCallback, 
           .body(payload.asJson())
           .log()
           .all()
-          .post()
+          .post(webhookPath)
           .then()
           .statusCode(200)
           .log()
