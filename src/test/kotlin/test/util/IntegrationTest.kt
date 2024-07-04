@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test
  * Integration tests are slower than reqular unit tests, because they integrate multiple components
  * of the system. These tests can also use external resources, like a database.
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
+// Class, interface (including annotation interface), enum, or record declaration
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 @Tag("integration")
 annotation class Integration
@@ -21,7 +22,7 @@ annotation class Integration
  * Integration tests are slower than reqular unit tests, because they integrate multiple components
  * of the system. These tests can also use external resources, like a database.
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 @Test
 @Tag("integration")

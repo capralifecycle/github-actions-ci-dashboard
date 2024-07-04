@@ -57,6 +57,7 @@
     <http4k-testing-kotest.version>5.22.0.0</http4k-testing-kotest.version>
     <rest-assured.version>5.4.0</rest-assured.version>
     <testcontainers.postgresql.version>1.19.8</testcontainers.postgresql.version>
+    <playwright.version>1.41.2</playwright.version>
 
     <!-- Maven -->
     <ktfmt.version>0.43</ktfmt.version>
@@ -335,6 +336,13 @@
       <groupId>org.testcontainers</groupId>
       <artifactId>postgresql</artifactId>
       <version>${testcontainers.postgresql.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.microsoft.playwright</groupId>
+      <artifactId>playwright</artifactId>
+      <version>${playwright.version}</version>
       <scope>test</scope>
     </dependency>
 

@@ -20,6 +20,8 @@ cors.allow.headers=origin,content-type,accept,authorization,x-request-id
 cors.allow.methods=GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD
 api.baseurl=http://localhost
 log.http.body=true
+database.username=user
+database.password=password
 TEMPLATE
   )>>overrides.properties
   changed=1

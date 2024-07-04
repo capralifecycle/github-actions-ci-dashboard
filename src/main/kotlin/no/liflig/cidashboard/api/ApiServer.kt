@@ -30,5 +30,6 @@ class ApiServer(private val options: ApiOptions, services: ApiServices) {
   private val api = Api(basicApiSetup, options, services).create()
 
   fun create(): Http4kServer =
-      api.asServer(Jetty(options.serverPort, httpNoServerVersionHeader(options.serverPort)))
+      api.asServer(
+          Jetty(options.serverPort.value, httpNoServerVersionHeader(options.serverPort.value)))
 }

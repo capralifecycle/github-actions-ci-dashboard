@@ -12,7 +12,7 @@ data class ApiOptions(
     val applicationName: String,
     /** Like `http://localhost`, `http://localhost:8080`, `https://myservice.prod.customer.com`. */
     val serverBaseUrl: String,
-    val serverPort: Int,
+    val serverPort: Port,
     val corsPolicy: CorsPolicy,
     val openApiCredentials: Credentials,
     val logHttpBody: Boolean
@@ -23,7 +23,7 @@ data class ApiOptions(
         ApiOptions(
             applicationName = props.stringNotEmpty("service.name"),
             serverBaseUrl = props.stringNotEmpty("api.baseurl"),
-            serverPort = props.intRequired("server.port"),
+            serverPort = Port(props.intRequired("server.port")),
             corsPolicy = CorsConfig.from(props).asPolicy(),
             openApiCredentials =
                 Credentials(
@@ -31,5 +31,12 @@ data class ApiOptions(
                     password = props.string("api.openapi.credentials.password") ?: "",
                 ),
             logHttpBody = props.booleanRequired("log.http.body"))
+  }
+}
+
+@JvmInline
+value class Port(val value: Int) {
+  init {
+    require(value in 0..65535) { "Invalid port" }
   }
 }

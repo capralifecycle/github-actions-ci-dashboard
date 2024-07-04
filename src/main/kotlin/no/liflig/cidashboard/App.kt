@@ -21,7 +21,7 @@ import org.jdbi.v3.core.Jdbi
  * @param config any options like ports and urls should be set here. Override values in the config
  *   when doing testing of [App].
  */
-class App(private val config: Config) {
+class App(val config: Config) {
   private val logger = KotlinLogging.logger {}
   private val runningTasks = mutableListOf<AutoCloseable>()
   private val jdbi: Jdbi = createJdbiInstance(config)
@@ -49,7 +49,7 @@ class App(private val config: Config) {
     val server = ApiServer(apiOptions, services).create()
     server.start()
     runningTasks.add(server)
-    logger.info { "Server started on http://0.0.0.0:${apiOptions.serverPort}" }
+    logger.info { "Server started on http://0.0.0.0:${apiOptions.serverPort.value}" }
   }
 }
 

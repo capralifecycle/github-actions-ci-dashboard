@@ -1,28 +1,23 @@
 package no.liflig.cidashboard.api
 
 import io.restassured.RestAssured
-import no.liflig.cidashboard.App
-import no.liflig.cidashboard.common.config.Config
 import org.http4k.core.Status
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.extension.RegisterExtension
+import test.util.AcceptanceTestExtension
+import test.util.Integration
 import test.util.IntegrationTest
-import test.util.loadForTests
 
+@Integration
 class HealthApiTest {
 
-  private val config = Config.loadForTests()
-  private val app = App(config)
+  companion object {
+    @JvmField @RegisterExtension val infra = AcceptanceTestExtension()
+  }
 
   @BeforeEach
   fun setUp() {
-    RestAssured.port = config.apiOptions.serverPort
-    app.start()
-  }
-
-  @AfterEach
-  fun tearDown() {
-    app.stop()
+    RestAssured.port = infra.app.config.apiOptions.serverPort.value
   }
 
   @IntegrationTest
