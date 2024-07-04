@@ -2,9 +2,6 @@ package no.liflig.cidashboard
 
 import mu.KotlinLogging
 import net.logstash.logback.marker.Markers
-import no.liflig.cidashboard.api.ApiServices
-import no.liflig.cidashboard.api.asJettyServer
-import no.liflig.cidashboard.api.createApiServer
 import no.liflig.cidashboard.common.config.Config
 import no.liflig.cidashboard.common.database.DatabaseConfigurator
 import no.liflig.cidashboard.common.database.DbPassword

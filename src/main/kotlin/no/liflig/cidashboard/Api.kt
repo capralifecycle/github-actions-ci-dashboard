@@ -1,4 +1,4 @@
-package no.liflig.cidashboard.api
+package no.liflig.cidashboard
 
 import no.liflig.cidashboard.common.config.ApiOptions
 import no.liflig.cidashboard.common.config.WebhookOptions
