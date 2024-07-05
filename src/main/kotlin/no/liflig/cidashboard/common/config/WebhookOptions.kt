@@ -20,6 +20,8 @@ data class WebhookOptions(
    *
    * Used by GitHub to generate a
    * [HMAC signature header](https://docs.github.com/en/webhooks/webhook-events-and-payloads#delivery-headers).
+   *
+   * See `/docs/webhooks-and-secrets.md`.
    */
   @JvmInline
   value class Secret(val value: String) {

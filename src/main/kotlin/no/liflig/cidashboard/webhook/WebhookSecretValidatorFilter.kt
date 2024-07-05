@@ -14,6 +14,11 @@ import org.http4k.lens.LensFailure
 import org.http4k.lens.nonBlankString
 import org.http4k.security.HmacSha256
 
+/**
+ * Prevents unsigned webhook requests with a 401 Unauthorized.
+ *
+ * See `/docs/webhooks-and-secrets.md`.
+ */
 class WebhookSecretValidatorFilter(private val secret: WebhookOptions.Secret) : Filter {
 
   companion object {

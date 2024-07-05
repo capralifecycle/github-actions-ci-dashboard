@@ -15,6 +15,7 @@ More information is found here:
 - [Requirements (Norwegian)](./docs/requirements.md)
 - [Solution specification/architecture (Confluence)](https://liflig.atlassian.net/l/cp/Qc1oFmJF)
 - [Overview of the design process (Confluence)](https://liflig.atlassian.net/wiki/x/PgBSDg)
+- [Webhooks and secrets](./docs/webhooks-and-secrets.md)
 
 ### Architecture
 
