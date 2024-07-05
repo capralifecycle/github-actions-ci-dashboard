@@ -22,6 +22,7 @@ api.baseurl=http://localhost
 log.http.body=true
 database.username=user
 database.password=password
+dashboard.renderer.hotreload=true
 TEMPLATE
   )>>overrides.properties
   changed=1

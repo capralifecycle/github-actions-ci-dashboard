@@ -17,6 +17,7 @@ import org.http4k.core.then
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
+import org.http4k.routing.webJars
 import org.http4k.server.Http4kServer
 import org.http4k.server.Jetty
 import org.http4k.server.asServer
@@ -43,14 +44,14 @@ fun createApiServer(
 
   return coreFilters.then(
       routes(
-          "/" bind Method.GET to IndexEndpoint(),
-          "/index.html" bind Method.GET to IndexEndpoint(),
+          "/" bind Method.GET to IndexEndpoint(options.hotReloadTemplates),
+          "/index.html" bind Method.GET to IndexEndpoint(options.hotReloadTemplates),
           "/dashboard-updates" bind Method.GET to DashboardUpdatesEndpoint(),
           webhookOptions.path bind
               Method.POST to
               WebhookSecretValidatorFilter(webhookOptions.secret).then(WebhookEndpoint()),
           "/health" bind Method.GET to HealthEndpoint(services.healthService),
-      ))
+          webJars()))
 }
 
 fun RoutingHttpHandler.asJettyServer(options: ApiOptions): Http4kServer =

@@ -1,6 +1,7 @@
 package no.liflig.cidashboard.common.config
 
 import java.util.Properties
+import no.liflig.properties.boolean
 import no.liflig.properties.booleanRequired
 import no.liflig.properties.intRequired
 import no.liflig.properties.string
@@ -15,7 +16,8 @@ data class ApiOptions(
     val serverPort: Port,
     val corsPolicy: CorsPolicy,
     val openApiCredentials: Credentials,
-    val logHttpBody: Boolean
+    val logHttpBody: Boolean,
+    val hotReloadTemplates: Boolean,
 ) {
 
   companion object {
@@ -30,7 +32,8 @@ data class ApiOptions(
                     user = props.stringNotEmpty("api.openapi.credentials.user"),
                     password = props.string("api.openapi.credentials.password") ?: "",
                 ),
-            logHttpBody = props.booleanRequired("log.http.body"))
+            logHttpBody = props.booleanRequired("log.http.body"),
+            hotReloadTemplates = props.boolean("dashboard.renderer.hotreload") ?: false)
   }
 }
 

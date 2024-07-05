@@ -1,13 +1,39 @@
 package no.liflig.cidashboard.dashboard
 
+import org.http4k.core.Body
+import org.http4k.core.ContentType
 import org.http4k.core.HttpHandler
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
+import org.http4k.core.with
+import org.http4k.template.HandlebarsTemplates
+import org.http4k.template.ViewModel
+import org.http4k.template.viewModel
 
-class IndexEndpoint : HttpHandler {
+class IndexEndpoint(useHotReload: Boolean) : HttpHandler {
+
+  private val templateDir = "handlebars-htmx-templates"
+  private val renderer =
+      if (useHotReload) {
+        HandlebarsTemplates().HotReload("src/main/resources/$templateDir")
+      } else {
+        HandlebarsTemplates().CachingClasspath(templateDir)
+      }
+
+  private val bodyLens = Body.viewModel(renderer, ContentType.TEXT_HTML).toLens()
+
   override fun invoke(request: Request): Response {
-    // Todo render index html
-    return Response(Status.OK).body("""<html>Hello world</html>""")
+    // The renderer uses the ViewModel class to identify which template to use.
+    return Response(Status.OK).with(bodyLens of Index("1", "abc", "/dashboard-updates"))
   }
+}
+
+data class Index(
+    val dashboardId: String,
+    val secretToken: String,
+    val pollUrl: String,
+    val pollRateSeconds: Long = 5
+) : ViewModel {
+  override fun template(): String = "index"
 }

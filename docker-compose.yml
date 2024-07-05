@@ -1,5 +1,9 @@
 version: "3.8"
 
+# Run locally using this instead:
+# docker run --name some-postgres -e POSTGRES_PASSWORD=password -e POSTGRES_USER=user -e POSTGRES_DB=app -p 5432:5432 -d postgres
+
+
 services:
   app:
     build:

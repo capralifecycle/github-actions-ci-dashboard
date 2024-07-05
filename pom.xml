@@ -54,7 +54,6 @@
     <junit.version>5.10.2</junit.version>
     <mockk.version>1.13.11</mockk.version>
     <assertj-core.version>3.26.0</assertj-core.version>
-    <http4k-testing-kotest.version>5.22.0.0</http4k-testing-kotest.version>
     <rest-assured.version>5.4.0</rest-assured.version>
     <testcontainers.postgresql.version>1.19.8</testcontainers.postgresql.version>
     <playwright.version>1.41.2</playwright.version>
@@ -65,6 +64,7 @@
     <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
     <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
     <sonar.version>3.11.0.3922</sonar.version>
+    <htmx.org.version>2.0.0</htmx.org.version>
   </properties>
 
   <profiles>
@@ -226,6 +226,17 @@
       <groupId>org.http4k</groupId>
       <artifactId>http4k-format-kotlinx-serialization</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.http4k</groupId>
+      <artifactId>http4k-template-handlebars</artifactId>
+    </dependency>
+
+    <dependency>
+      <!-- HTMX static files -->
+      <groupId>org.webjars.npm</groupId>
+      <artifactId>htmx.org</artifactId>
+      <version>${htmx.org.version}</version>
+    </dependency>
 
 
     <!--        Serialization           -->
@@ -312,12 +323,7 @@
       <version>${mockk.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.http4k</groupId>
-      <artifactId>http4k-testing-kotest</artifactId>
-      <version>${http4k-testing-kotest.version}</version>
-      <scope>test</scope>
-    </dependency>
+
     <dependency>
       <!-- For testing your API -->
       <groupId>io.rest-assured</groupId>
