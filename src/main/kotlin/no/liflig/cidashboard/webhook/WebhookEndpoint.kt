@@ -44,4 +44,3 @@ class WebhookEndpoint : HttpHandler {
 }
 
 interface WebhookPayload
-
