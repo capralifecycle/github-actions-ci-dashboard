@@ -17,6 +17,9 @@ data class WebhookOptions(
   /**
    * Used for a webhook submitter (GitHub) to authenticate itself. Prevents anyone from posting
    * webhook data.
+   *
+   * Used by GitHub to generate a
+   * [HMAC signature header](https://docs.github.com/en/webhooks/webhook-events-and-payloads#delivery-headers).
    */
   @JvmInline
   value class Secret(val value: String) {

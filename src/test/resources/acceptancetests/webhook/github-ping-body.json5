@@ -1,0 +1,59 @@
+// This webhook payload is sent the very first time, when you create a webhook inside github.
+{
+  "zen": "Practicality beats purity.",
+  "hook_id": 488374259,
+  "hook": {
+    "type": "Organization",
+    "id": 488374259,
+    "name": "web",
+    "active": true,
+    "events": [
+      "workflow_run"
+    ],
+    "config": {
+      "content_type": "json",
+      "insecure_ssl": "0",
+      "secret": "********",
+      "url": "https://ci-dashboard.liflig.io/webhook"
+    },
+    "updated_at": "2024-07-05T11:18:01Z",
+    "created_at": "2024-07-05T11:18:01Z",
+    "url": "https://api.github.com/orgs/capralifecycle/hooks/488374259",
+    "ping_url": "https://api.github.com/orgs/capralifecycle/hooks/488374259/pings",
+    "deliveries_url": "https://api.github.com/orgs/capralifecycle/hooks/488374259/deliveries"
+  },
+  "organization": {
+    "login": "capralifecycle",
+    "id": 13219542,
+    "node_id": "MDEyOk9yZ2FuaXphdGlvbjEzMjE5NTQy",
+    "url": "https://api.github.com/orgs/capralifecycle",
+    "repos_url": "https://api.github.com/orgs/capralifecycle/repos",
+    "events_url": "https://api.github.com/orgs/capralifecycle/events",
+    "hooks_url": "https://api.github.com/orgs/capralifecycle/hooks",
+    "issues_url": "https://api.github.com/orgs/capralifecycle/issues",
+    "members_url": "https://api.github.com/orgs/capralifecycle/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/capralifecycle/public_members{/member}",
+    "avatar_url": "https://avatars.githubusercontent.com/u/13219542?v=4",
+    "description": ""
+  },
+  "sender": {
+    "login": "krissrex",
+    "id": 7364831,
+    "node_id": "MDQ6VXNlcjczNjQ4MzE=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/7364831?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/krissrex",
+    "html_url": "https://github.com/krissrex",
+    "followers_url": "https://api.github.com/users/krissrex/followers",
+    "following_url": "https://api.github.com/users/krissrex/following{/other_user}",
+    "gists_url": "https://api.github.com/users/krissrex/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/krissrex/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/krissrex/subscriptions",
+    "organizations_url": "https://api.github.com/users/krissrex/orgs",
+    "repos_url": "https://api.github.com/users/krissrex/repos",
+    "events_url": "https://api.github.com/users/krissrex/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/krissrex/received_events",
+    "type": "User",
+    "site_admin": false
+  }
+}
