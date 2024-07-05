@@ -17,16 +17,6 @@ class WebhookEndpoint : HttpHandler {
     /** E.g. `"workflow_run"`, `"ping"`. */
     private val webhookEventType: HeaderLens<String> =
         Header.nonBlankString().required("X-GitHub-Event", "The event type")
-    /**
-     * Signed with the secret. Uses HMAC with SHA-256.
-     *
-     * `"sha256=5c5134a624883d7df34eae110bf37f78a0620b159fd884760c40a66a3903293f"`
-     */
-    private val webhookSignature: HeaderLens<String> =
-        Header.nonBlankString()
-            .required(
-                "X-Hub-Signature-256",
-                "The payload signature signed with HMAC SHA-256 and the Webhook Secret")
   }
 
   override fun invoke(request: Request): Response {
@@ -54,3 +44,4 @@ class WebhookEndpoint : HttpHandler {
 }
 
 interface WebhookPayload
+

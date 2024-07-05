@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 @Disabled("WIP")
 class WebhookSecretValidatorFilterTest {
 
-  val secret = WebhookOptions.Secret("TODO")
+  val secret = WebhookOptions.Secret("It's a Secret to Everybody")
 
   @Test
   fun `should validate secret using sha-256`() {
@@ -23,20 +23,20 @@ class WebhookSecretValidatorFilterTest {
     val headers: Headers =
         listOf(
             "X-Hub-Signature-256" to
-                "sha256=5c5134a624883d7df34eae110bf37f78a0620b159fd884760c40a66a3903293f")
+                "sha256=757107ea0eb2509fc211221cce984b8a37570b6d7586c22c46f4379c8b043e17")
 
     val nextHandlerWasCalled = AtomicBoolean(false)
     val okHandler: HttpHandler = { _ ->
       nextHandlerWasCalled.set(true)
       Response(Status.OK)
     }
-    val request = Request(Method.POST, "/webhook").body("{}").replaceHeaders(headers)
+    val request = Request(Method.POST, "/webhook").body("Hello, World!").replaceHeaders(headers)
 
     // When
     val response: Response = WebhookSecretValidatorFilter(secret).invoke(okHandler).invoke(request)
 
     // Then
-    assertThat(nextHandlerWasCalled.get()).isTrue()
+    assertThat(nextHandlerWasCalled).`as`("Next handler was not invoked").isTrue()
     assertThat(response.status).isEqualTo(Status.OK)
   }
 
@@ -53,13 +53,13 @@ class WebhookSecretValidatorFilterTest {
       nextHandlerWasCalled.set(true)
       Response(Status.OK)
     }
-    val request = Request(Method.POST, "/webhook").body("{}").replaceHeaders(headers)
+    val request = Request(Method.POST, "/webhook").body("Hello, World!").replaceHeaders(headers)
 
     // When
     val response: Response = WebhookSecretValidatorFilter(secret).invoke(okHandler).invoke(request)
 
     // Then
-    assertThat(nextHandlerWasCalled.get()).isFalse()
+    assertThat(nextHandlerWasCalled).`as`("Next handler was invoked").isFalse()
     assertThat(response.status).isEqualTo(Status.UNAUTHORIZED)
   }
 
@@ -73,13 +73,13 @@ class WebhookSecretValidatorFilterTest {
       nextHandlerWasCalled.set(true)
       Response(Status.OK)
     }
-    val request = Request(Method.POST, "/webhook").body("{}").replaceHeaders(headers)
+    val request = Request(Method.POST, "/webhook").body("Hello, World!").replaceHeaders(headers)
 
     // When
     val response: Response = WebhookSecretValidatorFilter(secret).invoke(okHandler).invoke(request)
 
     // Then
-    assertThat(nextHandlerWasCalled.get()).isFalse()
+    assertThat(nextHandlerWasCalled).`as`("Next handler was invoked").isFalse()
     assertThat(response.status).isEqualTo(Status.UNAUTHORIZED)
   }
 }

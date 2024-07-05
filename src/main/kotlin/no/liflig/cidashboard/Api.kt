@@ -8,6 +8,7 @@ import no.liflig.cidashboard.dashboard.IndexEndpoint
 import no.liflig.cidashboard.health.HealthEndpoint
 import no.liflig.cidashboard.health.HealthService
 import no.liflig.cidashboard.webhook.WebhookEndpoint
+import no.liflig.cidashboard.webhook.WebhookSecretValidatorFilter
 import no.liflig.http4k.setup.LifligBasicApiSetup
 import no.liflig.http4k.setup.logging.LoggingFilter
 import org.http4k.contract.openapi.v3.ApiServer
@@ -45,7 +46,9 @@ fun createApiServer(
           "/" bind Method.GET to IndexEndpoint(),
           "/index.html" bind Method.GET to IndexEndpoint(),
           "/dashboard-updates" bind Method.GET to DashboardUpdatesEndpoint(),
-          webhookOptions.path bind Method.POST to WebhookEndpoint(),
+          webhookOptions.path bind
+              Method.POST to
+              WebhookSecretValidatorFilter(webhookOptions.secret).then(WebhookEndpoint()),
           "/health" bind Method.GET to HealthEndpoint(services.healthService),
       ))
 }

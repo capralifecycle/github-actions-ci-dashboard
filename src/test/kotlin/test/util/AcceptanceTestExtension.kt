@@ -8,6 +8,7 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions
 import io.restassured.RestAssured
 import io.restassured.builder.RequestSpecBuilder
 import io.restassured.http.ContentType
+import io.restassured.http.Header
 import io.restassured.specification.RequestSpecification
 import java.net.ServerSocket
 import mu.KotlinLogging
@@ -16,6 +17,7 @@ import no.liflig.cidashboard.common.config.Config
 import no.liflig.cidashboard.common.config.DbConfig
 import no.liflig.cidashboard.common.config.Port
 import no.liflig.cidashboard.common.config.WebhookOptions
+import org.http4k.security.HmacSha256
 import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
@@ -95,11 +97,23 @@ class AcceptanceTestExtension : Extension, BeforeAllCallback, AfterAllCallback, 
               .build()
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
+    private fun sign(body: String): Header {
+      return Header(
+          "X-Hub-Signature-256",
+          "sha256=" +
+              HmacSha256.hmacSHA256(webhookSecret.value.toByteArray(Charsets.UTF_8), body)
+                  .toHexString(HexFormat.Default))
+    }
+
     fun sendWebhook(payload: WebhookPayload) {
-      log.debug { "Sending webhook $payload ..." }
+      log.info { "Sending webhook $payload ..." }
+
+      val body = payload.asJson()
 
       RestAssured.given(webhookPostRequest)
-          .body(payload.asJson())
+          .body(body)
+          .header(sign(body))
           .log()
           .all()
           .post(webhookPath)
