@@ -14,6 +14,7 @@ import no.liflig.http4k.setup.logging.LoggingFilter
 import org.http4k.contract.openapi.v3.ApiServer
 import org.http4k.core.Method
 import org.http4k.core.then
+import org.http4k.filter.ServerFilters
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
@@ -40,7 +41,8 @@ fun createApiServer(
           logHttpBody = options.logHttpBody,
           corsPolicy = options.corsPolicy)
 
-  val (coreFilters) = basicApiSetup.create(principalLog = { null })
+  val coreFilters =
+      basicApiSetup.create(principalLog = { null }).coreFilters.then(ServerFilters.GZip())
 
   return coreFilters.then(
       routes(
