@@ -267,6 +267,6 @@ data class WebhookPayload(val name: String, private val filePath: String, val ty
   }
 
   fun asJson(): String {
-    return javaClass.classLoader.getResource(filePath)!!.readText()
+    return loadResource(filePath)
   }
 }
