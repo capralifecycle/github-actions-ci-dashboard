@@ -114,8 +114,13 @@ class AcceptanceTestExtension : Extension, BeforeAllCallback, AfterAllCallback, 
       RestAssured.given(webhookPostRequest)
           .body(body)
           .header(sign(body))
+          .header("X-GitHub-Event", payload.type)
           .log()
-          .all()
+          .method()
+          .log()
+          .uri()
+          .log()
+          .headers()
           .post(webhookPath)
           .then()
           .statusCode(200)
@@ -221,7 +226,7 @@ END${'$'}${'$'};""")
     fun verifyDashboardIsEmpty() {
       PlaywrightAssertions.assertThat(page).hasURL(path("index.html"))
       PlaywrightAssertions.assertThat(page.locator("#statuses")).isVisible()
-      PlaywrightAssertions.assertThat(page.locator("#statuses > div")).hasCount(0)
+      PlaywrightAssertions.assertThat(page.locator("#statuses > .status")).hasCount(0)
     }
 
     fun verifyDashboardHasRepoInProgress(repoName: String) {}
@@ -230,15 +235,38 @@ END${'$'}${'$'};""")
   }
 }
 
-data class WebhookPayload(private val repoName: String = "example-repo") {
-  object ExampleRepo {
-    const val repoName: String = "example-repo"
+data class WebhookPayload(val name: String, private val filePath: String, val type: String) {
+  init {
+    require(!filePath.startsWith("/")) { "Path should not start with '/'" }
+  }
 
-    val WORKFLOW_RUN_1_START = WebhookPayload(repoName)
-    val WORKFLOW_RUN_1_SUCCESS = WebhookPayload(repoName)
+  object Ping {
+    val WEBHOOK_CREATED_PING =
+        WebhookPayload(
+            "WEBHOOK_CREATED_PING", "acceptancetests/webhook/github-ping-body.json", "ping")
+  }
+
+  object ExampleRepo {
+    const val repoName: String = "github-actions-ci-dashboard"
+
+    val WORKFLOW_RUN_1_REQUESTED =
+        WebhookPayload(
+            "WORKFLOW_RUN_1_REQUESTED",
+            "acceptancetests/webhook/user-workflow_run-requested.json",
+            "workflow_run")
+    val WORKFLOW_RUN_1_IN_PROGRESS =
+        WebhookPayload(
+            "WORKFLOW_RUN_1_IN_PROGRESS",
+            "acceptancetests/webhook/user-workflow_run-in_progress.json",
+            "workflow_run")
+    val WORKFLOW_RUN_1_SUCCESS =
+        WebhookPayload(
+            "WORKFLOW_RUN_1_SUCCESS",
+            "acceptancetests/webhook/user-workflow_run-completed.json",
+            "workflow_run")
   }
 
   fun asJson(): String {
-    return "{}"
+    return javaClass.classLoader.getResource(filePath)!!.readText()
   }
 }

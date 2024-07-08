@@ -1,4 +1,3 @@
-// This webhook payload is sent the very first time, when you create a webhook inside github.
 {
   "zen": "Practicality beats purity.",
   "hook_id": 488374259,

@@ -1,6 +1,5 @@
 package acceptancetests
 
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -19,12 +18,12 @@ class CiDashboardTest {
   }
 
   @Test
-  @Disabled("WIP")
   fun `should ingest webhook data and present it to dashboards when they poll`() {
     infra.tvBrowser.navigateToDashboard()
     infra.tvBrowser.verifyDashboardIsEmpty()
 
-    infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_START)
+    infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_REQUESTED)
+    infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_IN_PROGRESS)
     infra.tvBrowser.verifyDashboardHasRepoInProgress(WebhookPayload.ExampleRepo.repoName)
 
     infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_SUCCESS)

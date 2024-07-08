@@ -20,15 +20,17 @@ class WebhookEndpoint : HttpHandler {
   }
 
   override fun invoke(request: Request): Response {
+    val eventType: String = webhookEventType(request)
+
     withLoggingContext(
         "request.body" to request.bodyString(),
         "request.headers" to request.headers.joinToString()) {
-          log.info { "Got webhook payload" }
+          log.info { "Got webhook payload for $eventType" }
         }
 
     return Response(Status.OK)
 
-    /*val eventType: String = webhookEventType(request)
+    /*
     try {
       when (eventType) {
         "ping" -> GitHubWebhookPing.bodyLens(request)
