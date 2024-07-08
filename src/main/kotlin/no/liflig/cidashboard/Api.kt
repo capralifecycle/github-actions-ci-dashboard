@@ -15,9 +15,11 @@ import org.http4k.contract.openapi.v3.ApiServer
 import org.http4k.core.Method
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters
+import org.http4k.routing.ResourceLoader.Companion.Classpath
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
+import org.http4k.routing.static
 import org.http4k.routing.webJars
 import org.http4k.server.Http4kServer
 import org.http4k.server.Jetty
@@ -53,6 +55,7 @@ fun createApiServer(
               Method.POST to
               WebhookSecretValidatorFilter(webhookOptions.secret).then(WebhookEndpoint()),
           "/health" bind Method.GET to HealthEndpoint(services.healthService),
+          static(Classpath("/static")),
           webJars()))
 }
 
