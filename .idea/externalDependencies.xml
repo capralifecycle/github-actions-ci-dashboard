@@ -3,5 +3,6 @@
   <component name="ExternalDependencies">
     <plugin id="com.facebook.ktfmt_idea_plugin" />
     <plugin id="com.dmarcotte.handlebars" />
+    <plugin id="com.github.hugohomesquita.htmxjetbrains"/>
   </component>
 </project>
