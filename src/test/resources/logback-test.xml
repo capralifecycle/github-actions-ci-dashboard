@@ -3,11 +3,11 @@
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <layout class="ch.qos.logback.classic.PatternLayout">
-      <Pattern>
-        %d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} \(%line\) - %msg%n
-      </Pattern>
+      <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%thread] %-5level %logger{35} \(%file:%line\) - %msg [%mdc]%n</pattern>
     </layout>
   </appender>
+
+  <logger name="no.liflig" level="TRACE"/>
 
   <root level="INFO">
     <appender-ref ref="STDOUT"/>
