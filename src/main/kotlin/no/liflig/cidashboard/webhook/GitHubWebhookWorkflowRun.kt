@@ -5,6 +5,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import no.liflig.cidashboard.common.serialization.InstantSerializer
+import org.http4k.core.Body
+import org.http4k.format.KotlinxSerialization.auto
+import org.http4k.lens.BiDiBodyLens
 
 @Serializable
 data class GitHubWebhookWorkflowRun(
@@ -17,9 +20,10 @@ data class GitHubWebhookWorkflowRun(
 ) : WebhookPayload {
 
   companion object {
+    val bodyLens: BiDiBodyLens<GitHubWebhookWorkflowRun> =
+        Body.auto<GitHubWebhookWorkflowRun>().toLens()
 
     private val json = Json { ignoreUnknownKeys = true }
-
     fun fromJson(jsonString: String): GitHubWebhookWorkflowRun = json.decodeFromString(jsonString)
   }
 
