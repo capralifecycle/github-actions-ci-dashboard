@@ -8,6 +8,7 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
 import no.liflig.cidashboard.common.config.WebhookOptions
 import org.http4k.core.Body
 import org.http4k.format.KotlinxSerialization.auto
@@ -19,6 +20,10 @@ data class GitHubWebhookPing(val hook: Hook, val organization: Organization, val
     WebhookPayload {
   companion object {
     val bodyLens: BiDiBodyLens<GitHubWebhookPing> = Body.auto<GitHubWebhookPing>().toLens()
+
+    private val json = Json { ignoreUnknownKeys = true }
+
+    fun fromJson(jsonString: String): GitHubWebhookPing = json.decodeFromString(jsonString)
   }
 
   @Serializable
