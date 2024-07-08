@@ -88,7 +88,7 @@
   <p>This is dashboard id {{dashboardId}}. </p>
   <span id="loading" class="htmx-indicator">...</span>
   <div id="statuses"
-       hx-get="{{pollUrl}}?id={{dashboardId}}&token={{secretToken}}"
+       hx-get="{{pollUrl}}?id={{dashboardId}}&token={{secretToken}}&version={{version}}"
   hx-trigger="load, every {{pollRateSeconds}}s"
   hx-indicator="#loading"
   >

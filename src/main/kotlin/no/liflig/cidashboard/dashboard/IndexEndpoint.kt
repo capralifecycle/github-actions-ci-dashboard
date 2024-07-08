@@ -13,14 +13,16 @@ import org.http4k.template.viewModel
 
 class IndexEndpoint(useHotReload: Boolean) : HttpHandler {
 
-  private val templateDir = "handlebars-htmx-templates"
+  companion object {
+    private val templateDir = "handlebars-htmx-templates"
+  }
+
   private val renderer =
       if (useHotReload) {
         HandlebarsTemplates().HotReload("src/main/resources/$templateDir")
       } else {
         HandlebarsTemplates().CachingClasspath(templateDir)
       }
-
   private val bodyLens = Body.viewModel(renderer, ContentType.TEXT_HTML).toLens()
 
   override fun invoke(request: Request): Response {
@@ -33,7 +35,13 @@ data class Index(
     val dashboardId: String,
     val secretToken: String,
     val pollUrl: String,
-    val pollRateSeconds: Long = 5
+    val pollRateSeconds: Long = 5,
+    val version: String = LATEST_VERSION
 ) : ViewModel {
   override fun template(): String = "index"
+
+  companion object {
+    /** On breaking changes, bumping this will force the client to refresh the entire page. */
+    const val LATEST_VERSION = "1"
+  }
 }
