@@ -1,0 +1,35 @@
+{
+  "id": "1",
+  "repo": {
+    "id": 2,
+    "name": "test-repo",
+    "owner": "my-orgname",
+    "defaultBranch": "master"
+  },
+  "branch": "master",
+  "lastStatus": "SUCCEEDED",
+  "lastUpdatedAt": "2024-07-05T12:25:40Z",
+  "lastCommit": {
+    "sha": "123abc",
+    "commitDate": "2024-07-05T12:25:40Z",
+    "title": "Add feature",
+    "message": "Add feature\nThis is helpful",
+    "commiter": {
+      "id": 5,
+      "username": "krissrex",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/7364831?v=4"
+    }
+  },
+  "triggeredBy": "krissrex",
+  "lastSuccessfulCommit": {
+    "sha": "456def",
+    "commitDate": "2024-07-03T10:00:00Z",
+    "title": "Initial commit",
+    "message": "Initial commit",
+    "commiter": {
+      "id": 9,
+      "username": "mikaelthd",
+      "avatarUrl": ""
+    }
+  }
+}
