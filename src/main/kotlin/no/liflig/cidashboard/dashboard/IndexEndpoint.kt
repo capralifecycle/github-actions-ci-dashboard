@@ -15,7 +15,7 @@ import org.http4k.template.viewModel
 class IndexEndpoint(useHotReload: Boolean) : HttpHandler {
 
   companion object {
-    private val templateDir = "handlebars-htmx-templates"
+    val templateDir = "handlebars-htmx-templates"
   }
 
   private val renderer =

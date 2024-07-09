@@ -4,6 +4,7 @@ import no.liflig.cidashboard.common.config.ApiOptions
 import no.liflig.cidashboard.common.config.WebhookOptions
 import no.liflig.cidashboard.common.http4k.httpNoServerVersionHeader
 import no.liflig.cidashboard.dashboard.DashboardUpdatesEndpoint
+import no.liflig.cidashboard.dashboard.DashboardUpdatesService
 import no.liflig.cidashboard.dashboard.IndexEndpoint
 import no.liflig.cidashboard.health.HealthEndpoint
 import no.liflig.cidashboard.health.HealthService
@@ -51,7 +52,9 @@ fun createApiServer(
       routes(
           "/" bind Method.GET to IndexEndpoint(options.hotReloadTemplates),
           "/index.html" bind Method.GET to IndexEndpoint(options.hotReloadTemplates),
-          "/dashboard-updates" bind Method.GET to DashboardUpdatesEndpoint(),
+          "/dashboard-updates" bind
+              Method.GET to
+              DashboardUpdatesEndpoint(services.dashboardUpdatesService, options.hotReloadTemplates),
           webhookOptions.path bind
               Method.POST to
               WebhookSecretValidatorFilter(webhookOptions.secret)
@@ -68,5 +71,6 @@ fun RoutingHttpHandler.asJettyServer(options: ApiOptions): Http4kServer =
 /** Service registry for creating endpoints. */
 data class ApiServices(
     val healthService: HealthService,
-    val incomingWebhookService: IncomingWebhookService
+    val incomingWebhookService: IncomingWebhookService,
+    val dashboardUpdatesService: DashboardUpdatesService,
 )
