@@ -6,6 +6,11 @@ import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.persistence.CiStatusRepo
 import org.jdbi.v3.core.Jdbi
 
+/**
+ * Handles events and decides what to do with them, like storing to a repo or not.
+ *
+ * CALS-821
+ */
 class IncomingWebhookService(private val inTransaction: Transaction) {
 
   companion object {

@@ -11,6 +11,11 @@ import org.http4k.lens.Header
 import org.http4k.lens.Query
 import org.http4k.lens.boolean
 
+/**
+ * HTTP handler for the html contents inside the [IndexEndpoint]. This page is polled regularly by
+ * the index. This page should only render the HTML DOM inside the statuses div, and not a full
+ * webpage with `<html>` or `<body>` etc.
+ */
 class DashboardUpdatesEndpoint : HttpHandler {
 
   /** This can be used to reload the entire index.html, in case `<head>` was modified etc. */

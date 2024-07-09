@@ -10,6 +10,9 @@ import org.http4k.lens.Header
 import org.http4k.lens.HeaderLens
 import org.http4k.lens.nonBlankString
 
+/**
+ * HTTP handler for the webhook endpoint where GitHub will POST after GitHub Actions Workflows run.
+ */
 class WebhookEndpoint(private val incomingWebhookService: IncomingWebhookService) : HttpHandler {
   companion object {
     private val log = KotlinLogging.logger {}

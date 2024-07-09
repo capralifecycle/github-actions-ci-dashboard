@@ -6,7 +6,7 @@ import mu.KotlinLogging
 import mu.withLoggingContext
 import org.jdbi.v3.core.Handle
 
-/** Reads and writes CI statuses to a database. */
+/** Reads and writes [CiStatus] to a database. */
 class CiStatusRepo(private val databaseHandle: Handle) {
 
   companion object {

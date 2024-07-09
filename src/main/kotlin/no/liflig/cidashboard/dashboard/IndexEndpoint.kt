@@ -11,6 +11,7 @@ import org.http4k.template.HandlebarsTemplates
 import org.http4k.template.ViewModel
 import org.http4k.template.viewModel
 
+/** HTTP handler for the main dashboard webpage, like `"/"` or `"/index.html"`. */
 class IndexEndpoint(useHotReload: Boolean) : HttpHandler {
 
   companion object {

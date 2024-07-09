@@ -15,7 +15,8 @@ import org.http4k.lens.nonBlankString
 import org.http4k.security.HmacSha256
 
 /**
- * Prevents unsigned webhook requests with a 401 Unauthorized.
+ * Prevents unsigned webhook requests with a 401 Unauthorized. GitHub will always sign its POST
+ * requests with a secret and a header.
  *
  * See `/docs/webhooks-and-secrets.md`.
  */

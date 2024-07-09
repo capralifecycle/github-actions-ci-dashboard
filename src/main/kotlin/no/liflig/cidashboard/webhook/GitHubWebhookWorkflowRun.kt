@@ -9,6 +9,7 @@ import org.http4k.core.Body
 import org.http4k.format.KotlinxSerialization.auto
 import org.http4k.lens.BiDiBodyLens
 
+/** This is the main event we care about from GitHub Actions. */
 @Serializable
 data class GitHubWebhookWorkflowRun(
     val action: Action,

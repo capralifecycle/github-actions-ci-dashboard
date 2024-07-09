@@ -8,6 +8,9 @@ import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.json.Json
 import no.liflig.cidashboard.common.serialization.InstantSerializer
 
+/**
+ * The main object for GitHub Actions CI status. This is saved to the database with [CiStatusRepo].
+ */
 @Persisted
 @Serializable
 data class CiStatus(
