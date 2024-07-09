@@ -87,6 +87,20 @@ class CiStatusRepoTest {
     // Then
     assertThat(actualResult).hasSize(1).contains(ciStatus)
   }
+
+  @IntegrationTest
+  fun `should get by id from database`() {
+    // Given
+    val ciStatus = createCiStatus(id = "2")
+    jdbi.useHandle<Exception> { handle -> CiStatusRepo(handle).save(ciStatus) }
+
+    // When
+    val actualResult: CiStatus? =
+        jdbi.withHandle<CiStatus?, Exception> { handle -> CiStatusRepo(handle).getById(2) }
+
+    // Then
+    assertThat(actualResult).isEqualTo(ciStatus)
+  }
 }
 
 private fun createCiStatus(id: String): CiStatus {

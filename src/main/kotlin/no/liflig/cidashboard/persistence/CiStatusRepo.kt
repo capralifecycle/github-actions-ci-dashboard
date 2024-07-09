@@ -1,6 +1,7 @@
 package no.liflig.cidashboard.persistence
 
 import java.sql.ResultSet
+import kotlin.jvm.optionals.getOrNull
 import mu.KotlinLogging
 import mu.withLoggingContext
 import org.jdbi.v3.core.Handle
@@ -53,5 +54,15 @@ class CiStatusRepo(private val databaseHandle: Handle) {
             log.debug { "Fetched ${it.size} statuses from $TABLE_NAME" }
           }
         }
+  }
+
+  fun getById(id: Long): CiStatus? {
+    return databaseHandle
+        .select("SELECT data FROM $TABLE_NAME WHERE id = :id")
+        .bind("id", id.toString())
+        .map { rs: ResultSet, _ -> CiStatus.fromJson(rs.getString("data")) }
+        .findFirst()
+        .getOrNull()
+        .also { log.debug { "Fetched ${it?.id} from $TABLE_NAME" } }
   }
 }

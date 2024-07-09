@@ -65,7 +65,8 @@ data class GitHubWebhookWorkflowRun(
       @SerialName("run_started_at")
       @Serializable(with = InstantSerializer::class)
       val runStartedAt: Instant,
-      @SerialName("triggering_actor") val triggeringActor: TriggeringActor?,
+      val actor: Actor,
+      @SerialName("triggering_actor") val triggeringActor: Actor,
       @SerialName("head_commit") val headCommit: HeadCommit,
   ) {
 
@@ -92,7 +93,7 @@ data class GitHubWebhookWorkflowRun(
     }
 
     @Serializable
-    data class TriggeringActor(
+    data class Actor(
         /** `"krissrex"` */
         val login: String,
         /** `7364831` */

@@ -10,9 +10,7 @@ import org.http4k.lens.Header
 import org.http4k.lens.HeaderLens
 import org.http4k.lens.nonBlankString
 
-class WebhookEndpoint(
-    private val incomingWebhookService: IncomingWebhookService = IncomingWebhookService()
-) : HttpHandler {
+class WebhookEndpoint(private val incomingWebhookService: IncomingWebhookService) : HttpHandler {
   companion object {
     private val log = KotlinLogging.logger {}
 

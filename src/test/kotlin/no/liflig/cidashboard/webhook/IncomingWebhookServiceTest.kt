@@ -1,5 +1,10 @@
 package no.liflig.cidashboard.webhook
 
+import io.mockk.Called
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import no.liflig.cidashboard.persistence.CiStatusRepo
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -14,7 +19,8 @@ class IncomingWebhookServiceTest {
   @Test
   fun `should do nothing on ping`() {
     // Given
-    val service = IncomingWebhookService()
+    val inTransaction = mockk<Transaction>()
+    val service = IncomingWebhookService(inTransaction)
 
     // When
     service.handlePing(
@@ -22,6 +28,7 @@ class IncomingWebhookServiceTest {
 
     // Then
     // Nothing. Should just log.
+    verify { inTransaction wasNot Called }
   }
 
   @Nested
@@ -35,10 +42,17 @@ class IncomingWebhookServiceTest {
       // Database is empty
 
       // Create event
+      val workflowRun =
+          GitHubWebhookWorkflowRun.fromJson(
+              loadResource("acceptancetests/webhook/user-workflow_run-completed.json"))
 
       // Send event to service
+      val repo = mockk<CiStatusRepo> { every { save(any()) } returns Unit }
+      val inTransaction = Transaction { callback -> callback(repo) }
+      val service = IncomingWebhookService(inTransaction)
+      service.handleWorkflowRun(workflowRun)
 
-      // Query database for newer event
+      verify { repo.save(any()) }
     }
 
     /**
@@ -48,7 +62,28 @@ class IncomingWebhookServiceTest {
      */
     @IntegrationTest
     fun `should discard outdated workflow_run events`() {
-      TODO("Not yet implemented")
+      // Database has newer event
+
+      val newWorkflowRun =
+          GitHubWebhookWorkflowRun.fromJson(
+              loadResource("acceptancetests/webhook/user-workflow_run-completed.json"))
+
+      // Create event
+      val outdatedWorkflowRun =
+          GitHubWebhookWorkflowRun.fromJson(
+              loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json"))
+
+      // Send event to service
+      val repo =
+          mockk<CiStatusRepo> {
+            every { save(any()) } returns Unit
+            every { getById(newWorkflowRun.workflow.id) } returns newWorkflowRun.toCiStatus()
+          }
+      val inTransaction = Transaction { callback -> callback(repo) }
+      val service = IncomingWebhookService(inTransaction)
+      service.handleWorkflowRun(outdatedWorkflowRun)
+
+      verify { repo.save(any()) wasNot Called }
     }
   }
 }

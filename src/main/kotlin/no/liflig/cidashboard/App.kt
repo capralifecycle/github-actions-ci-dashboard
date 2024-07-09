@@ -9,6 +9,8 @@ import no.liflig.cidashboard.common.database.DbUrl
 import no.liflig.cidashboard.common.database.DbUsername
 import no.liflig.cidashboard.common.observability.OpenTelemetryConfig
 import no.liflig.cidashboard.health.HealthService
+import no.liflig.cidashboard.webhook.IncomingWebhookService
+import no.liflig.cidashboard.webhook.JdbiTransaction
 import org.jdbi.v3.core.Jdbi
 
 /**
@@ -38,7 +40,8 @@ class App(val config: Config) {
     val apiOptions = config.apiOptions
 
     val healthService = HealthService(apiOptions.applicationName, config.buildInfo)
-    val services = ApiServices(healthService)
+    val incomingWebhookService = IncomingWebhookService(JdbiTransaction(jdbi))
+    val services = ApiServices(healthService, incomingWebhookService)
 
     val server =
         createApiServer(apiOptions, config.webhookOptions, services)
