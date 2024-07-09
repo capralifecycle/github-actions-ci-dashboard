@@ -40,6 +40,11 @@ class IncomingWebhookServiceTest {
     @IntegrationTest
     fun `should persist workflow_run when the received data is newer`() {
       // Database is empty
+      val repo =
+          mockk<CiStatusRepo> {
+            every { save(any()) } returns Unit
+            every { getById(any()) } returns null
+          }
 
       // Create event
       val workflowRun =
@@ -47,7 +52,6 @@ class IncomingWebhookServiceTest {
               loadResource("acceptancetests/webhook/user-workflow_run-completed.json"))
 
       // Send event to service
-      val repo = mockk<CiStatusRepo> { every { save(any()) } returns Unit }
       val inTransaction = Transaction { callback -> callback(repo) }
       val service = IncomingWebhookService(inTransaction)
       service.handleWorkflowRun(workflowRun)
@@ -63,10 +67,15 @@ class IncomingWebhookServiceTest {
     @IntegrationTest
     fun `should discard outdated workflow_run events`() {
       // Database has newer event
-
       val newWorkflowRun =
           GitHubWebhookWorkflowRun.fromJson(
               loadResource("acceptancetests/webhook/user-workflow_run-completed.json"))
+
+      val repo =
+          mockk<CiStatusRepo> {
+            every { save(any()) } returns Unit
+            every { getById(newWorkflowRun.workflow.id) } returns newWorkflowRun.toCiStatus()
+          }
 
       // Create event
       val outdatedWorkflowRun =
@@ -74,16 +83,11 @@ class IncomingWebhookServiceTest {
               loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json"))
 
       // Send event to service
-      val repo =
-          mockk<CiStatusRepo> {
-            every { save(any()) } returns Unit
-            every { getById(newWorkflowRun.workflow.id) } returns newWorkflowRun.toCiStatus()
-          }
       val inTransaction = Transaction { callback -> callback(repo) }
       val service = IncomingWebhookService(inTransaction)
       service.handleWorkflowRun(outdatedWorkflowRun)
 
-      verify { repo.save(any()) wasNot Called }
+      verify(exactly = 0) { repo.save(any()) }
     }
   }
 }

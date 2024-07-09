@@ -20,7 +20,7 @@ class IncomingWebhookService(private val inTransaction: Transaction) {
     inTransaction { repo ->
       val existing: CiStatus? = repo.getById(workflowRun.workflow.id)
       val incoming = workflowRun.toCiStatus()
-      if (existing != null && existing.lastUpdatedAt.isAfter(incoming.lastUpdatedAt)) {
+      if (existing == null || existing.lastUpdatedAt.isBefore(incoming.lastUpdatedAt)) {
         repo.save(incoming)
       }
     }
