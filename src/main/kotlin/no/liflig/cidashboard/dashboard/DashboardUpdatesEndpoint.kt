@@ -18,7 +18,6 @@ import org.http4k.template.HandlebarsTemplates
 import org.http4k.template.ViewModel
 import org.http4k.template.viewModel
 
-
 /**
  * HTTP handler for the html contents inside the [IndexEndpoint]. This page is polled regularly by
  * the index. This page should only render the HTML DOM inside the statuses div, and not a full

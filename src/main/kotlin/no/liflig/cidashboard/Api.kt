@@ -54,7 +54,8 @@ fun createApiServer(
           "/index.html" bind Method.GET to IndexEndpoint(options.hotReloadTemplates),
           "/dashboard-updates" bind
               Method.GET to
-              DashboardUpdatesEndpoint(services.dashboardUpdatesService, options.hotReloadTemplates),
+              DashboardUpdatesEndpoint(
+                  services.dashboardUpdatesService, options.hotReloadTemplates),
           webhookOptions.path bind
               Method.POST to
               WebhookSecretValidatorFilter(webhookOptions.secret)
