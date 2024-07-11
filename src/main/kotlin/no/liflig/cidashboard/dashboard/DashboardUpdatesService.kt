@@ -6,7 +6,7 @@ import org.jdbi.v3.core.Jdbi
 
 class DashboardUpdatesService(private val withHandle: DatabaseHandle<List<CiStatus>>) {
 
-  fun handleDashboardUpdate(dashboard: String?): List<CiStatus> {
+  fun handleDashboardUpdate(dashboardId: String?): List<CiStatus> {
     return withHandle { repo -> repo.getAll() }
   }
 }

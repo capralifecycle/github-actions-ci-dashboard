@@ -62,6 +62,6 @@ class DashboardUpdatesEndpoint(
   }
 }
 
-data class Dashboard(val clientId: String, val statuses: List<CiStatus>) : ViewModel {
+data class Dashboard(val dashboardId: String, val statuses: List<CiStatus>) : ViewModel {
   override fun template() = "dashboard"
 }
