@@ -25,7 +25,9 @@ class DashboardUpdatesEndpointTest {
     val endpoint = DashboardUpdatesEndpoint(updatesService, useHotReload = false)
 
     val request =
-        Request(Method.GET, "").with(DashboardUpdatesEndpoint.dashboardIdLens of dashboardId)
+        Request(Method.GET, "")
+            .with(DashboardUpdatesEndpoint.dashboardIdLens of dashboardId)
+            .with(DashboardUpdatesEndpoint.tokenLens of "todo-add-token-via-config-api")
 
     // When
     val response = endpoint(request)
@@ -53,7 +55,9 @@ class DashboardUpdatesEndpointTest {
     val endpoint = DashboardUpdatesEndpoint(updatesService, useHotReload = false)
 
     val request =
-        Request(Method.GET, "").with(DashboardUpdatesEndpoint.dashboardIdLens of dashboardId)
+        Request(Method.GET, "")
+            .with(DashboardUpdatesEndpoint.dashboardIdLens of dashboardId)
+            .with(DashboardUpdatesEndpoint.tokenLens of "todo-add-token-via-config-api")
 
     // When
     val response = endpoint(request)

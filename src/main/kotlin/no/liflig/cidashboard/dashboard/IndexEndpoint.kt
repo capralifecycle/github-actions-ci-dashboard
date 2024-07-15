@@ -10,11 +10,18 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.with
+import org.http4k.lens.Query
 import org.http4k.template.ViewModel
 import org.http4k.template.viewModel
 
 /** HTTP handler for the main dashboard webpage, like `"/"` or `"/index.html"`. */
 class IndexEndpoint(useHotReload: Boolean, private val updatesPollRate: Duration) : HttpHandler {
+
+  companion object {
+    val tokenLens =
+        Query.required(
+            "token", "Authorization so strangers don't see our repositories and thus customers.")
+  }
 
   private val renderer =
       if (useHotReload) {
@@ -25,6 +32,11 @@ class IndexEndpoint(useHotReload: Boolean, private val updatesPollRate: Duration
   private val bodyLens = Body.viewModel(renderer, ContentType.TEXT_HTML).toLens()
 
   override fun invoke(request: Request): Response {
+    val secretToken = tokenLens(request)
+    if (secretToken != "todo-add-token-via-config-api") {
+      return Response(Status.FORBIDDEN).body("Missing token in query")
+    }
+
     // The renderer uses the ViewModel class to identify which template to use.
     return Response(Status.OK)
         .with(
@@ -32,7 +44,7 @@ class IndexEndpoint(useHotReload: Boolean, private val updatesPollRate: Duration
                 Index(
                     // FIXME: dont use placeholders; read from request.
                     "1",
-                    "abc",
+                    secretToken,
                     "/dashboard-updates",
                     pollRateSeconds = updatesPollRate.toDouble(DurationUnit.SECONDS)))
   }

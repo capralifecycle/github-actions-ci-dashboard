@@ -63,7 +63,10 @@ class AcceptanceTestExtension : Extension, BeforeAllCallback, AfterAllCallback, 
         webhookPath = config.webhookOptions.path,
         webhookSecret = config.webhookOptions.secret)
 
-    tvBrowser.initialize(port = config.apiOptions.serverPort, authToken = "", dashboardId = "abc")
+    tvBrowser.initialize(
+        port = config.apiOptions.serverPort,
+        authToken = "todo-add-token-via-config-api",
+        dashboardId = "abc")
   }
 
   override fun afterAll(context: ExtensionContext) {

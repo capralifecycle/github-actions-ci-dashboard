@@ -48,9 +48,18 @@ class DashboardUpdatesEndpoint(
             "Used to reload the entire page when the frontend is using an old index.html.")
 
     val dashboardIdLens = Query.optional("dashboardId", "Id to identify which config to use")
+
+    val tokenLens =
+        Query.required(
+            "token", "Authorization so strangers don't see our repositories and thus customers.")
   }
 
   override fun invoke(request: Request): Response {
+    val secretToken = tokenLens(request)
+    if (secretToken != "todo-add-token-via-config-api") {
+      return Response(Status.FORBIDDEN).body("Missing token in query")
+    }
+
     val shouldReload: Boolean = versionLens(request) != Index.LATEST_VERSION
 
     val dashboardId = dashboardIdLens(request)
