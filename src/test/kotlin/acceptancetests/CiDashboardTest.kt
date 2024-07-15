@@ -1,5 +1,9 @@
 package acceptancetests
 
+import no.liflig.cidashboard.persistence.CiStatus.PipelineStatus.FAILED
+import no.liflig.cidashboard.persistence.CiStatus.PipelineStatus.IN_PROGRESS
+import no.liflig.cidashboard.persistence.CiStatus.PipelineStatus.QUEUED
+import no.liflig.cidashboard.persistence.CiStatus.PipelineStatus.SUCCEEDED
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -23,10 +27,15 @@ class CiDashboardTest {
     infra.tvBrowser.verifyDashboardIsEmpty()
 
     infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_REQUESTED)
-    infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_IN_PROGRESS)
-    infra.tvBrowser.verifyDashboardHasRepoInProgress(WebhookPayload.ExampleRepo.repoName)
+    infra.tvBrowser.verifyDashboardHasRepoInStatus(WebhookPayload.ExampleRepo.repoName, QUEUED)
 
-    infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_SUCCESS)
-    infra.tvBrowser.verifyDashboardHasRepoInProgress(WebhookPayload.ExampleRepo.repoName)
+    infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_IN_PROGRESS)
+    infra.tvBrowser.verifyDashboardHasRepoInStatus(WebhookPayload.ExampleRepo.repoName, IN_PROGRESS)
+
+    infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_FAILURE)
+    infra.tvBrowser.verifyDashboardHasRepoInStatus(WebhookPayload.ExampleRepo.repoName, FAILED)
+
+    infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_SUCCESS)
+    infra.tvBrowser.verifyDashboardHasRepoInStatus(WebhookPayload.ExampleRepo.repoName, SUCCEEDED)
   }
 }

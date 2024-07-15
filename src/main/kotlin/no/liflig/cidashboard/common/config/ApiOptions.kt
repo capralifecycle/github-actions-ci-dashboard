@@ -1,9 +1,12 @@
 package no.liflig.cidashboard.common.config
 
 import java.util.Properties
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import no.liflig.properties.boolean
 import no.liflig.properties.booleanRequired
 import no.liflig.properties.intRequired
+import no.liflig.properties.long
 import no.liflig.properties.string
 import no.liflig.properties.stringNotEmpty
 import org.http4k.core.Credentials
@@ -18,6 +21,11 @@ data class ApiOptions(
     val openApiCredentials: Credentials,
     val logHttpBody: Boolean,
     val hotReloadTemplates: Boolean,
+    /**
+     * How fast a client should poll the
+     * [UpdatesEndpoint][no.liflig.cidashboard.dashboard.DashboardUpdatesEndpoint]
+     */
+    val updatesPollRate: Duration
 ) {
 
   companion object {
@@ -33,7 +41,8 @@ data class ApiOptions(
                     password = props.string("api.openapi.credentials.password") ?: "",
                 ),
             logHttpBody = props.booleanRequired("log.http.body"),
-            hotReloadTemplates = props.boolean("dashboard.renderer.hotreload") ?: false)
+            hotReloadTemplates = props.boolean("dashboard.renderer.hotreload") ?: false,
+            updatesPollRate = (props.long("dashboard.client.pollRateSeconds") ?: 5).seconds)
   }
 }
 

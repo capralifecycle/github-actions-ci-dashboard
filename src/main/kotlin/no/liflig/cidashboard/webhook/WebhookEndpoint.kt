@@ -25,12 +25,7 @@ class WebhookEndpoint(private val incomingWebhookService: IncomingWebhookService
   override fun invoke(request: Request): Response {
     val eventType: String = webhookEventType(request)
 
-    // TODO: stop logging body and headers when we have enough sample data.
-    withLoggingContext(
-        "request.body" to request.bodyString(),
-        "request.headers" to request.headers.joinToString()) {
-          log.info { "Got webhook payload for $eventType" }
-        }
+    log.trace { "Got webhook payload for $eventType" }
 
     try {
       when (eventType) {

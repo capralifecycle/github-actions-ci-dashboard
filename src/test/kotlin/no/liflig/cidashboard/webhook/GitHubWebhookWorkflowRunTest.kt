@@ -37,7 +37,8 @@ class GitHubWebhookWorkflowRunTest {
   @Test
   fun `should deserialize completed`() {
     // Given
-    val workflowEventJson = loadResource("acceptancetests/webhook/user-workflow_run-completed.json")
+    val workflowEventJson =
+        loadResource("acceptancetests/webhook/user-workflow_run-completed-failure.json")
 
     // When
     val event = GitHubWebhookWorkflowRun.fromJson(workflowEventJson)

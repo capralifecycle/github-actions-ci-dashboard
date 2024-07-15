@@ -11,12 +11,15 @@ import io.restassured.http.ContentType
 import io.restassured.http.Header
 import io.restassured.specification.RequestSpecification
 import java.net.ServerSocket
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import mu.KotlinLogging
 import no.liflig.cidashboard.App
 import no.liflig.cidashboard.common.config.Config
 import no.liflig.cidashboard.common.config.DbConfig
 import no.liflig.cidashboard.common.config.Port
 import no.liflig.cidashboard.common.config.WebhookOptions
+import no.liflig.cidashboard.persistence.CiStatus
 import org.http4k.security.HmacSha256
 import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.extension.AfterAllCallback
@@ -46,7 +49,11 @@ class AcceptanceTestExtension : Extension, BeforeAllCallback, AfterAllCallback, 
   override fun beforeAll(context: ExtensionContext) {
     database.start()
 
-    val config = Config.load().let { database.applyTo(it) }.let { setUnusedHttpPort(it) }
+    val config =
+        Config.load()
+            .let { database.applyTo(it) }
+            .let { setUnusedHttpPort(it) }
+            .let { setFastPollingInterval(it) }
 
     app = App(config)
     app.start()
@@ -74,6 +81,11 @@ class AcceptanceTestExtension : Extension, BeforeAllCallback, AfterAllCallback, 
     val port = ServerSocket(RANDOM_PORT).use { it.localPort }
 
     return config.copy(apiOptions = config.apiOptions.copy(serverPort = Port(port)))
+  }
+
+  /** Make tests faster, by polling more rapidly so Playwright waits less. */
+  private fun setFastPollingInterval(config: Config): Config {
+    return config.copy(apiOptions = config.apiOptions.copy(updatesPollRate = 500.milliseconds))
   }
 
   class GitHub {
@@ -192,8 +204,7 @@ END${'$'}${'$'};""")
             .chromium()
             .launch(
                 // Uncomment for manual testing:
-                /* BrowserType.LaunchOptions().setHeadless(false).setSlowMo(1000.0) */
-                )
+                /*BrowserType.LaunchOptions().setHeadless(false).setSlowMo(1000.0)*/ )
     private val context: BrowserContext =
         browser.newContext(
             Browser.NewContextOptions().setLocale("no-nb").setTimezoneId("Europe/Oslo"))
@@ -208,6 +219,8 @@ END${'$'}${'$'};""")
       this.dashboardServerPort = port
       this.authToken = authToken
       this.dashboardId = dashboardId
+
+      PlaywrightAssertions.setDefaultAssertionTimeout(10.seconds.inWholeMilliseconds.toDouble())
     }
 
     override fun close() {
@@ -225,13 +238,17 @@ END${'$'}${'$'};""")
 
     fun verifyDashboardIsEmpty() {
       PlaywrightAssertions.assertThat(page).hasURL(path("index.html"))
+      PlaywrightAssertions.assertThat(page.locator("#first-load")).not().isVisible()
+
       PlaywrightAssertions.assertThat(page.locator("#statuses")).isVisible()
       PlaywrightAssertions.assertThat(page.locator("#statuses > .status")).hasCount(0)
     }
 
-    fun verifyDashboardHasRepoInProgress(repoName: String) {}
-
-    fun verifyDashboardHasRepoInSuccess(repoName: String) {}
+    fun verifyDashboardHasRepoInStatus(repoName: String, status: CiStatus.PipelineStatus) {
+      val ciStatus = page.locator(".status--$status")
+      PlaywrightAssertions.assertThat(ciStatus).isVisible()
+      PlaywrightAssertions.assertThat(ciStatus.locator(".status__repo-name")).hasText(repoName)
+    }
   }
 }
 
@@ -259,10 +276,15 @@ data class WebhookPayload(val name: String, private val filePath: String, val ty
             "WORKFLOW_RUN_1_IN_PROGRESS",
             "acceptancetests/webhook/user-workflow_run-in_progress.json",
             "workflow_run")
-    val WORKFLOW_RUN_1_SUCCESS =
+    val WORKFLOW_RUN_1_COMPLETED_FAILURE =
+        WebhookPayload(
+            "WORKFLOW_RUN_1_FAILURE",
+            "acceptancetests/webhook/user-workflow_run-completed-failure.json",
+            "workflow_run")
+    val WORKFLOW_RUN_1_COMPLETED_SUCCESS =
         WebhookPayload(
             "WORKFLOW_RUN_1_SUCCESS",
-            "acceptancetests/webhook/user-workflow_run-completed.json",
+            "acceptancetests/webhook/renovate-bot-workflow_run-completed-success.json",
             "workflow_run")
   }
 

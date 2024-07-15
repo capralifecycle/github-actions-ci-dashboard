@@ -103,30 +103,33 @@ class CiStatusRepoTest {
   }
 }
 
-private fun createCiStatus(id: String): CiStatus {
-  return CiStatus(
-      id = id,
-      repo =
-          Repo(
-              id = RepoId(2),
-              name = RepoName("test-repo"),
-              owner = Username("my-orgname"),
-              defaultBranch = BranchName("master")),
-      branch = BranchName("master"),
-      lastStatus = CiStatus.PipelineStatus.SUCCEEDED,
-      lastUpdatedAt = Instant.parse("2024-07-05T12:25:40Z"),
-      lastCommit =
-          Commit(
-              sha = "123abc",
-              commitDate = Instant.parse("2024-07-05T12:25:40Z"),
-              title = "Add feature",
-              message = "Add feature\nThis is helpful",
-              commiter =
-                  User(
-                      id = UserId(5),
-                      username = Username("krissrex"),
-                      avatarUrl = "https://avatars.githubusercontent.com/u/7364831?v=4")),
-      triggeredBy = Username("krissrex"),
-      lastSuccessfulCommit = null,
-  )
-}
+fun createCiStatus(
+    id: String,
+    repoName: String = "test-repo",
+    lastStatus: CiStatus.PipelineStatus = CiStatus.PipelineStatus.SUCCEEDED
+): CiStatus =
+    CiStatus(
+        id = id,
+        repo =
+            Repo(
+                id = RepoId(2),
+                name = RepoName(repoName),
+                owner = Username("my-orgname"),
+                defaultBranch = BranchName("master")),
+        branch = BranchName("master"),
+        lastStatus = lastStatus,
+        lastUpdatedAt = Instant.parse("2024-07-05T12:25:40Z"),
+        lastCommit =
+            Commit(
+                sha = "123abc",
+                commitDate = Instant.parse("2024-07-05T12:25:40Z"),
+                title = "Add feature",
+                message = "Add feature\nThis is helpful",
+                commiter =
+                    User(
+                        id = UserId(5),
+                        username = Username("krissrex"),
+                        avatarUrl = "https://avatars.githubusercontent.com/u/7364831?v=4")),
+        triggeredBy = Username("krissrex"),
+        lastSuccessfulCommit = null,
+    )

@@ -49,7 +49,7 @@ class IncomingWebhookServiceTest {
       // Create event
       val workflowRun =
           GitHubWebhookWorkflowRun.fromJson(
-              loadResource("acceptancetests/webhook/user-workflow_run-completed.json"))
+              loadResource("acceptancetests/webhook/user-workflow_run-completed-failure.json"))
 
       // Send event to service
       val inTransaction = Transaction { callback -> callback(repo) }
@@ -69,7 +69,7 @@ class IncomingWebhookServiceTest {
       // Database has newer event
       val newWorkflowRun =
           GitHubWebhookWorkflowRun.fromJson(
-              loadResource("acceptancetests/webhook/user-workflow_run-completed.json"))
+              loadResource("acceptancetests/webhook/user-workflow_run-completed-failure.json"))
 
       val repo =
           mockk<CiStatusRepo> {

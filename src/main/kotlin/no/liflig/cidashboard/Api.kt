@@ -48,10 +48,11 @@ fun createApiServer(
   val coreFilters =
       basicApiSetup.create(principalLog = { null }).coreFilters.then(ServerFilters.GZip())
 
+  val indexEndpoint = IndexEndpoint(options.hotReloadTemplates, options.updatesPollRate)
   return coreFilters.then(
       routes(
-          "/" bind Method.GET to IndexEndpoint(options.hotReloadTemplates),
-          "/index.html" bind Method.GET to IndexEndpoint(options.hotReloadTemplates),
+          "/" bind Method.GET to indexEndpoint,
+          "/index.html" bind Method.GET to indexEndpoint,
           "/dashboard-updates" bind
               Method.GET to
               DashboardUpdatesEndpoint(

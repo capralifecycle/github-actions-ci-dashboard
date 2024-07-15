@@ -8,6 +8,7 @@
   </appender>
 
   <logger name="no.liflig" level="TRACE"/>
+  <logger name="com.github.jknack.handlebars" level="TRACE"/>
 
   <root level="INFO">
     <appender-ref ref="STDOUT"/>

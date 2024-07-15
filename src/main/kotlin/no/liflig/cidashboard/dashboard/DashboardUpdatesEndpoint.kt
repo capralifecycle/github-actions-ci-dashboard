@@ -1,6 +1,6 @@
 package no.liflig.cidashboard.dashboard
 
-import no.liflig.cidashboard.dashboard.IndexEndpoint.Companion.templateDir
+import no.liflig.cidashboard.common.http4k.Renderer
 import no.liflig.cidashboard.persistence.CiStatus
 import org.http4k.core.Body
 import org.http4k.core.ContentType
@@ -14,7 +14,6 @@ import org.http4k.lens.BiDiLens
 import org.http4k.lens.Header
 import org.http4k.lens.Query
 import org.http4k.lens.boolean
-import org.http4k.template.HandlebarsTemplates
 import org.http4k.template.ViewModel
 import org.http4k.template.viewModel
 
@@ -30,23 +29,26 @@ class DashboardUpdatesEndpoint(
 
   private val renderer =
       if (useHotReload) {
-        HandlebarsTemplates().HotReload("src/main/resources/$templateDir")
+        Renderer.hotReloading
       } else {
-        HandlebarsTemplates().CachingClasspath(templateDir)
+        Renderer.classpath
       }
 
   private val bodyLens = Body.viewModel(renderer, ContentType.TEXT_HTML).toLens()
 
-  /** This can be used to reload the entire index.html, in case `<head>` was modified etc. */
-  private val reloadEntirePageLens: BiDiLens<HttpMessage, Boolean> =
-      Header.boolean()
-          .defaulted("HX-Refresh", false, "If true, the client will refresh the entire page.")
+  companion object {
 
-  private val versionLens: BiDiLens<Request, String?> =
-      Query.optional(
-          "version", "Used to reload the entire page when the frontend is using an old index.html.")
+    /** This can be used to reload the entire index.html, in case `<head>` was modified etc. */
+    private val reloadEntirePageLens: BiDiLens<HttpMessage, Boolean> =
+        Header.boolean()
+            .defaulted("HX-Refresh", false, "If true, the client will refresh the entire page.")
+    private val versionLens: BiDiLens<Request, String?> =
+        Query.optional(
+            "version",
+            "Used to reload the entire page when the frontend is using an old index.html.")
 
-  private val dashboardIdLens = Query.optional("dashboardId", "Id to identify which config to use")
+    val dashboardIdLens = Query.optional("dashboardId", "Id to identify which config to use")
+  }
 
   override fun invoke(request: Request): Response {
     val shouldReload: Boolean = versionLens(request) != Index.LATEST_VERSION

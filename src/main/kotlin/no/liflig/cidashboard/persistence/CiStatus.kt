@@ -17,12 +17,16 @@ data class CiStatus(
     /** Primary key */
     val id: String,
     val repo: Repo,
-    val branch: BranchName,
+    /*A bit hacky, but all `value class` needs a JvmName to stop kotlin from mangling it.
+    Otherwise, Handlebars can't find the getter because it is named e.g. `getBranch-0F3G-xM`
+    https://kotlinlang.org/docs/inline-classes.html#mangling
+    */
+    @get:JvmName("getBranch") val branch: BranchName,
     val lastStatus: PipelineStatus,
     /** The timestamp of the workflow event that updated this [lastStatus]. */
     val lastUpdatedAt: Instant,
     val lastCommit: Commit,
-    val triggeredBy: Username,
+    @get:JvmName("getTriggeredBy") val triggeredBy: Username,
     val lastSuccessfulCommit: Commit? = null,
 ) {
 
@@ -49,10 +53,10 @@ data class CiStatus(
 @Persisted
 @Serializable
 data class Repo(
-    val id: RepoId,
-    val name: RepoName,
-    val owner: Username,
-    val defaultBranch: BranchName,
+    @get:JvmName("getId") val id: RepoId,
+    @get:JvmName("getName") val name: RepoName,
+    @get:JvmName("getOwner") val owner: Username,
+    @get:JvmName("getDefaultBranch") val defaultBranch: BranchName,
 )
 
 @Persisted @Serializable @JvmInline value class RepoId(val value: Long)
@@ -75,7 +79,11 @@ value class Username(val value: String) {
 
 @Persisted
 @Serializable
-data class User(val id: UserId, val username: Username, val avatarUrl: String)
+data class User(
+    @get:JvmName("getId") val id: UserId,
+    @get:JvmName("getUsername") val username: Username,
+    val avatarUrl: String
+)
 
 @Persisted
 @Serializable
