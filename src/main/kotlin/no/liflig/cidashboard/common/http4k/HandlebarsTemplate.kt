@@ -7,18 +7,24 @@ import mu.KotlinLogging
 import mu.withLoggingContext
 import no.liflig.cidashboard.common.http4k.MissingHelper.ERROR_PREFIX
 import org.http4k.template.HandlebarsTemplates
+import org.http4k.template.TemplateRenderer
 
 object Renderer {
   const val TEMPLATE_DIR = "handlebars-htmx-templates"
 
-  val hotReloading = HandlebarsTemplates().HotReload("src/main/resources/$TEMPLATE_DIR")
-  val classpath =
-      HandlebarsTemplates {
-            it.with(ConcurrentMapTemplateCache() /*Cache template compilations*/)
-                .prettyPrint(true /*Trim template whitespace*/)
-                .registerHelperMissing(MissingHelper)
-          }
-          .CachingClasspath(TEMPLATE_DIR)
+  val hotReloading: TemplateRenderer by lazy {
+    // This will crash if constructed in production, so it must be lazy.
+    HandlebarsTemplates().HotReload("src/main/resources/$TEMPLATE_DIR")
+  }
+
+  val classpath: TemplateRenderer by lazy {
+    HandlebarsTemplates {
+          it.with(ConcurrentMapTemplateCache() /*Cache template compilations*/)
+              .prettyPrint(true /*Trim template whitespace*/)
+              .registerHelperMissing(MissingHelper)
+        }
+        .CachingClasspath(TEMPLATE_DIR)
+  }
 }
 
 /** Logs errors and inserts a [ERROR_PREFIX] and template when a block/variable is missing. */
