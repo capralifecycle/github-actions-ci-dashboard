@@ -69,7 +69,7 @@ class DashboardUpdatesEndpointTest {
         .doesNotContain(MissingHelper.ERROR_PREFIX)
         .`as`("Invalid rendered output")
         .isEqualTo(
-            """  <div class="status status--SUCCEEDED">
+            """  <div class="status status--SUCCEEDED" id="1">
     <span class="status__repo-name">repo-a</span>
     <span class="status__repo-branch">master</span>
     <span class="status__last-updated">2024-07-05T12:25:40Z</span>
@@ -83,7 +83,7 @@ class DashboardUpdatesEndpointTest {
       </div>
     </div>
   </div>
-  <div class="status status--IN_PROGRESS">
+  <div class="status status--IN_PROGRESS" id="2">
     <span class="status__repo-name">repo-b</span>
     <span class="status__repo-branch">master</span>
     <span class="status__last-updated">2024-07-05T12:25:40Z</span>
@@ -97,7 +97,7 @@ class DashboardUpdatesEndpointTest {
       </div>
     </div>
   </div>
-  <div class="status status--FAILED">
+  <div class="status status--FAILED" id="3">
     <span class="status__repo-name">repo-c</span>
     <span class="status__repo-branch">master</span>
     <span class="status__last-updated">2024-07-05T12:25:40Z</span>

@@ -1,6 +1,6 @@
 {{! Use BEM for css class naming. block__element--modifier }}
 {{#each statuses}}
-  <div class="status status--{{lastStatus}}">
+  <div class="status status--{{lastStatus}}" id="{{id}}">
     <span class="status__repo-name">{{repo.name}}</span>
     <span class="status__repo-branch">{{branch}}</span>
     <span class="status__last-updated">{{lastUpdatedAt}}</span>
