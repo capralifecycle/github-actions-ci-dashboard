@@ -6,7 +6,8 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=capralifecycle_github-actions-ci-dashboard&metric=sqale_index&token=c098b4d25bf2f8a05ee55cb9aeb4b84eb1329689)](https://sonarcloud.io/summary/new_code?id=capralifecycle_github-actions-ci-dashboard)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=capralifecycle_github-actions-ci-dashboard&metric=code_smells&token=c098b4d25bf2f8a05ee55cb9aeb4b84eb1329689)](https://sonarcloud.io/summary/new_code?id=capralifecycle_github-actions-ci-dashboard)
 
-Responsible for collecting GitHub Actions `workflow_run` webhook data and providing a web dashboard with recent CI build status.
+Responsible for collecting GitHub Actions `workflow_run` webhook data and providing a web dashboard with recent CI build
+status.
 
 ## Documentation
 
@@ -32,11 +33,12 @@ You need to install:
 - Docker
 - Maven (or run maven through IntelliJ)
 - JDK 17
-    - `brew tap homebrew/cask-versions` and then`brew install --cask temurin17`
+  - `brew tap homebrew/cask-versions` and then`brew install --cask temurin17`
 
 #### Developer machine setup
 
-0. [Authenticate to Github Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry) for internal maven
+0. [Authenticate to Github Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry)
+   for internal maven
    repos.
 1. Create an `overrides.properties` by running
     ```shell
@@ -66,10 +68,19 @@ Only check lint: `mvn spotless:check`
 
 Fix: `mvn spotless:apply`
 
+### Writing CSS
+
+1. Make sure you run [init-local-env.sh](./init-local-env.sh) to get hot-reload enabled.
+2. There is a "test" called [DevelopmentAid](./src/test/kotlin/acceptancetests/DevelopmentAid.kt) that you can start to
+open a website preloaded with data.
+3. Then modify the css in [index.hbs](./src/main/resources/handlebars-htmx-templates/index.hbs).
+4. Refresh the page.
+
 ### Deploying
 
 Push the master branch.
-You can track the progress in [GitHub Actions](https://github.com/capralifecycle/github-actions-ci-dashboard/actions/workflows/ci.yaml)
+You can track the progress
+in [GitHub Actions](https://github.com/capralifecycle/github-actions-ci-dashboard/actions/workflows/ci.yaml)
 and in
 the [AWS CodePipeline](https://eu-west-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/experiments-apps/view?region=eu-west-1) (`liflig-experiments`).
 
@@ -77,7 +88,8 @@ the [AWS CodePipeline](https://eu-west-1.console.aws.amazon.com/codesuite/codepi
 
 You can disable the java agent in ECS by setting the environment parameter `OTEL_JAVAAGENT_ENABLED` to `false`.
 
-You can collect data by attaching a sidecar in ECS with the AWS Distro of Otel Collector: https://aws-otel.github.io/docs/setup/ecs.
+You can collect data by attaching a sidecar in ECS with the AWS Distro of Otel
+Collector: https://aws-otel.github.io/docs/setup/ecs.
 
 ## License
 
