@@ -1,19 +1,25 @@
 {{! Use BEM for css class naming. block__element--modifier }}
+{{! Uses variables from CiStatus.kt }}
 {{#each statuses}}
   <div class="status status--{{lastStatus}}" id="{{id}}">
-    <span class="status__repo-name">{{repo.name}}</span>
-    <span class="status__repo-branch">{{branch}}</span>
-    <span class="status__last-updated">{{lastUpdatedAt}}</span>
-    <span class="status__triggered-by">{{triggeredBy}}</span>
+    <div class="status__repo">
+      <span class="status__repo-owner">{{repo.owner}}/</span><span class="status__repo-name">{{repo.name}}</span>
+      <span class="status__repo-branch">{{branch}}</span>
+    </div>
+    <span class="status__last-updated">{{lastStatus}} at {{lastUpdatedAt}}</span>
+    <div class="triggered-by status__triggered-by">
+      <span class="triggered-by__label">Build triggered by</span> <span
+      class="triggered-by__username">{{triggeredBy}}</span>
+    </div>
     <div class="commit status__commit">
-      <span class="commit__title">{{lastCommit.title}}</span>
-      <span class="commit__sha">{{lastCommit.sha}}</span>
+      <p class="commit__title">{{lastCommit.title}}</p>
+      <span class="commit__sha">SHA: {{lastCommit.sha}}</span>
       <div class="commiter commit__commiter">
         <img src="{{lastCommit.commiter.avatarUrl}}" alt="Avatar" class="commiter__avatar">
         <span class="commiter__username">{{lastCommit.commiter.username}}</span>
       </div>
     </div>
   </div>
-  {{else}}
+{{else}}
   <span class="no-builds">No builds</span>
 {{~/each}}

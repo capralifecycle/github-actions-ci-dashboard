@@ -54,6 +54,7 @@ data class Index(
     val dashboardId: String,
     val secretToken: String,
     val pollUrl: String,
+    val grid: Grid = Grid(5, 5),
     val pollRateSeconds: Double = 5.0,
     val version: String = LATEST_VERSION
 ) : ViewModel {
@@ -64,3 +65,5 @@ data class Index(
     const val LATEST_VERSION = "1"
   }
 }
+
+data class Grid(val columns: Int, val rows: Int)

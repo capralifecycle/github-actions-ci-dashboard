@@ -71,6 +71,8 @@
   </style>
 
   <style>
+    /* Generic setup */
+
     @font-face {
       font-family: 'Inter';
       font-style: normal;
@@ -86,43 +88,62 @@
     }
 
     body {
-      background-color: lightgray;
-      padding: 2em 2em 0 2em;
+      background-color: #606060;
+      width: 100vw;
+      height: 100vw;
+      padding: 1em 2em 0 2em;
 
       font-family: "Inter", sans-serif;
       font-optical-sizing: auto;
       font-weight: 400;
       font-style: normal;
       font-variation-settings: "slnt" 0;
+
+      overflow: hidden;
     }
 
     .title {
       font-size: 2em;
+      margin-bottom: 1em;
+      color: #eaeaea;
+      text-align: center;
     }
+
+    /* Grid container */
 
     #statuses {
       transition: all ease-in 1s;
-      width: 100vw;
+      width: 100%;
       height: 100%;
     }
 
     .statuses {
-      background-color: #b8b8b8;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(35em, 1fr));
+      grid-template-rows: repeat({{grid.rows}}, 1fr);
+      grid-column-gap: 1em;
+      grid-row-gap: 1em;
     }
+
+    /* Status boxes */
 
     .status {
       display: inline-block;
       border-radius: 1em;
-      border: 1px solid #5e5e5e;
+      border: 1px solid #000000;
       padding: 0.5em;
+
+      min-width: 0;
+      min-height: 0;
     }
 
     .status--SUCCEEDED {
-      background-color: hsl(139, 70%, 40%);
+      /* This funky green works even for color blind people.*/
+      background-color: hsl(154.6, 76.4%, 44.9%);
     }
 
     .status--FAILED {
-      background-color: hsl(10, 70%, 40%);
+      background-color: hsl(0, 82.5%, 52.9%);
     }
 
     .status--IN_PROGRESS {
@@ -163,6 +184,110 @@
       }
     }
 
+    /*  Status contents */
+
+    .status {
+      display: grid;
+      grid-template-areas:
+        "title title"
+        "commit commit"
+        "updated triggered";
+      grid-row-gap: 1em;
+    }
+
+    .status__repo {
+      grid-area: title;
+      font-size: 1.5em;
+    }
+    .status__repo-owner {
+      color: #4e4e4e;
+    }
+    .status__repo-name {
+      font-weight: bold;
+    }
+    .status__repo-branch {
+      font-size: 0.8em;
+      margin-left: 1em;
+    }
+
+    .status__last-updated {
+      grid-area: updated;
+      font-size: 0.9em;
+
+      color: #4e4e4e;
+    }
+
+    .status__triggered-by {
+      grid-area: triggered;
+    }
+
+
+    .status__commit {
+      grid-area: commit;
+    }
+
+    /*  Commit info */
+    .commit {
+      display: grid;
+      grid-template-areas:
+        "commiter title"
+        "commiter sha";
+
+      background-color: rgba(234, 234, 234, 0.8);
+      padding: 0.5em;
+      border-radius: 0.5em;
+    }
+
+    .commit__title {
+      grid-area: title;
+
+      border-radius: 0.5em 0.5em 0 0;
+      padding: 0.5em;
+      font-size: 1.2em;
+    }
+
+    .commit__sha {
+      grid-area: sha;
+      font-size: 0.8em;
+      color: #4e4e4e;
+
+      border-radius: 0 0 0.5em 0.5em;
+      padding: 0.5em;
+
+      /* Align to bottom of box: */
+      margin-top: auto;
+    }
+
+    .commit__commiter {
+      grid-area: commiter;
+    }
+
+    /* Commiter */
+
+    .commiter {
+      display: grid;
+      grid-template-areas:
+        "avatar"
+        "username";
+
+      justify-items: center;
+      padding: 0.2em;
+    }
+
+    .commiter__avatar {
+      grid-area: avatar;
+      width: 60%;
+    }
+
+    .comiter__username {
+      grid-area: username;
+    }
+
+    /* Triggered by */
+
+    .triggered-by__label {
+      color: #4e4e4e;
+    }
   </style>
 
 </head>
