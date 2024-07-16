@@ -10,6 +10,7 @@
   <title>CI Dashboard</title>
 
   <script src="/webjars/htmx.org/2.0.1/dist/htmx.min.js"></script>
+  <script src="/webjars/idiomorph/0.3.0/dist/idiomorph-ext.min.js"></script>
 
   <style>
     /* CSS Reset. */
@@ -92,6 +93,8 @@
        hx-get="{{pollUrl}}?id={{dashboardId}}&token={{secretToken}}&version={{version}}"
   hx-trigger="load, every {{pollRateSeconds}}s"
   hx-indicator="#loading"
+  hx-ext="morph"
+  hx-swap="morph:innerHTML"
   >
   <i id="first-load">Loading...</i>
 </div>
