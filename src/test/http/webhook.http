@@ -1,0 +1,32 @@
+@host = http://localhost:8080
+
+POST {{host}}/webhook
+X-GitHub-Event: workflow_run
+Content-Type: application/json
+X-Hub-Signature-256: sha256=772eb2387c6cc6665e6ad28a0b9223bdf4527a2459be7c0e8f7527b556554d52
+
+< ../resources/acceptancetests/webhook/user-workflow_run-requested.json
+###
+
+POST {{host}}/webhook
+X-GitHub-Event: workflow_run
+Content-Type: application/json
+X-Hub-Signature-256: sha256=660cfddcf8f844e2316ab55adfba40b9af7264a003a2f37d25e905ad33b28ed8
+
+< ../resources/acceptancetests/webhook/user-workflow_run-in_progress.json
+###
+
+POST {{host}}/webhook
+X-GitHub-Event: workflow_run
+Content-Type: application/json
+X-Hub-Signature-256: sha256=96e25f23d2a17ecb9c1ed12a123f9506fff74406be1ccd1f44679a50f9b9b153
+
+< ../resources/acceptancetests/webhook/user-workflow_run-completed-failure.json
+###
+
+POST {{host}}/webhook
+X-GitHub-Event: workflow_run
+Content-Type: application/json
+X-Hub-Signature-256: sha256=a90098e7abdf240bb16679bb130105a64111471a021f05a47a2a97a3e876f09f
+
+< ../resources/acceptancetests/webhook/renovate-bot-workflow_run-completed-success.json
