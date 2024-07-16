@@ -10,7 +10,7 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.RegisterExtension
 import test.util.AcceptanceTestExtension
 import test.util.Integration
-import test.util.WebhookPayload
+import test.util.FileWebhookPayload
 
 @Integration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -26,16 +26,16 @@ class CiDashboardTest {
     infra.tvBrowser.navigateToDashboard()
     infra.tvBrowser.verifyDashboardIsEmpty()
 
-    infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_REQUESTED)
-    infra.tvBrowser.verifyDashboardHasRepoInStatus(WebhookPayload.ExampleRepo.repoName, QUEUED)
+    infra.gitHub.sendWebhook(FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_REQUESTED)
+    infra.tvBrowser.verifyDashboardHasRepoInStatus(FileWebhookPayload.ExampleRepo.repoName, QUEUED)
 
-    infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_IN_PROGRESS)
-    infra.tvBrowser.verifyDashboardHasRepoInStatus(WebhookPayload.ExampleRepo.repoName, IN_PROGRESS)
+    infra.gitHub.sendWebhook(FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_IN_PROGRESS)
+    infra.tvBrowser.verifyDashboardHasRepoInStatus(FileWebhookPayload.ExampleRepo.repoName, IN_PROGRESS)
 
-    infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_FAILURE)
-    infra.tvBrowser.verifyDashboardHasRepoInStatus(WebhookPayload.ExampleRepo.repoName, FAILED)
+    infra.gitHub.sendWebhook(FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_FAILURE)
+    infra.tvBrowser.verifyDashboardHasRepoInStatus(FileWebhookPayload.ExampleRepo.repoName, FAILED)
 
-    infra.gitHub.sendWebhook(WebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_SUCCESS)
-    infra.tvBrowser.verifyDashboardHasRepoInStatus(WebhookPayload.ExampleRepo.repoName, SUCCEEDED)
+    infra.gitHub.sendWebhook(FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_SUCCESS)
+    infra.tvBrowser.verifyDashboardHasRepoInStatus(FileWebhookPayload.ExampleRepo.repoName, SUCCEEDED)
   }
 }

@@ -38,7 +38,8 @@ import org.testcontainers.containers.PostgreSQLContainer
  * To test at this high level and end-to-end, the system requires infrastructure or mocks/simulators
  * to properly interact with external systems.
  */
-class AcceptanceTestExtension : Extension, BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+class AcceptanceTestExtension(val fastPoll: Boolean = true) :
+    Extension, BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
 
   lateinit var app: App
 
@@ -53,7 +54,13 @@ class AcceptanceTestExtension : Extension, BeforeAllCallback, AfterAllCallback, 
         Config.load()
             .let { database.applyTo(it) }
             .let { setUnusedHttpPort(it) }
-            .let { setFastPollingInterval(it) }
+            .let {
+              if (fastPoll) {
+                setFastPollingInterval(it)
+              } else {
+                it
+              }
+            }
 
     app = App(config)
     app.start()
@@ -255,14 +262,25 @@ END${'$'}${'$'};""")
   }
 }
 
-data class WebhookPayload(val name: String, private val filePath: String, val type: String) {
+interface WebhookPayload {
+  /** `"workflow_run"`, `"ping"` etc. */
+  val type: String
+
+  fun asJson(): String
+}
+
+data class FileWebhookPayload(
+    val name: String,
+    private val filePath: String,
+    override val type: String
+) : WebhookPayload {
   init {
     require(!filePath.startsWith("/")) { "Path should not start with '/'" }
   }
 
   object Ping {
     val WEBHOOK_CREATED_PING =
-        WebhookPayload(
+        FileWebhookPayload(
             "WEBHOOK_CREATED_PING", "acceptancetests/webhook/github-ping-body.json", "ping")
   }
 
@@ -270,28 +288,28 @@ data class WebhookPayload(val name: String, private val filePath: String, val ty
     const val repoName: String = "github-actions-ci-dashboard"
 
     val WORKFLOW_RUN_1_REQUESTED =
-        WebhookPayload(
+        FileWebhookPayload(
             "WORKFLOW_RUN_1_REQUESTED",
             "acceptancetests/webhook/user-workflow_run-requested.json",
             "workflow_run")
     val WORKFLOW_RUN_1_IN_PROGRESS =
-        WebhookPayload(
+        FileWebhookPayload(
             "WORKFLOW_RUN_1_IN_PROGRESS",
             "acceptancetests/webhook/user-workflow_run-in_progress.json",
             "workflow_run")
     val WORKFLOW_RUN_1_COMPLETED_FAILURE =
-        WebhookPayload(
+        FileWebhookPayload(
             "WORKFLOW_RUN_1_FAILURE",
             "acceptancetests/webhook/user-workflow_run-completed-failure.json",
             "workflow_run")
     val WORKFLOW_RUN_1_COMPLETED_SUCCESS =
-        WebhookPayload(
+        FileWebhookPayload(
             "WORKFLOW_RUN_1_SUCCESS",
             "acceptancetests/webhook/renovate-bot-workflow_run-completed-success.json",
             "workflow_run")
   }
 
-  fun asJson(): String {
+  override fun asJson(): String {
     return loadResource(filePath)
   }
 }
