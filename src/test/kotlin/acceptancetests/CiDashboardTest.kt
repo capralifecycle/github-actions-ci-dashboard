@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.RegisterExtension
 import test.util.AcceptanceTestExtension
-import test.util.Integration
 import test.util.FileWebhookPayload
+import test.util.Integration
 
 @Integration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -30,12 +30,14 @@ class CiDashboardTest {
     infra.tvBrowser.verifyDashboardHasRepoInStatus(FileWebhookPayload.ExampleRepo.repoName, QUEUED)
 
     infra.gitHub.sendWebhook(FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_IN_PROGRESS)
-    infra.tvBrowser.verifyDashboardHasRepoInStatus(FileWebhookPayload.ExampleRepo.repoName, IN_PROGRESS)
+    infra.tvBrowser.verifyDashboardHasRepoInStatus(
+        FileWebhookPayload.ExampleRepo.repoName, IN_PROGRESS)
 
     infra.gitHub.sendWebhook(FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_FAILURE)
     infra.tvBrowser.verifyDashboardHasRepoInStatus(FileWebhookPayload.ExampleRepo.repoName, FAILED)
 
     infra.gitHub.sendWebhook(FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_SUCCESS)
-    infra.tvBrowser.verifyDashboardHasRepoInStatus(FileWebhookPayload.ExampleRepo.repoName, SUCCEEDED)
+    infra.tvBrowser.verifyDashboardHasRepoInStatus(
+        FileWebhookPayload.ExampleRepo.repoName, SUCCEEDED)
   }
 }
