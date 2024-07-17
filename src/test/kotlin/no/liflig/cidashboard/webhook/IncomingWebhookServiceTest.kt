@@ -38,16 +38,21 @@ class IncomingWebhookServiceTest {
   @DisplayName("Workflow Run")
   inner class WorkflowRun {
 
+    private val repo: CiStatusRepo = mockk()
+    private val inTransaction = Transaction { callback -> callback(repo) }
+
+    @BeforeEach
+    fun setUp() {
+      clearMocks(repo)
+
+      every { repo.save(any()) } returns Unit
+      // Database is empty:
+      every { repo.getById(any()) } returns null
+    }
+
     /** We always keep the latest data, because if reflects the current workflow state. */
     @IntegrationTest
     fun `should persist workflow_run when the received data is newer`() {
-      // Database is empty
-      val repo =
-          mockk<CiStatusRepo> {
-            every { save(any()) } returns Unit
-            every { getById(any()) } returns null
-          }
-
       // Create event
       val workflowRun =
           GitHubWebhookWorkflowRun.fromJson(
@@ -73,11 +78,7 @@ class IncomingWebhookServiceTest {
           GitHubWebhookWorkflowRun.fromJson(
               loadResource("acceptancetests/webhook/user-workflow_run-completed-failure.json"))
 
-      val repo =
-          mockk<CiStatusRepo> {
-            every { save(any()) } returns Unit
-            every { getById(newWorkflowRun.workflow.id) } returns newWorkflowRun.toCiStatus()
-          }
+      every { repo.getById(newWorkflowRun.workflow.id) } returns newWorkflowRun.toCiStatus()
 
       // Create event
       val outdatedWorkflowRun =
@@ -92,28 +93,18 @@ class IncomingWebhookServiceTest {
       verify(exactly = 0) { repo.save(any()) }
     }
 
+    /** CALS-820 */
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @DisplayName("Branch Whitelist")
     inner class BranchWhitelist {
-      private val repo: CiStatusRepo = mockk {
-        every { save(any()) } returns Unit
-        every { getById(any()) } returns null
-      }
-      private val inTransaction = Transaction { callback -> callback(repo) }
-
-      @BeforeEach
-      fun setUp() {
-        clearMocks(repo, answers = false)
-      }
-
       @Test
       fun `should persist events for branches in the whitelist`() {
         // Given
         val workflowRun = createWorkflowRunEventFor("master")
 
-        val whitelist = listOf("master", "main")
-        val service = IncomingWebhookService(inTransaction, whitelist)
+        val whitelist = BranchWhitelist(listOf("master", "main"))
+        val service = IncomingWebhookService(inTransaction, branchWhitelist = whitelist)
 
         // When
         service.handleWorkflowRun(workflowRun)
@@ -127,8 +118,8 @@ class IncomingWebhookServiceTest {
         // Given
         val workflowRun = createWorkflowRunEventFor("feat/my-branch")
 
-        val whitelist = listOf("master", "main")
-        val service = IncomingWebhookService(inTransaction, whitelist)
+        val whitelist = BranchWhitelist(listOf("master", "main"))
+        val service = IncomingWebhookService(inTransaction, branchWhitelist = whitelist)
 
         // When
         service.handleWorkflowRun(workflowRun)
@@ -142,6 +133,55 @@ class IncomingWebhookServiceTest {
                   loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json"))
               .let { event ->
                 event.copy(workflowRun = event.workflowRun.copy(headBranch = branch))
+              }
+    }
+
+    /** CALS-820 */
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @DisplayName("Workflow Name Whitelist")
+    inner class WorkflowNameWhitelist {
+
+      @Test
+      fun `should persist events for workflow names in the whitelist`() {
+        // Given
+        val workflowRun = createWorkflowRunEventWithName("ci")
+
+        val whitelist = WorkflowNameWhitelist(listOf("ci"))
+        val service = IncomingWebhookService(inTransaction, workflowNameWhitelist = whitelist)
+
+        // When
+        service.handleWorkflowRun(workflowRun)
+
+        // Then
+        verify { repo.save(any()) }
+      }
+
+      @Test
+      fun `should discard events for workflow names not in the whitelist`() {
+        // Given
+        val workflowRun = createWorkflowRunEventWithName("my-workflow")
+
+        val whitelist = WorkflowNameWhitelist(listOf("ci"))
+        val service = IncomingWebhookService(inTransaction, workflowNameWhitelist = whitelist)
+
+        // When
+        service.handleWorkflowRun(workflowRun)
+
+        // Then
+        verify(inverse = true) { repo.save(any()) }
+      }
+
+      private fun createWorkflowRunEventWithName(workflowName: String) =
+          GitHubWebhookWorkflowRun.fromJson(
+                  loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json"))
+              .let { event ->
+                event.copy(
+                    workflowRun = event.workflowRun.copy(name = workflowName),
+                    workflow =
+                        event.workflow.copy(
+                            name = workflowName, path = ".github/workflows/${workflowName}.yaml"),
+                )
               }
     }
   }

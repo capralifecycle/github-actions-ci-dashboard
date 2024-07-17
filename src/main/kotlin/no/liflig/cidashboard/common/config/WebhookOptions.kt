@@ -1,6 +1,8 @@
 package no.liflig.cidashboard.common.config
 
 import java.util.Properties
+import no.liflig.cidashboard.webhook.BranchWhitelist
+import no.liflig.cidashboard.webhook.WorkflowNameWhitelist
 import no.liflig.properties.string
 import no.liflig.properties.stringNotEmpty
 
@@ -8,7 +10,8 @@ data class WebhookOptions(
     /** Full path to webhook. Must start with `/`. */
     val path: String,
     val secret: Secret,
-    val branchWhitelist: List<String>
+    val branchWhitelist: BranchWhitelist,
+    val workflowNameWhitelist: WorkflowNameWhitelist
 ) {
 
   init {
@@ -43,6 +46,16 @@ data class WebhookOptions(
                     ?.split(",")
                     ?.map { it.trim() }
                     ?.filter { it.isNotBlank() }
-                    ?: emptyList())
+                    ?.let { BranchWhitelist(it) }
+                    ?: BranchWhitelist(emptyList()),
+            workflowNameWhitelist =
+                properties
+                    .string("webhook.workflowNameWhitelist")
+                    ?.split(",")
+                    ?.map { it.trim() }
+                    ?.filter { it.isNotBlank() }
+                    ?.let { WorkflowNameWhitelist(it) }
+                    ?: WorkflowNameWhitelist(emptyList()),
+        )
   }
 }
