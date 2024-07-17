@@ -1,25 +1,41 @@
 {{! Use BEM for css class naming. block__element--modifier }}
 {{! Uses variables from CiStatus.kt }}
-{{#each statuses}}
-  <div class="status status--{{lastStatus}}" id="{{id}}">
-    <div class="status__repo">
-      <span class="status__repo-owner">{{repo.owner}}/</span><span class="status__repo-name">{{repo.name}}</span><span
-      class="status__repo-branch">{{branch}}</span>
-    </div>
-    <span class="status__last-updated">{{capitalize lastStatus fully=true}} at <time>{{dateFormat lastUpdatedAt format="HH:mm dd/MMM" locale=config.locale tz=config.timezone}}</time></span>
-    <div class="triggered-by status__triggered-by">
-      <span class="triggered-by__label">Build triggered by</span> <span
-      class="triggered-by__username">{{triggeredBy}}</span>
-    </div>
-    <div class="commit status__commit">
-      <p class="commit__title">{{lastCommit.title}}</p>
-      <span class="commit__sha">SHA: {{substring lastCommit.sha 0 6}}</span>
-      <div class="commiter commit__commiter">
-        <img src="{{lastCommit.commiter.avatarUrl}}" alt="Avatar" class="commiter__avatar">
-        <span class="commiter__username">{{lastCommit.commiter.username}}</span>
+<div id="statuses" class="statuses">
+  {{#each statuses}}
+    <div class="status status--{{lastStatus}}" id="{{id}}">
+      <div class="status__repo">
+        <span class="status__repo-owner">{{repo.owner}}/</span><span class="status__repo-name">{{repo.name}}</span><span
+        class="status__repo-branch">{{branch}}</span>
+      </div>
+      <span class="status__last-updated">{{capitalize lastStatus fully=true}} at <time>{{dateFormat lastUpdatedAt
+                                                                                                    format="HH:mm dd/MMM"
+                                                                                                    locale=config.locale
+                                                                                                    tz=config.timezone}}</time></span>
+      <div class="triggered-by status__triggered-by">
+        <span class="triggered-by__label">Build triggered by</span> <span
+        class="triggered-by__username">{{triggeredBy}}</span>
+      </div>
+      <div class="commit status__commit">
+        <p class="commit__title">{{lastCommit.title}}</p>
+        <span class="commit__sha">SHA: {{substring lastCommit.sha 0 6}}</span>
+        <div class="commiter commit__commiter">
+          <img src="{{lastCommit.commiter.avatarUrl}}" alt="Avatar" class="commiter__avatar">
+          <span class="commiter__username">{{lastCommit.commiter.username}}</span>
+        </div>
       </div>
     </div>
+  {{else}}
+    <span class="no-builds">No builds</span>
+  {{/each}}
+</div>
+{{~#if failedBuilds}}
+  <div id="failed-builds" class="failed-builds" style="background-color: darkred; color: white; padding: 0.5em">
+    <h2 style="font-size: 2em; margin-bottom: 0.5em">All Failed Builds</h2>
+    <ul style="line-height: 1.5em">
+      {{#each failedBuilds}}
+        <li><span style="color: #aeaeae">{{repo.owner}}/</span><span style="font-weight: bold">{{repo.name}}</span><span
+          style="color: #aeaeae">/{{branch}}</span></li>
+      {{/each}}
+    </ul>
   </div>
-{{else}}
-  <span class="no-builds">No builds</span>
-{{~/each}}
+{{/if}}

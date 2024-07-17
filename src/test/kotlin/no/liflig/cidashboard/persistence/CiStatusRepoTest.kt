@@ -106,7 +106,8 @@ class CiStatusRepoTest {
 fun createCiStatus(
     id: String,
     repoName: String = "test-repo",
-    lastStatus: CiStatus.PipelineStatus = CiStatus.PipelineStatus.SUCCEEDED
+    lastStatus: CiStatus.PipelineStatus = CiStatus.PipelineStatus.SUCCEEDED,
+    lastUpdatedAt: Instant = Instant.parse("2024-07-05T12:25:40Z")
 ): CiStatus =
     CiStatus(
         id = id,
@@ -118,7 +119,7 @@ fun createCiStatus(
                 defaultBranch = BranchName("master")),
         branch = BranchName("master"),
         lastStatus = lastStatus,
-        lastUpdatedAt = Instant.parse("2024-07-05T12:25:40Z"),
+        lastUpdatedAt = lastUpdatedAt,
         lastCommit =
             Commit(
                 sha = "123abc",

@@ -35,6 +35,7 @@ class CiDashboardTest {
 
     infra.gitHub.sendWebhook(FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_FAILURE)
     infra.tvBrowser.verifyDashboardHasRepoInStatus(FileWebhookPayload.ExampleRepo.repoName, FAILED)
+    infra.tvBrowser.verifyAllFailedBuildsIsListingRepo(FileWebhookPayload.ExampleRepo.repoName)
 
     infra.gitHub.sendWebhook(FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_SUCCESS)
     infra.tvBrowser.verifyDashboardHasRepoInStatus(

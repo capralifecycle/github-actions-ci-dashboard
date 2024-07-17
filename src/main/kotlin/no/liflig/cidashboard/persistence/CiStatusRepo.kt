@@ -43,6 +43,7 @@ class CiStatusRepo(private val databaseHandle: Handle) {
     }
   }
 
+  /** @return list of all statuses, sorted by [CiStatus.lastUpdatedAt] descending. */
   fun getAll(): List<CiStatus> {
     return databaseHandle
         .select(

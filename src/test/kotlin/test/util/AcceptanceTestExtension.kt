@@ -263,6 +263,10 @@ END${'$'}${'$'};""")
       PlaywrightAssertions.assertThat(ciStatus).isVisible()
       PlaywrightAssertions.assertThat(ciStatus.locator(".status__repo-name")).hasText(repoName)
     }
+
+    fun verifyAllFailedBuildsIsListingRepo(repoName: String) {
+      PlaywrightAssertions.assertThat(page.locator("#failed-builds")).containsText(repoName)
+    }
   }
 }
 

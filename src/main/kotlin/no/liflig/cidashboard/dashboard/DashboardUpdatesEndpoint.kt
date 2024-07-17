@@ -65,10 +65,15 @@ class DashboardUpdatesEndpoint(
 
     val dashboardId = dashboardIdLens(request)
 
-    val statuses = dashboardUpdatesService.handleDashboardUpdate(dashboardId)
+    val data = dashboardUpdatesService.getUpdatedDashboardData(dashboardId)
 
     return Response(Status.OK)
-        .with(bodyLens of Dashboard(dashboardId.toString(), statuses))
+        .with(
+            bodyLens of
+                Dashboard(
+                    dashboardId.toString(),
+                    statuses = data.lastBuilds,
+                    failedBuilds = data.allFailedBuilds))
         .with(reloadEntirePageLens of shouldReload)
   }
 }
@@ -76,6 +81,7 @@ class DashboardUpdatesEndpoint(
 data class Dashboard(
     val dashboardId: String,
     val statuses: List<CiStatus>,
+    val failedBuilds: List<CiStatus>,
     val config: DashboardConfig = DashboardConfig()
 ) : ViewModel {
   override fun template() = "dashboard"

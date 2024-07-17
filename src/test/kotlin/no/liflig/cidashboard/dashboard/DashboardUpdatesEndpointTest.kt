@@ -16,10 +16,10 @@ class DashboardUpdatesEndpointTest {
   @Test
   fun `should render empty list to say no builds`() {
     // Given
-    val ciStatuses: List<CiStatus> = emptyList()
+    val ciStatuses: DashboardData = DashboardData(emptyList(), emptyList())
     val dashboardId = "1"
     val updatesService: DashboardUpdatesService = mockk {
-      every { handleDashboardUpdate(dashboardId) } returns ciStatuses
+      every { getUpdatedDashboardData(dashboardId) } returns ciStatuses
     }
 
     val endpoint = DashboardUpdatesEndpoint(updatesService, useHotReload = false)
@@ -33,24 +33,40 @@ class DashboardUpdatesEndpointTest {
     val response = endpoint(request)
 
     // Then
-    assertThat(response.bodyString()).isEqualTo("""  <span class="no-builds">No builds</span>""")
+    assertThat(response.bodyString())
+        .isEqualTo(
+            """<div id="statuses" class="statuses">
+              |    <span class="no-builds">No builds</span>
+              |</div>"""
+                .trimMargin())
   }
 
   @Test
   fun `should render all ci statuses from the service to html`() {
     // Given
-    val ciStatuses: List<CiStatus> =
-        listOf(
-            createCiStatus(
-                id = "1", repoName = "repo-a", lastStatus = CiStatus.PipelineStatus.SUCCEEDED),
-            createCiStatus(
-                id = "2", repoName = "repo-b", lastStatus = CiStatus.PipelineStatus.IN_PROGRESS),
-            createCiStatus(
-                id = "3", repoName = "repo-c", lastStatus = CiStatus.PipelineStatus.FAILED),
-        )
+    val ciStatuses: DashboardData =
+        DashboardData(
+            lastBuilds =
+                listOf(
+                    createCiStatus(
+                        id = "1",
+                        repoName = "repo-a",
+                        lastStatus = CiStatus.PipelineStatus.SUCCEEDED),
+                    createCiStatus(
+                        id = "2",
+                        repoName = "repo-b",
+                        lastStatus = CiStatus.PipelineStatus.IN_PROGRESS),
+                    createCiStatus(
+                        id = "3", repoName = "repo-c", lastStatus = CiStatus.PipelineStatus.FAILED),
+                ),
+            allFailedBuilds =
+                listOf(
+                    createCiStatus(
+                        id = "3", repoName = "repo-c", lastStatus = CiStatus.PipelineStatus.FAILED),
+                ))
     val dashboardId = "2"
     val updatesService: DashboardUpdatesService =
-        mockk() { every { handleDashboardUpdate(dashboardId) } returns ciStatuses }
+        mockk() { every { getUpdatedDashboardData(dashboardId) } returns ciStatuses }
 
     val endpoint = DashboardUpdatesEndpoint(updatesService, useHotReload = false)
 
