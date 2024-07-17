@@ -9,6 +9,8 @@
 Responsible for collecting GitHub Actions `workflow_run` webhook data and providing a web dashboard with recent CI build
 status.
 
+![Screenshot](docs/dashboard-screenshot.png)
+
 ## Documentation
 
 More information is found here:

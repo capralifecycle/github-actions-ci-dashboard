@@ -11,6 +11,7 @@ import io.restassured.http.ContentType
 import io.restassured.http.Header
 import io.restassured.specification.RequestSpecification
 import java.net.ServerSocket
+import java.nio.file.Paths
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import mu.KotlinLogging
@@ -267,6 +268,10 @@ END${'$'}${'$'};""")
     fun verifyAllFailedBuildsIsListingRepo(repoName: String) {
       PlaywrightAssertions.assertThat(page.locator("#failed-builds")).containsText(repoName)
     }
+
+    fun saveScreenshotForReadme() {
+      page.screenshot(Page.ScreenshotOptions().setPath(Paths.get("docs/dashboard-screenshot.png")))
+    }
   }
 }
 
@@ -316,6 +321,26 @@ data class FileWebhookPayload(
             "acceptancetests/webhook/renovate-bot-workflow_run-completed-success.json",
             "workflow_run")
   }
+
+  /** Just used to generate a screenshot with a failed build. */
+  object DataForScreenshots {
+    const val repoNameLifligProperties = "liflig-properties"
+    val LIFLIG_PROPERTIES_WORKFLOW_RUN_1_COMPLETED_FAILURE =
+        FileWebhookPayload(
+            "WORKFLOW_RUN_1_FAILURE",
+            "acceptancetests/webhook/liflig-properties-user-workflow_run-completed-failure.json",
+            "workflow_run"
+        )
+
+    const val repoNameLifligCdk = "liflig-cdk"
+    val LIFLIG_CDK_WORKFLOW_RUN_2_IN_PROGRESS =
+        FileWebhookPayload(
+            "WORKFLOW_RUN_2_IN_PROGRESS",
+            "acceptancetests/webhook/liflig-cdk-user-workflow_run-in_progress.json",
+            "workflow_run"
+        )
+  }
+
 
   override fun asJson(): String {
     return loadResource(filePath)
