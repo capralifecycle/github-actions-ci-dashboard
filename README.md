@@ -50,10 +50,13 @@ You need to install:
 
 ### Running the application
 
-1. Build the jar: `mvn package`
-2. Build and run the docker image with `./test-docker.sh`.
+1. Start the `db` in [docker-compose.yml](./docker-compose.yml)
+2. Run the [main method from intelliJ](./src/main/kotlin/no/liflig/cidashboard/Main.kt)
+3. Watch the logs for which port is being used.
+4. Visit `http://localhost:PORT/?token=TOKEN_HERE`
 
-You can test the API with [src/test/http/health.http](src/test/http/health.http)
+You can test the API
+with [src/test/http/health.http](src/test/http/health.http), [webhook.http](src/test/http/webhook.http).
 
 ### Running tests
 
