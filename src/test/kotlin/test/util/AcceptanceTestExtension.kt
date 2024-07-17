@@ -217,7 +217,11 @@ END${'$'}${'$'};""")
                 /*BrowserType.LaunchOptions().setHeadless(false).setSlowMo(1000.0)*/ )
     private val context: BrowserContext =
         browser.newContext(
-            Browser.NewContextOptions().setLocale("no-nb").setTimezoneId("Europe/Oslo"))
+            Browser.NewContextOptions()
+                .setLocale("no-nb")
+                .setTimezoneId("Europe/Oslo")
+                .setScreenSize(1920, 1080)
+                .setViewportSize(1920, 1080))
 
     val page: Page = context.newPage()
 
