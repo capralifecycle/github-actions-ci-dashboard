@@ -42,7 +42,8 @@ class App(val config: Config) {
     val apiOptions = config.apiOptions
 
     val healthService = HealthService(apiOptions.applicationName, config.buildInfo)
-    val incomingWebhookService = IncomingWebhookService(JdbiTransaction(jdbi))
+    val incomingWebhookService =
+        IncomingWebhookService(JdbiTransaction(jdbi), config.webhookOptions.branchWhitelist)
     val dashboardUpdatesService = DashboardUpdatesService(JdbiDatabaseHandle(jdbi))
     val services = ApiServices(healthService, incomingWebhookService, dashboardUpdatesService)
 

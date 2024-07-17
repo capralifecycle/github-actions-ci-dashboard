@@ -1,12 +1,14 @@
 package no.liflig.cidashboard.common.config
 
 import java.util.Properties
+import no.liflig.properties.string
 import no.liflig.properties.stringNotEmpty
 
 data class WebhookOptions(
     /** Full path to webhook. Must start with `/`. */
     val path: String,
-    val secret: Secret
+    val secret: Secret,
+    val branchWhitelist: List<String>
 ) {
 
   init {
@@ -34,6 +36,13 @@ data class WebhookOptions(
     fun from(properties: Properties): WebhookOptions =
         WebhookOptions(
             path = properties.stringNotEmpty("webhook.path"),
-            secret = Secret(properties.stringNotEmpty("webhook.secret")))
+            secret = Secret(properties.stringNotEmpty("webhook.secret")),
+            branchWhitelist =
+                properties
+                    .string("webhook.branchWhitelist")
+                    ?.split(",")
+                    ?.map { it.trim() }
+                    ?.filter { it.isNotBlank() }
+                    ?: emptyList())
   }
 }
