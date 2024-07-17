@@ -25,6 +25,7 @@ data class GitHubWebhookWorkflowRun(
         Body.auto<GitHubWebhookWorkflowRun>().toLens()
 
     private val json = Json { ignoreUnknownKeys = true }
+
     fun fromJson(jsonString: String): GitHubWebhookWorkflowRun = json.decodeFromString(jsonString)
   }
 
@@ -129,7 +130,15 @@ data class GitHubWebhookWorkflowRun(
 
   @Serializable
   data class Workflow(
-      /** `105563496` */
+      /**
+       * The ID of the workflow.
+       *
+       * <p>
+       * Note that this is shared across branches in a repo. That means a run in `master` and run in
+       * `feat/make-change` will have the *same* workflow id.
+       *
+       * E.g. `105563496`
+       */
       val id: Long,
       /** `"ci"` */
       val name: String,
