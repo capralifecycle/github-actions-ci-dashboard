@@ -329,18 +329,15 @@ data class FileWebhookPayload(
         FileWebhookPayload(
             "WORKFLOW_RUN_1_FAILURE",
             "acceptancetests/webhook/liflig-properties-user-workflow_run-completed-failure.json",
-            "workflow_run"
-        )
+            "workflow_run")
 
     const val repoNameLifligCdk = "liflig-cdk"
     val LIFLIG_CDK_WORKFLOW_RUN_2_IN_PROGRESS =
         FileWebhookPayload(
             "WORKFLOW_RUN_2_IN_PROGRESS",
             "acceptancetests/webhook/liflig-cdk-user-workflow_run-in_progress.json",
-            "workflow_run"
-        )
+            "workflow_run")
   }
-
 
   override fun asJson(): String {
     return loadResource(filePath)
