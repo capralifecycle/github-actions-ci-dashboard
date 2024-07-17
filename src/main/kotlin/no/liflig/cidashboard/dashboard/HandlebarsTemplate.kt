@@ -1,11 +1,11 @@
-package no.liflig.cidashboard.common.http4k
+package no.liflig.cidashboard.dashboard
 
 import com.github.jknack.handlebars.Helper
 import com.github.jknack.handlebars.Options
 import com.github.jknack.handlebars.cache.ConcurrentMapTemplateCache
 import mu.KotlinLogging
 import mu.withLoggingContext
-import no.liflig.cidashboard.common.http4k.MissingHelper.ERROR_PREFIX
+import no.liflig.cidashboard.dashboard.MissingHelper.ERROR_PREFIX
 import org.http4k.template.HandlebarsTemplates
 import org.http4k.template.TemplateRenderer
 

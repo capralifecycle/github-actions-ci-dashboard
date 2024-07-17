@@ -2,7 +2,6 @@ package no.liflig.cidashboard.dashboard
 
 import io.mockk.every
 import io.mockk.mockk
-import no.liflig.cidashboard.common.http4k.MissingHelper
 import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.persistence.createCiStatus
 import no.liflig.snapshot.verifyStringSnapshot

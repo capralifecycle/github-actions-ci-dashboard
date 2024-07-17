@@ -2,7 +2,6 @@ package no.liflig.cidashboard.dashboard
 
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
-import no.liflig.cidashboard.common.http4k.Renderer
 import org.http4k.core.Body
 import org.http4k.core.ContentType
 import org.http4k.core.HttpHandler

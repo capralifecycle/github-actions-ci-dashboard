@@ -1,6 +1,5 @@
 package no.liflig.cidashboard.dashboard
 
-import no.liflig.cidashboard.common.http4k.Renderer
 import no.liflig.cidashboard.persistence.CiStatus
 import org.http4k.core.Body
 import org.http4k.core.ContentType
