@@ -208,12 +208,15 @@
       grid-area: title;
       font-size: 1.5em;
     }
+
     .status__repo-owner {
       color: #4e4e4e;
     }
+
     .status__repo-name {
       font-weight: bold;
     }
+
     .status__repo-branch {
       font-size: 0.8em;
       margin-left: 1em;
@@ -298,20 +301,51 @@
     .triggered-by__label {
       color: #4e4e4e;
     }
+
+    /* All Failed Builds list */
+    .failed-builds {
+      background-color: darkred;
+      color: white;
+      padding: 0.5em;
+    }
+
+    .failed-builds__title {
+      font-size: 2em;
+      margin-bottom: 0.5em;
+    }
+
+    .failed-builds__list {
+      line-height: 1.5em;
+    }
+
+    .failed-build__owner {
+      color: #dcdcdc;
+      font-size: 0.8em;
+    }
+
+    .failed-build__repo {
+      font-weight: bold;
+    }
+
+    .failed-build__branch {
+      color: #aeaeae;
+      font-size: 0.8em;
+    }
+
   </style>
 
 </head>
 <body>
-  <h1 class="title">GitHub Actions CI Dashboard</h1>
+<h1 class="title">GitHub Actions CI Dashboard</h1>
 
-  <span id="loading" class="htmx-indicator">...</span>
-  <div id="content"
-       hx-get="{{pollUrl}}?id={{dashboardId}}&token={{secretToken}}&version={{version}}"
-  hx-trigger="load, every {{pollRateSeconds}}s"
-  hx-indicator="#loading"
-  hx-ext="morph"
-  hx-swap="morph:innerHTML"
-  >
-  <i id="first-load">Loading...</i>
+<span id="loading" class="htmx-indicator">...</span>
+<div id="content"
+     hx-get="{{pollUrl}}?id={{dashboardId}}&token={{secretToken}}&version={{version}}"
+hx-trigger="load, every {{pollRateSeconds}}s"
+hx-indicator="#loading"
+hx-ext="morph"
+hx-swap="morph:innerHTML"
+>
+<i id="first-load">Loading...</i>
 </body>
 </html>
