@@ -1,6 +1,8 @@
 package no.liflig.cidashboard.dashboard
 
+import java.time.ZoneId
 import no.liflig.cidashboard.persistence.CiStatus
+import org.apache.commons.lang3.LocaleUtils
 import org.http4k.core.Body
 import org.http4k.core.ContentType
 import org.http4k.core.HttpHandler
@@ -71,6 +73,15 @@ class DashboardUpdatesEndpoint(
   }
 }
 
-data class Dashboard(val dashboardId: String, val statuses: List<CiStatus>) : ViewModel {
+data class Dashboard(
+    val dashboardId: String,
+    val statuses: List<CiStatus>,
+    val config: DashboardConfig = DashboardConfig()
+) : ViewModel {
   override fun template() = "dashboard"
 }
+
+data class DashboardConfig(
+    val locale: String = LocaleUtils.toLocale("en_US").toString(),
+    val timezone: String = ZoneId.of("Europe/Oslo").id
+)

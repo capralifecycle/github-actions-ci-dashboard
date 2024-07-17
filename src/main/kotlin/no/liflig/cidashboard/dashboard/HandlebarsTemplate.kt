@@ -1,8 +1,11 @@
 package no.liflig.cidashboard.dashboard
 
+import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
 import com.github.jknack.handlebars.Options
 import com.github.jknack.handlebars.cache.ConcurrentMapTemplateCache
+import com.github.jknack.handlebars.cache.NullTemplateCache
+import com.github.jknack.handlebars.helper.StringHelpers
 import mu.KotlinLogging
 import mu.withLoggingContext
 import no.liflig.cidashboard.dashboard.MissingHelper.ERROR_PREFIX
@@ -12,16 +15,22 @@ import org.http4k.template.TemplateRenderer
 object Renderer {
   const val TEMPLATE_DIR = "handlebars-htmx-templates"
 
+  private val handlebarsConfig: (Handlebars) -> Handlebars = { handlebars ->
+    handlebars
+        .prettyPrint(true /*Trim template whitespace*/)
+        .registerHelperMissing(MissingHelper)
+        .registerHelpers(StringHelpers::class.java)
+  }
+
   val hotReloading: TemplateRenderer by lazy {
-    // This will crash if constructed in production, so it must be lazy.
-    HandlebarsTemplates().HotReload("src/main/resources/$TEMPLATE_DIR")
+    // This will crash if constructed in production because of baseTemplateDir, so it must be lazy.
+    HandlebarsTemplates { handlebarsConfig(it).with(NullTemplateCache.INSTANCE) }
+        .HotReload("src/main/resources/$TEMPLATE_DIR")
   }
 
   val classpath: TemplateRenderer by lazy {
     HandlebarsTemplates {
-          it.with(ConcurrentMapTemplateCache() /*Cache template compilations*/)
-              .prettyPrint(true /*Trim template whitespace*/)
-              .registerHelperMissing(MissingHelper)
+          handlebarsConfig(it).with(ConcurrentMapTemplateCache() /*Cache template compilations*/)
         }
         .CachingClasspath(TEMPLATE_DIR)
   }

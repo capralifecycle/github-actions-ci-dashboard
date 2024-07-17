@@ -6,14 +6,14 @@
       <span class="status__repo-owner">{{repo.owner}}/</span><span class="status__repo-name">{{repo.name}}</span><span
       class="status__repo-branch">{{branch}}</span>
     </div>
-    <span class="status__last-updated">{{lastStatus}} at {{lastUpdatedAt}}</span>
+    <span class="status__last-updated">{{capitalize lastStatus fully=true}} at <time>{{dateFormat lastUpdatedAt format="HH:mm dd/MMM" locale=config.locale tz=config.timezone}}</time></span>
     <div class="triggered-by status__triggered-by">
       <span class="triggered-by__label">Build triggered by</span> <span
       class="triggered-by__username">{{triggeredBy}}</span>
     </div>
     <div class="commit status__commit">
       <p class="commit__title">{{lastCommit.title}}</p>
-      <span class="commit__sha">SHA: {{lastCommit.sha}}</span>
+      <span class="commit__sha">SHA: {{substring lastCommit.sha 0 6}}</span>
       <div class="commiter commit__commiter">
         <img src="{{lastCommit.commiter.avatarUrl}}" alt="Avatar" class="commiter__avatar">
         <span class="commiter__username">{{lastCommit.commiter.username}}</span>
