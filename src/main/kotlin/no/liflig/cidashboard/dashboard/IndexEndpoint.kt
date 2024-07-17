@@ -53,7 +53,6 @@ data class Index(
     val dashboardId: String,
     val secretToken: String,
     val pollUrl: String,
-    val grid: Grid = Grid(5, 5),
     val pollRateSeconds: Double = 5.0,
     val version: String = LATEST_VERSION
 ) : ViewModel {
@@ -61,8 +60,6 @@ data class Index(
 
   companion object {
     /** On breaking changes, bumping this will force the client to refresh the entire page. */
-    const val LATEST_VERSION = "1"
+    const val LATEST_VERSION = "2"
   }
 }
-
-data class Grid(val columns: Int, val rows: Int)

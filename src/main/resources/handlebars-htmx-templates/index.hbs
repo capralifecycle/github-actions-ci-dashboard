@@ -119,10 +119,10 @@
 
     .statuses {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(35em, 1fr));
-      grid-template-rows: repeat({{grid.rows}}, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(28em, 1fr));
       grid-column-gap: 1em;
       grid-row-gap: 1em;
+      grid-auto-rows: min-content;
     }
 
     /* Status boxes */
@@ -193,6 +193,7 @@
         "commit commit"
         "updated triggered";
       grid-row-gap: 1em;
+      grid-template-rows: 3em auto 2em;
     }
 
     .status__repo {
@@ -271,6 +272,7 @@
         "username";
 
       justify-items: center;
+      align-self: start;
       padding: 0.2em;
     }
 
