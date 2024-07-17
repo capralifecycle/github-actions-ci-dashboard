@@ -33,8 +33,8 @@
     <h2 style="font-size: 2em; margin-bottom: 0.5em">All Failed Builds</h2>
     <ul style="line-height: 1.5em">
       {{#each failedBuilds}}
-        <li><span style="color: #aeaeae">{{repo.owner}}/</span><span style="font-weight: bold">{{repo.name}}</span><span
-          style="color: #aeaeae">/{{branch}}</span></li>
+        <li><span style="color: #dcdcdc; font-size: 0.8em">{{repo.owner}}/</span><span style="font-weight: bold">{{repo.name}}</span><span
+          style="color: #aeaeae; font-size: 0.8em"> {{abbreviate branch 20}}</span></li>
       {{/each}}
     </ul>
   </div>
