@@ -5,6 +5,7 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import no.liflig.cidashboard.persistence.CiStatusId
 import no.liflig.cidashboard.persistence.CiStatusRepo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -78,7 +79,7 @@ class IncomingWebhookServiceTest {
           GitHubWebhookWorkflowRun.fromJson(
               loadResource("acceptancetests/webhook/user-workflow_run-completed-failure.json"))
 
-      every { repo.getById(newWorkflowRun.workflow.id) } returns newWorkflowRun.toCiStatus()
+      every { repo.getById(CiStatusId.from(newWorkflowRun)) } returns newWorkflowRun.toCiStatus()
 
       // Create event
       val outdatedWorkflowRun =

@@ -65,8 +65,8 @@ class CiStatusRepoTest {
     val rowCount =
         jdbi.withHandle<Int, Exception> { handle ->
           handle
-              .select("SELECT 1 FROM ${CiStatusRepo.TABLE_NAME} WHERE id = :id")
-              .bind("id", ciStatus.id)
+              .select("SELECT COUNT(id) FROM ${CiStatusRepo.TABLE_NAME} WHERE id = :id")
+              .bind("id", ciStatus.id.value)
               .mapTo(Int::class.java)
               .first()
         }
@@ -96,7 +96,9 @@ class CiStatusRepoTest {
 
     // When
     val actualResult: CiStatus? =
-        jdbi.withHandle<CiStatus?, Exception> { handle -> CiStatusRepo(handle).getById(2) }
+        jdbi.withHandle<CiStatus?, Exception> { handle ->
+          CiStatusRepo(handle).getById(CiStatusId("2"))
+        }
 
     // Then
     assertThat(actualResult).isEqualTo(ciStatus)
@@ -110,7 +112,7 @@ fun createCiStatus(
     lastUpdatedAt: Instant = Instant.parse("2024-07-05T12:25:40Z")
 ): CiStatus =
     CiStatus(
-        id = id,
+        id = CiStatusId(id),
         repo =
             Repo(
                 id = RepoId(2),

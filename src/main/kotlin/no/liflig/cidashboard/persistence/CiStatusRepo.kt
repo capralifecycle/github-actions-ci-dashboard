@@ -24,7 +24,7 @@ class CiStatusRepo(private val databaseHandle: Handle) {
                   |ON CONFLICT (id) DO UPDATE
                   |        SET data = :data::jsonb"""
                     .trimMargin())
-            .bind("id", status.id)
+            .bind("id", status.id.value)
             .bind("data", status.toJson())
             .execute()
 
@@ -35,7 +35,8 @@ class CiStatusRepo(private val databaseHandle: Handle) {
       }
     } else {
       withLoggingContext(
-          "status.lastUpdatedAt" to status.lastUpdatedAt.toString(), "status.id" to status.id) {
+          "status.lastUpdatedAt" to status.lastUpdatedAt.toString(),
+          "status.id" to status.id.value) {
             log.debug {
               "Saved status id ${status.id} to table $TABLE_NAME with state ${status.lastStatus.name}"
             }
@@ -57,10 +58,10 @@ class CiStatusRepo(private val databaseHandle: Handle) {
         }
   }
 
-  fun getById(id: Long): CiStatus? {
+  fun getById(id: CiStatusId): CiStatus? {
     return databaseHandle
         .select("SELECT data FROM $TABLE_NAME WHERE id = :id")
-        .bind("id", id.toString())
+        .bind("id", id.value)
         .map { rs: ResultSet, _ -> CiStatus.fromJson(rs.getString("data")) }
         .findFirst()
         .getOrNull()

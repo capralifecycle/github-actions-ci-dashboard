@@ -15,7 +15,7 @@ import no.liflig.cidashboard.common.serialization.InstantSerializer
 @Serializable
 data class CiStatus(
     /** Primary key */
-    val id: String,
+    @get:JvmName("getId") val id: CiStatusId,
     val repo: Repo,
     /*A bit hacky, but all `value class` needs a JvmName to stop kotlin from mangling it.
     Otherwise, Handlebars can't find the getter because it is named e.g. `getBranch-0F3G-xM`
@@ -49,6 +49,9 @@ data class CiStatus(
     SUCCEEDED
   }
 }
+
+/** Primary key and ID for a CI status. Should be unique per repo, branch and workflow. */
+@Serializable @Persisted @JvmInline value class CiStatusId(val value: String)
 
 @Persisted
 @Serializable

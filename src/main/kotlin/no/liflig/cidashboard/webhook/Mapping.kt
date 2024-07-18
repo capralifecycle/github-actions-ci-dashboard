@@ -3,6 +3,7 @@ package no.liflig.cidashboard.webhook
 import no.liflig.cidashboard.persistence.BranchName
 import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.persistence.CiStatus.PipelineStatus
+import no.liflig.cidashboard.persistence.CiStatusId
 import no.liflig.cidashboard.persistence.Commit
 import no.liflig.cidashboard.persistence.Repo
 import no.liflig.cidashboard.persistence.RepoId
@@ -13,7 +14,7 @@ import no.liflig.cidashboard.persistence.Username
 
 fun GitHubWebhookWorkflowRun.toCiStatus() =
     CiStatus(
-        id = workflow.id.toString(),
+        id = CiStatusId.from(this),
         repo =
             Repo(
                 id = RepoId(repository.id),
@@ -56,3 +57,7 @@ fun GitHubWebhookWorkflowRun.toCiStatus() =
         triggeredBy = Username(workflowRun.triggeringActor.login),
         lastSuccessfulCommit = null,
     )
+
+fun CiStatusId.Companion.from(workflowRunEvent: GitHubWebhookWorkflowRun): CiStatusId =
+    // Not sure if we need more identifiers. Is the workflow id unique per fork of a repo?
+    CiStatusId("${workflowRunEvent.workflow.id}-${workflowRunEvent.workflowRun.headBranch}")

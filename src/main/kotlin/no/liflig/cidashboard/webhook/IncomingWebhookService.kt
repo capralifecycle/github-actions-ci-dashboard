@@ -3,6 +3,7 @@ package no.liflig.cidashboard.webhook
 import mu.KotlinLogging
 import mu.withLoggingContext
 import no.liflig.cidashboard.persistence.CiStatus
+import no.liflig.cidashboard.persistence.CiStatusId
 import no.liflig.cidashboard.persistence.CiStatusRepo
 import org.jdbi.v3.core.Jdbi
 
@@ -41,7 +42,7 @@ class IncomingWebhookService(
     }
 
     inTransaction { repo ->
-      val existing: CiStatus? = repo.getById(workflowRun.workflow.id)
+      val existing: CiStatus? = repo.getById(CiStatusId.from(workflowRun))
       val incoming = workflowRun.toCiStatus()
       if (existing == null || existing.lastUpdatedAt.isBefore(incoming.lastUpdatedAt)) {
         repo.save(incoming)

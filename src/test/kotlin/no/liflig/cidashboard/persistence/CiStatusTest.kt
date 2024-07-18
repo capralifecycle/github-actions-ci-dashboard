@@ -11,7 +11,7 @@ class CiStatusTest {
     // Given
     val ciStatus =
         CiStatus(
-            id = "1",
+            id = CiStatusId("1"),
             repo =
                 Repo(
                     id = RepoId(2),
