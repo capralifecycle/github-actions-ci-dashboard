@@ -5,6 +5,7 @@ import com.microsoft.playwright.BrowserContext
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
 import com.microsoft.playwright.assertions.PlaywrightAssertions
+import com.microsoft.playwright.options.ScreenshotAnimations
 import io.restassured.RestAssured
 import io.restassured.builder.RequestSpecBuilder
 import io.restassured.http.ContentType
@@ -270,7 +271,12 @@ END${'$'}${'$'};""")
     }
 
     fun saveScreenshotForReadme() {
-      page.screenshot(Page.ScreenshotOptions().setPath(Paths.get("docs/dashboard-screenshot.png")))
+      page.screenshot(
+          Page.ScreenshotOptions()
+              .setAnimations(
+                  ScreenshotAnimations
+                      .DISABLED /* Avoid generating new screenshots just because the in-progress status is animated */)
+              .setPath(Paths.get("docs/dashboard-screenshot.png")))
     }
   }
 }
