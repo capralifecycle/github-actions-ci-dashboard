@@ -29,40 +29,41 @@
 
     <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
     <java.version>17</java.version>
+    <kotlin.version>2.0.0</kotlin.version>
 
     <!-- Liflig-dependencies -->
-    <liflig-document-store.version>1.20240606.134512</liflig-document-store.version>
-    <liflig-properties.version>2.20240520.022316</liflig-properties.version>
-    <liflig-http4k-setup.version>1.20240606.051645</liflig-http4k-setup.version>
-    <liflig-snapshot-test.version>1.20240519.232118</liflig-snapshot-test.version>
+    <liflig-document-store.version>1.20240715.075751</liflig-document-store.version>
+    <liflig-properties.version>2.20240711.020820</liflig-properties.version>
+    <liflig-http4k-setup.version>1.20240714.205333</liflig-http4k-setup.version>
+    <liflig-snapshot-test.version>1.20240710.215420</liflig-snapshot-test.version>
 
     <!-- App -->
-    <kotlinx-serialization.version>1.7.0</kotlinx-serialization.version>
+    <kotlinx-serialization.version>1.7.1</kotlinx-serialization.version>
     <kotlin-logging.version>3.0.5</kotlin-logging.version>
     <slf4j.version>2.0.13</slf4j.version>
     <logback-classic.version>1.5.6</logback-classic.version>
     <logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
-    <opentelemetry.version>1.39.0</opentelemetry.version>
-    <http4k.version>5.22.0.0</http4k.version>
+    <opentelemetry.version>1.40.0</opentelemetry.version>
+    <http4k.version>5.26.0.0</http4k.version>
     <postgresql.version>42.7.3</postgresql.version>
     <hikari-connectionpool.version>5.1.0</hikari-connectionpool.version>
-    <jdbi.version>3.45.1</jdbi.version>
-    <flyway.version>10.14.0</flyway.version>
+    <jdbi.version>3.45.2</jdbi.version>
+    <flyway.version>10.16.0</flyway.version>
     <htmx.org.version>2.0.1</htmx.org.version>
     <htmx-idiomorph.version>0.3.0</htmx-idiomorph.version>
 
     <!-- Test-dependencies -->
-    <junit.version>5.10.2</junit.version>
-    <mockk.version>1.13.11</mockk.version>
-    <assertj-core.version>3.26.0</assertj-core.version>
-    <rest-assured.version>5.4.0</rest-assured.version>
-    <testcontainers.postgresql.version>1.19.8</testcontainers.postgresql.version>
-    <playwright.version>1.41.2</playwright.version>
+    <junit.version>5.10.3</junit.version>
+    <mockk.version>1.13.12</mockk.version>
+    <assertj-core.version>3.26.3</assertj-core.version>
+    <rest-assured.version>5.5.0</rest-assured.version>
+    <testcontainers.postgresql.version>1.20.0</testcontainers.postgresql.version>
+    <playwright.version>1.45.0</playwright.version>
 
     <!-- Maven -->
     <ktfmt.version>0.43</ktfmt.version>
     <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
-    <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
+    <maven-failsafe-plugin.version>3.3.1</maven-failsafe-plugin.version>
     <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
     <sonar.version>3.11.0.3922</sonar.version>
   </properties>
