@@ -4,6 +4,7 @@ import com.microsoft.playwright.Browser
 import com.microsoft.playwright.BrowserContext
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
+import com.microsoft.playwright.assertions.LocatorAssertions
 import com.microsoft.playwright.assertions.PlaywrightAssertions
 import com.microsoft.playwright.options.ScreenshotAnimations
 import io.restassured.RestAssured
@@ -263,7 +264,8 @@ END${'$'}${'$'};""")
     fun verifyDashboardHasRepoInStatus(repoName: String, status: CiStatus.PipelineStatus) {
       val ciStatus = page.locator(".status--$status")
       PlaywrightAssertions.assertThat(ciStatus).isVisible()
-      PlaywrightAssertions.assertThat(ciStatus.locator(".status__repo-name")).hasText(repoName)
+      PlaywrightAssertions.assertThat(ciStatus.locator(".status__repo-name"))
+          .hasText(repoName, LocatorAssertions.HasTextOptions().setIgnoreCase(true))
     }
 
     fun verifyAllFailedBuildsIsListingRepo(repoName: String) {

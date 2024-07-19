@@ -87,11 +87,25 @@
       box-sizing: border-box;
     }
 
+    /* Colors and sizes */
+
+    :root {
+      --page-background-color: #2d2c2c;
+      --title-color-light: #eaeaea;
+      --text-color-weak: #4e4e4e;
+
+      --body-side-padding: 2em;
+
+      --status-color-failed: hsl(0, 82.5%, 52.9%);
+    }
+
+    /* Outer elements */
+
     body {
-      background-color: #606060;
+      background-color: var(--page-background-color);
       width: 100vw;
       height: 100vh;
-      padding: 1em 2em 0 2em;
+      padding: 1em var(--body-side-padding) 0 var(--body-side-padding);
 
       font-family: "Inter", sans-serif;
       font-optical-sizing: auto;
@@ -105,7 +119,7 @@
     .title {
       font-size: 2em;
       margin-bottom: 1em;
-      color: #eaeaea;
+      color: var(--title-color-light);
       text-align: center;
     }
 
@@ -118,13 +132,11 @@
 
       width: 100%;
       height: 100%;
-      overflow: hidden;
     }
 
     .statuses {
       width: 100%;
       height: 100%;
-      overflow: hidden;
 
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(28em, 1fr));
@@ -139,6 +151,7 @@
       display: inline-block;
       border-radius: 1em;
       border: 1px solid #000000;
+      box-shadow: 2px 2px 6px #00000059;
       padding: 0.5em;
 
       min-width: 0;
@@ -151,7 +164,7 @@
     }
 
     .status--FAILED {
-      background-color: hsl(0, 82.5%, 52.9%);
+      background-color: var(--status-color-failed);
     }
 
     .status--IN_PROGRESS {
@@ -201,36 +214,38 @@
         "commit commit"
         "updated triggered";
       grid-row-gap: 1em;
-      grid-template-rows: 3em auto 2em;
+      grid-template-rows: 3em auto 1.5em;
     }
 
     .status__repo {
       grid-area: title;
-      font-size: 1.5em;
     }
 
     .status__repo-owner {
-      color: #4e4e4e;
+      color: var(--text-color-weak);
     }
 
     .status__repo-name {
+      font-size: 1.5em;
       font-weight: bold;
+      line-height: 1.5em;
     }
 
     .status__repo-branch {
-      font-size: 0.8em;
-      margin-left: 1em;
+      font-size: 1.2em;
+      color: var(--text-color-weak);
     }
 
     .status__last-updated {
       grid-area: updated;
       font-size: 0.9em;
 
-      color: #4e4e4e;
+      color: var(--text-color-weak);
     }
 
     .status__triggered-by {
       grid-area: triggered;
+      font-size: 0.9em;
     }
 
 
@@ -244,27 +259,27 @@
       grid-template-areas:
         "commiter title"
         "commiter sha";
+      grid-template-columns: 1fr 3fr;
+
+      padding: 1em;
+      grid-column-gap: 0.5em;
 
       background-color: rgba(234, 234, 234, 0.8);
-      padding: 0.5em;
-      border-radius: 0.5em;
+      border-radius: 0.25em;
     }
 
     .commit__title {
       grid-area: title;
 
       border-radius: 0.5em 0.5em 0 0;
-      padding: 0.5em;
       font-size: 1.2em;
     }
 
     .commit__sha {
       grid-area: sha;
       font-size: 0.8em;
-      color: #4e4e4e;
+      color: var(--text-color-weak);
 
-      border-radius: 0 0 0.5em 0.5em;
-      padding: 0.5em;
 
       /* Align to bottom of box: */
       margin-top: auto;
@@ -284,42 +299,58 @@
 
       justify-items: center;
       align-self: start;
-      padding: 0.2em;
     }
 
     .commiter__avatar {
       grid-area: avatar;
-      width: 60%;
+      width: 100%;
+      object-fit: contain;
     }
 
     .commiter__username {
       grid-area: username;
+      word-wrap: anywhere;
+      margin-top: 4px;
     }
 
     /* Triggered by */
 
+    .triggered-by {
+      text-align: end;
+    }
+
     .triggered-by__label {
-      color: #4e4e4e;
+      color: var(--text-color-weak);
+    }
+
+    .triggered-by__username {
+      font-size: 1.2em;
     }
 
     /* All Failed Builds list */
     .failed-builds {
-      background-color: darkred;
-      color: white;
-      padding: 0.5em;
+      background-color: var(--status-color-failed);
+      padding: 1em;
+      padding-top: 0.5em;
+      border-top-left-radius: 1em;
+
+      margin-right: calc(-1 * var(--body-side-padding));
     }
 
     .failed-builds__title {
       font-size: 2em;
+      font-weight: bold;
       margin-bottom: 0.5em;
+      text-align: center;
     }
 
     .failed-builds__list {
       line-height: 1.5em;
+      text-align: end;
     }
 
     .failed-build__owner {
-      color: #dcdcdc;
+      color: #393939;
       font-size: 0.8em;
     }
 
@@ -328,7 +359,7 @@
     }
 
     .failed-build__branch {
-      color: #aeaeae;
+      color: var(--text-color-weak);
       font-size: 0.8em;
     }
 
