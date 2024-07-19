@@ -64,9 +64,9 @@ with [src/test/http/health.http](src/test/http/health.http), [webhook.http](src/
 mvn verify
 ```
 
-Add `-DskipTests` to `mvn` to disable all tests.  
-Add `-DskipITs` to only disable integration tests.  
-Add `-DREGENERATE_FAILED_SNAPSHOTS=true` to update snapshot tests.  
+- Add `-DskipTests` to `mvn` to disable all tests.
+- Add `-DskipITs` to only disable integration tests.
+- Add `-DREGENERATE_FAILED_SNAPSHOTS=true` to update snapshot tests.
 
 ### Linting
 
