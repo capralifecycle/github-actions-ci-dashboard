@@ -27,20 +27,20 @@ class DevelopmentAid {
   @Disabled(
       "This is not a test. It is used to let developers spin up the project with sample data to develop CSS etc")
   fun `should ingest webhook data and present it to dashboards when they poll`() {
-    infra.gitHub.sendWebhook(createPayload("repo-a", CiStatus.PipelineStatus.QUEUED))
-    infra.gitHub.sendWebhook(createPayload("repo-b", CiStatus.PipelineStatus.IN_PROGRESS))
-    infra.gitHub.sendWebhook(createPayload("repo-c", CiStatus.PipelineStatus.SUCCEEDED))
-    infra.gitHub.sendWebhook(createPayload("repo-d", CiStatus.PipelineStatus.FAILED))
-
-    val testWithManyRepos = false
+    val testWithManyRepos = true
     if (testWithManyRepos) {
       repeat(40) {
         infra.gitHub.sendWebhook(createPayload("repo-x$it", CiStatus.PipelineStatus.SUCCEEDED))
       }
-      repeat(10) {
+      repeat(5) {
         infra.gitHub.sendWebhook(createPayload("repo-y$it", CiStatus.PipelineStatus.FAILED))
       }
     }
+
+    infra.gitHub.sendWebhook(createPayload("repo-a", CiStatus.PipelineStatus.QUEUED))
+    infra.gitHub.sendWebhook(createPayload("repo-b", CiStatus.PipelineStatus.IN_PROGRESS))
+    infra.gitHub.sendWebhook(createPayload("repo-c", CiStatus.PipelineStatus.SUCCEEDED))
+    infra.gitHub.sendWebhook(createPayload("repo-d", CiStatus.PipelineStatus.FAILED))
 
     println(
         "\n".repeat(10) +
@@ -67,9 +67,9 @@ class DevelopmentAid {
                       CiStatus.PipelineStatus.IN_PROGRESS ->
                           "acceptancetests/webhook/user-workflow_run-in_progress.json"
                       CiStatus.PipelineStatus.FAILED ->
-                          "acceptancetests/webhook/renovate-bot-workflow_run-completed-success.json"
-                      CiStatus.PipelineStatus.SUCCEEDED ->
                           "acceptancetests/webhook/user-workflow_run-completed-failure.json"
+                      CiStatus.PipelineStatus.SUCCEEDED ->
+                          "acceptancetests/webhook/renovate-bot-workflow_run-completed-success.json"
                     }))
 
         val newPayload =
