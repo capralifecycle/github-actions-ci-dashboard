@@ -4,9 +4,8 @@
   {{#each statuses}}
     <div class="status status--{{lastStatus}}" id="{{id}}">
       <div class="status__repo">
-        <span class="status__repo-name">{{repo.name}} </span><span
-        class="status__repo-branch">{{branch}}</span><br/>
-        <span class="status__repo-owner">{{capitalize repo.owner}} </span>
+        <span class="status__repo-name">{{repo.name}}</span><br/><span
+        class="status__repo-branch">{{branch}}</span><span class="status__repo-owner">{{repo.owner}} </span>
       </div>
       <span class="status__last-updated">{{capitalize lastStatus fully=true}} at <time>{{dateFormat lastUpdatedAt
                                                                                                     format="HH:mm dd/MMM"
