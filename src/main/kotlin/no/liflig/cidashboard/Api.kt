@@ -48,7 +48,8 @@ fun createApiServer(
   val coreFilters =
       basicApiSetup.create(principalLog = { null }).coreFilters.then(ServerFilters.GZip())
 
-  val indexEndpoint = IndexEndpoint(options.hotReloadTemplates, options.updatesPollRate)
+  val indexEndpoint =
+      IndexEndpoint(options.clientSecretToken, options.hotReloadTemplates, options.updatesPollRate)
   return coreFilters.then(
       routes(
           "/" bind Method.GET to indexEndpoint,
@@ -56,7 +57,9 @@ fun createApiServer(
           "/dashboard-updates" bind
               Method.GET to
               DashboardUpdatesEndpoint(
-                  services.dashboardUpdatesService, options.hotReloadTemplates),
+                  services.dashboardUpdatesService,
+                  options.clientSecretToken,
+                  options.hotReloadTemplates),
           webhookOptions.path bind
               Method.POST to
               WebhookSecretValidatorFilter(webhookOptions.secret)

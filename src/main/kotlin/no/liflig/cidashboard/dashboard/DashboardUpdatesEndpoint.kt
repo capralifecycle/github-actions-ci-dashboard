@@ -1,6 +1,7 @@
 package no.liflig.cidashboard.dashboard
 
 import java.time.ZoneId
+import no.liflig.cidashboard.common.config.ClientSecretToken
 import no.liflig.cidashboard.persistence.CiStatus
 import org.apache.commons.lang3.LocaleUtils
 import org.http4k.core.Body
@@ -24,7 +25,8 @@ import org.http4k.template.viewModel
  * webpage with `<html>` or `<body>` etc.
  */
 class DashboardUpdatesEndpoint(
-    val dashboardUpdatesService: DashboardUpdatesService,
+    private val dashboardUpdatesService: DashboardUpdatesService,
+    private val secretToken: ClientSecretToken,
     useHotReload: Boolean
 ) : HttpHandler {
 
@@ -38,7 +40,6 @@ class DashboardUpdatesEndpoint(
   private val bodyLens = Body.viewModel(renderer, ContentType.TEXT_HTML).toLens()
 
   companion object {
-
     /** This can be used to reload the entire index.html, in case `<head>` was modified etc. */
     private val reloadEntirePageLens: BiDiLens<HttpMessage, Boolean> =
         Header.boolean()
@@ -56,9 +57,9 @@ class DashboardUpdatesEndpoint(
   }
 
   override fun invoke(request: Request): Response {
-    val secretToken = tokenLens(request)
-    if (secretToken != "todo-add-token-via-config-api") {
-      return Response(Status.FORBIDDEN).body("Missing token in query")
+    val providedToken = tokenLens(request)
+    if (providedToken != secretToken.value) {
+      return Response(Status.FORBIDDEN).body("Invalid token in query")
     }
 
     val shouldReload: Boolean = versionLens(request) != Index.LATEST_VERSION

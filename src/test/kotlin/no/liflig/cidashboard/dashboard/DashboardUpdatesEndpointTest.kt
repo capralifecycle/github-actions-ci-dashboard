@@ -2,6 +2,7 @@ package no.liflig.cidashboard.dashboard
 
 import io.mockk.every
 import io.mockk.mockk
+import no.liflig.cidashboard.common.config.ClientSecretToken
 import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.persistence.createCiStatus
 import no.liflig.snapshot.verifyStringSnapshot
@@ -22,12 +23,15 @@ class DashboardUpdatesEndpointTest {
       every { getUpdatedDashboardData(dashboardId) } returns ciStatuses
     }
 
-    val endpoint = DashboardUpdatesEndpoint(updatesService, useHotReload = false)
+    val secretToken = "my-secret-token"
+    val endpoint =
+        DashboardUpdatesEndpoint(
+            updatesService, secretToken = ClientSecretToken(secretToken), useHotReload = false)
 
     val request =
         Request(Method.GET, "")
             .with(DashboardUpdatesEndpoint.dashboardIdLens of dashboardId)
-            .with(DashboardUpdatesEndpoint.tokenLens of "todo-add-token-via-config-api")
+            .with(DashboardUpdatesEndpoint.tokenLens of secretToken)
 
     // When
     val response = endpoint(request)
@@ -68,12 +72,15 @@ class DashboardUpdatesEndpointTest {
     val updatesService: DashboardUpdatesService =
         mockk() { every { getUpdatedDashboardData(dashboardId) } returns ciStatuses }
 
-    val endpoint = DashboardUpdatesEndpoint(updatesService, useHotReload = false)
+    val secretToken = "my-secret-token"
+    val endpoint =
+        DashboardUpdatesEndpoint(
+            updatesService, secretToken = ClientSecretToken(secretToken), useHotReload = false)
 
     val request =
         Request(Method.GET, "")
             .with(DashboardUpdatesEndpoint.dashboardIdLens of dashboardId)
-            .with(DashboardUpdatesEndpoint.tokenLens of "todo-add-token-via-config-api")
+            .with(DashboardUpdatesEndpoint.tokenLens of secretToken)
 
     // When
     val response = endpoint(request)

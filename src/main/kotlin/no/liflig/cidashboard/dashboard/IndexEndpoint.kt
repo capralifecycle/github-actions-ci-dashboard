@@ -2,6 +2,7 @@ package no.liflig.cidashboard.dashboard
 
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
+import no.liflig.cidashboard.common.config.ClientSecretToken
 import org.http4k.core.Body
 import org.http4k.core.ContentType
 import org.http4k.core.HttpHandler
@@ -14,7 +15,11 @@ import org.http4k.template.ViewModel
 import org.http4k.template.viewModel
 
 /** HTTP handler for the main dashboard webpage, like `"/"` or `"/index.html"`. */
-class IndexEndpoint(useHotReload: Boolean, private val updatesPollRate: Duration) : HttpHandler {
+class IndexEndpoint(
+    private val secretToken: ClientSecretToken,
+    useHotReload: Boolean,
+    private val updatesPollRate: Duration
+) : HttpHandler {
 
   companion object {
     val tokenLens =
@@ -31,9 +36,9 @@ class IndexEndpoint(useHotReload: Boolean, private val updatesPollRate: Duration
   private val bodyLens = Body.viewModel(renderer, ContentType.TEXT_HTML).toLens()
 
   override fun invoke(request: Request): Response {
-    val secretToken = tokenLens(request)
-    if (secretToken != "todo-add-token-via-config-api") {
-      return Response(Status.FORBIDDEN).body("Missing token in query")
+    val actualToken = tokenLens(request)
+    if (actualToken != secretToken.value) {
+      return Response(Status.FORBIDDEN).body("Invalid token in query")
     }
 
     // The renderer uses the ViewModel class to identify which template to use.
@@ -43,7 +48,7 @@ class IndexEndpoint(useHotReload: Boolean, private val updatesPollRate: Duration
                 Index(
                     // FIXME: dont use placeholders; read from request.
                     "1",
-                    secretToken,
+                    actualToken,
                     "/dashboard-updates",
                     pollRateSeconds = updatesPollRate.toDouble(DurationUnit.SECONDS)))
   }

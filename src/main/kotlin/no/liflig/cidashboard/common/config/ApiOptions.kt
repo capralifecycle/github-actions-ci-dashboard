@@ -25,7 +25,8 @@ data class ApiOptions(
      * How fast a client should poll the
      * [UpdatesEndpoint][no.liflig.cidashboard.dashboard.DashboardUpdatesEndpoint]
      */
-    val updatesPollRate: Duration
+    val updatesPollRate: Duration,
+    val clientSecretToken: ClientSecretToken
 ) {
 
   companion object {
@@ -42,7 +43,9 @@ data class ApiOptions(
                 ),
             logHttpBody = props.booleanRequired("log.http.body"),
             hotReloadTemplates = props.boolean("dashboard.renderer.hotreload") ?: false,
-            updatesPollRate = (props.long("dashboard.client.pollRateSeconds") ?: 5).seconds)
+            updatesPollRate = (props.long("dashboard.client.pollRateSeconds") ?: 5).seconds,
+            clientSecretToken =
+                ClientSecretToken(props.stringNotEmpty("dashboard.client.secretToken")))
   }
 }
 
@@ -52,3 +55,6 @@ value class Port(val value: Int) {
     require(value in 0..65535) { "Invalid port" }
   }
 }
+
+/** Web browsers must specify this token in the url to authorize access to the dashboard. */
+@JvmInline value class ClientSecretToken(val value: String)

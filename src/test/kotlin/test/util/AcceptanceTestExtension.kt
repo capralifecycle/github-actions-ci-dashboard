@@ -18,6 +18,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import mu.KotlinLogging
 import no.liflig.cidashboard.App
+import no.liflig.cidashboard.common.config.ClientSecretToken
 import no.liflig.cidashboard.common.config.Config
 import no.liflig.cidashboard.common.config.DbConfig
 import no.liflig.cidashboard.common.config.Port
@@ -75,7 +76,7 @@ class AcceptanceTestExtension(val fastPoll: Boolean = true) :
 
     tvBrowser.initialize(
         port = config.apiOptions.serverPort,
-        authToken = "todo-add-token-via-config-api",
+        authToken = config.apiOptions.clientSecretToken,
         dashboardId = "abc")
   }
 
@@ -229,10 +230,10 @@ END${'$'}${'$'};""")
     val page: Page = context.newPage()
 
     private var dashboardServerPort: Port = Port(8080)
-    private lateinit var authToken: String
+    private var authToken: ClientSecretToken = ClientSecretToken("unset")
     private lateinit var dashboardId: String
 
-    fun initialize(port: Port, authToken: String, dashboardId: String) {
+    fun initialize(port: Port, authToken: ClientSecretToken, dashboardId: String) {
       this.dashboardServerPort = port
       this.authToken = authToken
       this.dashboardId = dashboardId
@@ -245,7 +246,7 @@ END${'$'}${'$'};""")
     }
 
     private fun path(path: String): String =
-        "http://localhost:${dashboardServerPort.value}/$path?token=${authToken}&id=${dashboardId}"
+        "http://localhost:${dashboardServerPort.value}/$path?token=${authToken.value}&id=${dashboardId}"
 
     fun navigateToDashboard() {
       log.info { "Navigating to dashboard /index.html" }
