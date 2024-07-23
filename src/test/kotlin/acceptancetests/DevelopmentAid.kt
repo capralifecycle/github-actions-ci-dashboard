@@ -46,7 +46,7 @@ class DevelopmentAid {
         "\n".repeat(10) +
             "http://localhost:" +
             infra.app.config.apiOptions.serverPort.value +
-            "/?token=${infra.app.config.apiOptions.clientSecretToken}")
+            "/?token=${infra.app.config.apiOptions.clientSecretToken.value}")
     while (true) {
       println("Abort the test to stop infinite sleep...")
       Thread.sleep(10000)
