@@ -8,6 +8,7 @@
   },
   "branch": "master",
   "lastStatus": "SUCCEEDED",
+  "startedAt": "2024-07-05T12:20:40Z",
   "lastUpdatedAt": "2024-07-05T12:25:40Z",
   "lastCommit": {
     "sha": "123abc",
@@ -31,5 +32,6 @@
       "username": "mikaelthd",
       "avatarUrl": ""
     }
-  }
+  },
+  "durationOfLastSuccess": "PT5M"
 }

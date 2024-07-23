@@ -65,8 +65,7 @@ object MissingHelper : Helper<Any> {
 object CustomHelpers {
   @JvmName("progressPercentage")
   fun progressPercentage(maxTime: Duration?, startTime: Instant, now: Instant): String {
-    if (maxTime == null)
-    {
+    if (maxTime == null) {
       return "0"
     }
     val elapsedTimeInMillis = abs(now.toEpochMilli() - startTime.toEpochMilli())

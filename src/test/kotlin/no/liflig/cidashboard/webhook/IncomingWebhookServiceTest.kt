@@ -1,12 +1,20 @@
 package no.liflig.cidashboard.webhook
 
 import io.mockk.Called
+import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
+import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.persistence.CiStatusId
 import no.liflig.cidashboard.persistence.CiStatusRepo
+import no.liflig.cidashboard.persistence.createCiStatus
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -41,12 +49,13 @@ class IncomingWebhookServiceTest {
 
     private val repo: CiStatusRepo = mockk()
     private val inTransaction = Transaction { callback -> callback(repo) }
+    private val service = IncomingWebhookService(inTransaction)
 
     @BeforeEach
     fun setUp() {
       clearMocks(repo)
 
-      every { repo.save(any()) } returns Unit
+      every { repo.save(any()) } just Runs
       // Database is empty:
       every { repo.getById(any()) } returns null
     }
@@ -60,8 +69,6 @@ class IncomingWebhookServiceTest {
               loadResource("acceptancetests/webhook/user-workflow_run-completed-failure.json"))
 
       // Send event to service
-      val inTransaction = Transaction { callback -> callback(repo) }
-      val service = IncomingWebhookService(inTransaction)
       service.handleWorkflowRun(workflowRun)
 
       verify { repo.save(any()) }
@@ -87,11 +94,64 @@ class IncomingWebhookServiceTest {
               loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json"))
 
       // Send event to service
-      val inTransaction = Transaction { callback -> callback(repo) }
-      val service = IncomingWebhookService(inTransaction)
       service.handleWorkflowRun(outdatedWorkflowRun)
 
+      // Should not be saved
       verify(exactly = 0) { repo.save(any()) }
+    }
+
+    /**
+     * Every time a webhook with success comes in, we can persist the total time of the build. This
+     * total time is used to show a progress bar on the next in-progress builds.
+     *
+     * Whenever a webhook event with a conclusion not equal to success comes in, we just keep the
+     * old duration.
+     */
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @DisplayName("Duration Of Last Success")
+    inner class DurationOfLastSuccess {
+      @IntegrationTest
+      fun `should persist build duration when event is success`() {
+        // Create event
+        val workflowRun =
+            GitHubWebhookWorkflowRun.fromJson(
+                loadResource(
+                    "acceptancetests/webhook/renovate-bot-workflow_run-completed-success.json"))
+
+        // Send event to service
+        service.handleWorkflowRun(workflowRun)
+
+        // Verify it set a duration
+        val saved = slot<CiStatus>()
+        verify { repo.save(capture(saved)) }
+
+        assertThat(saved.captured.durationOfLastSuccess).isEqualTo(193.seconds)
+      }
+
+      @Test
+      fun `should keep the old status when new event is not success`() {
+        // The existing state with a duration
+        val oldDuration = 2.minutes
+        every { repo.getById(CiStatusId("105563496-master")) } returns
+            createCiStatus(
+                "105563496-master",
+                repoName = "github-actions-ci-dashboard",
+                durationOfLastSuccess = oldDuration)
+
+        // Send new event with in-progress
+        val inProgressWorkflowRun =
+            GitHubWebhookWorkflowRun.fromJson(
+                loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json"))
+
+        service.handleWorkflowRun(inProgressWorkflowRun)
+
+        // Should still have a 2-minute duration
+        val saved = slot<CiStatus>()
+        verify { repo.save(capture(saved)) }
+
+        assertThat(saved.captured.durationOfLastSuccess).isEqualTo(oldDuration)
+      }
     }
 
     /** CALS-820 */

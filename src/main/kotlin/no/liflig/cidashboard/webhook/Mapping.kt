@@ -1,6 +1,8 @@
 package no.liflig.cidashboard.webhook
 
+import java.time.Instant
 import kotlin.math.abs
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import no.liflig.cidashboard.persistence.BranchName
 import no.liflig.cidashboard.persistence.CiStatus
@@ -13,6 +15,7 @@ import no.liflig.cidashboard.persistence.RepoName
 import no.liflig.cidashboard.persistence.User
 import no.liflig.cidashboard.persistence.UserId
 import no.liflig.cidashboard.persistence.Username
+import no.liflig.cidashboard.webhook.GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Success
 
 fun GitHubWebhookWorkflowRun.toCiStatus() =
     CiStatus(
@@ -40,8 +43,7 @@ fun GitHubWebhookWorkflowRun.toCiStatus() =
                     GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Stale,
                     GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.TimedOut,
                     GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Failure -> PipelineStatus.FAILED
-                    GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Success ->
-                        PipelineStatus.SUCCEEDED
+                    Success -> PipelineStatus.SUCCEEDED
                   }
             },
         startedAt = workflowRun.runStartedAt,
@@ -60,11 +62,15 @@ fun GitHubWebhookWorkflowRun.toCiStatus() =
         triggeredBy = Username(workflowRun.triggeringActor.login),
         lastSuccessfulCommit = null,
         durationOfLastSuccess =
-            if (workflowRun.conclusion == GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Success)
-                abs(workflowRun.updatedAt.toEpochMilli() - workflowRun.runStartedAt.toEpochMilli())
-                    .milliseconds
-            else null)
+            if (workflowRun.conclusion == Success) {
+              timeBetween(workflowRun.runStartedAt, workflowRun.updatedAt)
+            } else {
+              null
+            })
 
 fun CiStatusId.Companion.from(workflowRunEvent: GitHubWebhookWorkflowRun): CiStatusId =
     // Not sure if we need more identifiers. Is the workflow id unique per fork of a repo?
     CiStatusId("${workflowRunEvent.workflow.id}-${workflowRunEvent.workflowRun.headBranch}")
+
+private fun timeBetween(start: Instant, stop: Instant): Duration =
+    abs(stop.toEpochMilli() - start.toEpochMilli()).milliseconds

@@ -43,10 +43,19 @@ class IncomingWebhookService(
 
     inTransaction { repo ->
       val existing: CiStatus? = repo.getById(CiStatusId.from(workflowRun))
-      val incoming = workflowRun.toCiStatus()
-      if (existing == null || existing.lastUpdatedAt.isBefore(incoming.lastUpdatedAt)) {
-        repo.save(incoming)
+      var incoming = workflowRun.toCiStatus()
+
+      if (existing != null && incoming.lastUpdatedAt.isBefore(existing.lastUpdatedAt)) {
+        // Outdated event
+        return@inTransaction
       }
+
+      if (incoming.lastStatus != CiStatus.PipelineStatus.SUCCEEDED) {
+        // Keep old duration
+        incoming = incoming.copy(durationOfLastSuccess = existing?.durationOfLastSuccess)
+      }
+
+      repo.save(incoming)
     }
   }
 }

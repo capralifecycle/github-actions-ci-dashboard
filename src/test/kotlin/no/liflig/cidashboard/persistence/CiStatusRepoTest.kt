@@ -1,7 +1,7 @@
 package no.liflig.cidashboard.persistence
 
 import java.time.Instant
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration
 import no.liflig.cidashboard.common.config.Config
 import no.liflig.cidashboard.common.database.DatabaseConfigurator
 import no.liflig.cidashboard.common.database.DbPassword
@@ -126,7 +126,8 @@ fun createCiStatus(
     id: String,
     repoName: String = "test-repo",
     lastStatus: CiStatus.PipelineStatus = CiStatus.PipelineStatus.SUCCEEDED,
-    lastUpdatedAt: Instant = Instant.parse("2024-07-05T12:25:40Z")
+    lastUpdatedAt: Instant = Instant.parse("2024-07-02T12:25:40Z"),
+    durationOfLastSuccess: Duration? = null
 ): CiStatus =
     CiStatus(
         id = CiStatusId(id),
@@ -153,4 +154,4 @@ fun createCiStatus(
                         avatarUrl = "https://avatars.githubusercontent.com/u/7364831?v=4")),
         triggeredBy = Username("krissrex"),
         lastSuccessfulCommit = null,
-        durationOfLastSuccess = 5.minutes)
+        durationOfLastSuccess = durationOfLastSuccess)
