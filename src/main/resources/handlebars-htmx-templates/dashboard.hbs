@@ -2,7 +2,11 @@
 {{! Uses variables from CiStatus.kt }}
 <div id="statuses" class="statuses">
   {{#each statuses}}
-    <div class="status status--{{lastStatus}}" id="{{id}}">
+    <div class="status status--{{lastStatus}}" id="{{id}}"
+    {{#if (isBuilding lastStatus)}}
+      style="background-image: linear-gradient(to right, var(--build-progress-statusbar-color), var(--build-progress-statusbar-color) {{progressPercentage durationOfLastSuccess startedAt now}}%, transparent {{progressPercentage durationOfLastSuccess startedAt now}}%, transparent 100%)"
+    {{/if}}
+    >
       <div class="status__repo">
         <span class="status__repo-name">{{repo.name}}</span><br/><span
         class="status__repo-branch">{{branch}}</span><span class="status__repo-owner">{{repo.owner}} </span>

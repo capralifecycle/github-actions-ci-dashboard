@@ -65,6 +65,6 @@ data class Index(
 
   companion object {
     /** On breaking changes, bumping this will force the client to refresh the entire page. */
-    const val LATEST_VERSION = "6"
+    const val LATEST_VERSION = "7"
   }
 }

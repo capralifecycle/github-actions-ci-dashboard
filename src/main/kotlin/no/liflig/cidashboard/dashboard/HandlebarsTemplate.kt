@@ -8,10 +8,12 @@ import com.github.jknack.handlebars.cache.NullTemplateCache
 import com.github.jknack.handlebars.helper.StringHelpers
 import java.time.Instant
 import kotlin.math.abs
+import kotlin.math.min
 import kotlin.time.Duration
 import mu.KotlinLogging
 import mu.withLoggingContext
 import no.liflig.cidashboard.dashboard.MissingHelper.ERROR_PREFIX
+import no.liflig.cidashboard.persistence.CiStatus
 import org.http4k.template.HandlebarsTemplates
 import org.http4k.template.TemplateRenderer
 
@@ -63,6 +65,7 @@ object MissingHelper : Helper<Any> {
 }
 
 object CustomHelpers {
+  @Suppress("unused")
   @JvmName("progressPercentage")
   fun progressPercentage(maxTime: Duration?, startTime: Instant, now: Instant): String {
     if (maxTime == null) {
@@ -70,6 +73,16 @@ object CustomHelpers {
     }
     val elapsedTimeInMillis = abs(now.toEpochMilli() - startTime.toEpochMilli())
     val maxTimeInMillis = maxTime.inWholeMilliseconds
-    return (elapsedTimeInMillis * 100f / maxTimeInMillis).toInt().toString()
+    val percent: Int = min((elapsedTimeInMillis * 100f / maxTimeInMillis).toInt(), 100)
+    return percent.toString()
+  }
+
+  @Suppress("unused")
+  fun isBuilding(status: CiStatus.PipelineStatus): Boolean {
+    return when (status) {
+      CiStatus.PipelineStatus.QUEUED,
+      CiStatus.PipelineStatus.IN_PROGRESS -> true
+      else -> false
+    }
   }
 }

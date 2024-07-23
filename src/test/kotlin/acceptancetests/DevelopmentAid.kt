@@ -1,7 +1,7 @@
 package acceptancetests
 
 import java.time.Instant
-import kotlin.random.Random
+import java.time.temporal.ChronoUnit
 import kotlinx.serialization.json.Json
 import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.webhook.GitHubWebhookWorkflowRun
@@ -37,10 +37,15 @@ class DevelopmentAid {
       }
     }
 
-    infra.gitHub.sendWebhook(createPayload("repo-a", CiStatus.PipelineStatus.QUEUED))
-    infra.gitHub.sendWebhook(createPayload("repo-b", CiStatus.PipelineStatus.IN_PROGRESS))
     infra.gitHub.sendWebhook(createPayload("repo-c", CiStatus.PipelineStatus.SUCCEEDED))
     infra.gitHub.sendWebhook(createPayload("repo-d", CiStatus.PipelineStatus.FAILED))
+
+    // Give it a previous success runtime, to measure progress
+    infra.gitHub.sendWebhook(createPayload("repo-b", CiStatus.PipelineStatus.SUCCEEDED))
+    infra.gitHub.sendWebhook(
+        createPayload("repo-b", CiStatus.PipelineStatus.IN_PROGRESS, startedAt = Instant.now()))
+
+    infra.gitHub.sendWebhook(createPayload("repo-a", CiStatus.PipelineStatus.QUEUED))
 
     println(
         "\n".repeat(10) +
@@ -53,7 +58,11 @@ class DevelopmentAid {
     }
   }
 
-  private fun createPayload(repoName: String, state: CiStatus.PipelineStatus): WebhookPayload {
+  private fun createPayload(
+      repoName: String,
+      state: CiStatus.PipelineStatus,
+      startedAt: Instant = Instant.now().minus(3, ChronoUnit.MINUTES)
+  ): WebhookPayload {
     return object : WebhookPayload {
       override val type: String = "workflow_run"
 
@@ -74,8 +83,9 @@ class DevelopmentAid {
 
         val newPayload =
             payload.copy(
-                workflow = payload.workflow.copy(id = Random.nextLong()),
-                workflowRun = payload.workflowRun.copy(updatedAt = Instant.now()),
+                workflow = payload.workflow.copy(id = repoName.hashCode().toLong()),
+                workflowRun =
+                    payload.workflowRun.copy(updatedAt = Instant.now(), runStartedAt = startedAt),
                 repository = payload.repository.copy(name = repoName))
 
         return Json.encodeToString(GitHubWebhookWorkflowRun.serializer(), newPayload)
