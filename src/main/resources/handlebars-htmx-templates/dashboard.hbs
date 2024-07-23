@@ -34,10 +34,8 @@
     <ul class="failed-builds__list">
       {{#each failedBuilds}}
         <li class="failed-build failed-builds__failed-build"><span
-          class="failed-build__owner">{{repo.owner}}/</span><span
           class="failed-build__repo">{{repo.name}}</span><span
-          class="failed-build__branch"> {{abbreviate
-          branch 20}}</span></li>
+          class="failed-build__commiter"> by {{capitalize lastCommit.commiter.username}}</span></li>
       {{/each}}
     </ul>
   </div>
