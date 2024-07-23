@@ -3,6 +3,7 @@
 package no.liflig.cidashboard.persistence
 
 import java.time.Instant
+import kotlin.time.Duration
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.json.Json
@@ -23,11 +24,13 @@ data class CiStatus(
     */
     @get:JvmName("getBranch") val branch: BranchName,
     val lastStatus: PipelineStatus,
+    val startedAt: Instant,
     /** The timestamp of the workflow event that updated this [lastStatus]. */
     val lastUpdatedAt: Instant,
     val lastCommit: Commit,
     @get:JvmName("getTriggeredBy") val triggeredBy: Username,
     val lastSuccessfulCommit: Commit? = null,
+    @get:JvmName("getDurationOfLastSuccess") val durationOfLastSuccess: Duration? = null,
 ) {
 
   companion object {

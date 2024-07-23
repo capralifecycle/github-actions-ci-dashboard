@@ -1,6 +1,7 @@
 package no.liflig.cidashboard.persistence
 
 import java.time.Instant
+import kotlin.time.Duration.Companion.minutes
 import no.liflig.snapshot.verifyJsonSnapshot
 import org.junit.jupiter.api.Test
 
@@ -20,6 +21,7 @@ class CiStatusTest {
                     defaultBranch = BranchName("master")),
             branch = BranchName("master"),
             lastStatus = CiStatus.PipelineStatus.SUCCEEDED,
+            startedAt = Instant.parse("2024-07-05T12:20:40Z"),
             lastUpdatedAt = Instant.parse("2024-07-05T12:25:40Z"),
             lastCommit =
                 Commit(
@@ -41,7 +43,7 @@ class CiStatusTest {
                     message = "Initial commit",
                     commiter =
                         User(id = UserId(9), username = Username("mikaelthd"), avatarUrl = "")),
-        )
+            durationOfLastSuccess = 5.minutes)
 
     // When
     val json = ciStatus.toJson()

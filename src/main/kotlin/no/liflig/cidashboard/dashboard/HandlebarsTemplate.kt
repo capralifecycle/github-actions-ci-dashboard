@@ -6,6 +6,9 @@ import com.github.jknack.handlebars.Options
 import com.github.jknack.handlebars.cache.ConcurrentMapTemplateCache
 import com.github.jknack.handlebars.cache.NullTemplateCache
 import com.github.jknack.handlebars.helper.StringHelpers
+import java.time.Instant
+import kotlin.math.abs
+import kotlin.time.Duration
 import mu.KotlinLogging
 import mu.withLoggingContext
 import no.liflig.cidashboard.dashboard.MissingHelper.ERROR_PREFIX
@@ -19,6 +22,7 @@ object Renderer {
     handlebars
         .prettyPrint(true /*Trim template whitespace*/)
         .registerHelperMissing(MissingHelper)
+        .registerHelpers(CustomHelpers)
         .registerHelpers(StringHelpers::class.java)
   }
 
@@ -55,5 +59,18 @@ object MissingHelper : Helper<Any> {
         }
 
     return "$ERROR_PREFIX ${options?.fn?.text()}"
+  }
+}
+
+object CustomHelpers {
+  @JvmName("progressPercentage")
+  fun progressPercentage(maxTime: Duration?, startTime: Instant, now: Instant): String {
+    if (maxTime == null)
+    {
+      return "0"
+    }
+    val elapsedTimeInMillis = abs(now.toEpochMilli() - startTime.toEpochMilli())
+    val maxTimeInMillis = maxTime.inWholeMilliseconds
+    return (elapsedTimeInMillis * 100f / maxTimeInMillis).toInt().toString()
   }
 }

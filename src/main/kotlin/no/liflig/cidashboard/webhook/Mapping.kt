@@ -1,5 +1,7 @@
 package no.liflig.cidashboard.webhook
 
+import kotlin.math.abs
+import kotlin.time.Duration.Companion.milliseconds
 import no.liflig.cidashboard.persistence.BranchName
 import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.persistence.CiStatus.PipelineStatus
@@ -42,6 +44,7 @@ fun GitHubWebhookWorkflowRun.toCiStatus() =
                         PipelineStatus.SUCCEEDED
                   }
             },
+        startedAt = workflowRun.runStartedAt,
         lastUpdatedAt = workflowRun.updatedAt,
         lastCommit =
             Commit(
@@ -56,7 +59,11 @@ fun GitHubWebhookWorkflowRun.toCiStatus() =
                         avatarUrl = workflowRun.actor.avatarUrl)),
         triggeredBy = Username(workflowRun.triggeringActor.login),
         lastSuccessfulCommit = null,
-    )
+        durationOfLastSuccess =
+            if (workflowRun.conclusion == GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Success)
+                abs(workflowRun.updatedAt.toEpochMilli() - workflowRun.runStartedAt.toEpochMilli())
+                    .milliseconds
+            else null)
 
 fun CiStatusId.Companion.from(workflowRunEvent: GitHubWebhookWorkflowRun): CiStatusId =
     // Not sure if we need more identifiers. Is the workflow id unique per fork of a repo?

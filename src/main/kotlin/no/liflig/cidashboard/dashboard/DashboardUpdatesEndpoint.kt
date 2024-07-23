@@ -1,5 +1,7 @@
 package no.liflig.cidashboard.dashboard
 
+import java.time.Clock
+import java.time.Instant
 import java.time.ZoneId
 import no.liflig.cidashboard.common.config.ClientSecretToken
 import no.liflig.cidashboard.persistence.CiStatus
@@ -27,7 +29,8 @@ import org.http4k.template.viewModel
 class DashboardUpdatesEndpoint(
     private val dashboardUpdatesService: DashboardUpdatesService,
     private val secretToken: ClientSecretToken,
-    useHotReload: Boolean
+    useHotReload: Boolean,
+    private val clock: Clock = Clock.systemUTC(),
 ) : HttpHandler {
 
   private val renderer =
@@ -74,7 +77,8 @@ class DashboardUpdatesEndpoint(
                 Dashboard(
                     dashboardId.toString(),
                     statuses = data.lastBuilds,
-                    failedBuilds = data.allFailedBuilds))
+                    failedBuilds = data.allFailedBuilds,
+                    now = clock.instant()))
         .with(reloadEntirePageLens of shouldReload)
   }
 }
@@ -83,7 +87,8 @@ data class Dashboard(
     val dashboardId: String,
     val statuses: List<CiStatus>,
     val failedBuilds: List<CiStatus>,
-    val config: DashboardConfig = DashboardConfig()
+    val config: DashboardConfig = DashboardConfig(),
+    val now: Instant
 ) : ViewModel {
   override fun template() = "dashboard"
 }
