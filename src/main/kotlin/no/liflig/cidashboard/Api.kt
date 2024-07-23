@@ -1,5 +1,7 @@
 package no.liflig.cidashboard
 
+import no.liflig.cidashboard.admin.DeleteAllDatabaseRowsEndpoint
+import no.liflig.cidashboard.admin.DeleteAllDatabaseRowsService
 import no.liflig.cidashboard.common.config.ApiOptions
 import no.liflig.cidashboard.common.config.WebhookOptions
 import no.liflig.cidashboard.common.http4k.httpNoServerVersionHeader
@@ -65,6 +67,9 @@ fun createApiServer(
               WebhookSecretValidatorFilter(webhookOptions.secret)
                   .then(WebhookEndpoint(services.incomingWebhookService)),
           "/health" bind Method.GET to HealthEndpoint(services.healthService),
+          "/admin/nuke" bind
+              Method.POST to
+              DeleteAllDatabaseRowsEndpoint(services.deleteAllDatabaseRowsService),
           static(Classpath("/static")),
           webJars()))
 }
@@ -78,4 +83,5 @@ data class ApiServices(
     val healthService: HealthService,
     val incomingWebhookService: IncomingWebhookService,
     val dashboardUpdatesService: DashboardUpdatesService,
+    val deleteAllDatabaseRowsService: DeleteAllDatabaseRowsService
 )

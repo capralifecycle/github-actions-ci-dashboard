@@ -67,4 +67,8 @@ class CiStatusRepo(private val databaseHandle: Handle) {
         .getOrNull()
         .also { log.debug { "Fetched ${it?.id} from $TABLE_NAME" } }
   }
+
+  fun deleteAll() {
+    databaseHandle.createUpdate("TRUNCATE TABLE $TABLE_NAME").execute()
+  }
 }

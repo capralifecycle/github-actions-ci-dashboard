@@ -5,6 +5,7 @@
 [![Build Status](https://github.com/capralifecycle/github-actions-ci-dashboard/actions/workflows/ci.yaml/badge.svg)](https://github.com/capralifecycle/github-actions-ci-dashboard/actions/workflows/ci.yaml)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=capralifecycle_github-actions-ci-dashboard&metric=sqale_index&token=c098b4d25bf2f8a05ee55cb9aeb4b84eb1329689)](https://sonarcloud.io/summary/new_code?id=capralifecycle_github-actions-ci-dashboard)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=capralifecycle_github-actions-ci-dashboard&metric=code_smells&token=c098b4d25bf2f8a05ee55cb9aeb4b84eb1329689)](https://sonarcloud.io/summary/new_code?id=capralifecycle_github-actions-ci-dashboard)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=capralifecycle_github-actions-ci-dashboard&metric=coverage&token=c098b4d25bf2f8a05ee55cb9aeb4b84eb1329689)](https://sonarcloud.io/summary/new_code?id=capralifecycle_github-actions-ci-dashboard)
 
 Responsible for collecting GitHub Actions `workflow_run` webhook data and providing a web dashboard with recent CI build
 status.

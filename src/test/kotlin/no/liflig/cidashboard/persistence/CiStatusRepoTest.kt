@@ -103,6 +103,22 @@ class CiStatusRepoTest {
     // Then
     assertThat(actualResult).isEqualTo(ciStatus)
   }
+
+  @IntegrationTest
+  fun `should delete all CiStatuses`() {
+    // Given
+    val ciStatus = createCiStatus(id = "2")
+    jdbi.useHandle<Exception> { handle -> CiStatusRepo(handle).save(ciStatus) }
+
+    // When
+    jdbi.useHandle<Exception> { handle -> CiStatusRepo(handle).deleteAll() }
+
+    // Then
+    val actualRemaining: List<CiStatus> =
+        jdbi.withHandle<List<CiStatus>, Exception> { handle -> CiStatusRepo(handle).getAll() }
+
+    assertThat(actualRemaining).isEmpty()
+  }
 }
 
 fun createCiStatus(

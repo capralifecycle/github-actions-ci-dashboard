@@ -2,6 +2,7 @@ package no.liflig.cidashboard
 
 import mu.KotlinLogging
 import net.logstash.logback.marker.Markers
+import no.liflig.cidashboard.admin.DeleteAllDatabaseRowsService
 import no.liflig.cidashboard.common.config.Config
 import no.liflig.cidashboard.common.database.DatabaseConfigurator
 import no.liflig.cidashboard.common.database.DbPassword
@@ -48,7 +49,12 @@ class App(val config: Config) {
             config.webhookOptions.branchWhitelist,
             config.webhookOptions.workflowNameWhitelist)
     val dashboardUpdatesService = DashboardUpdatesService(JdbiDatabaseHandle(jdbi))
-    val services = ApiServices(healthService, incomingWebhookService, dashboardUpdatesService)
+    val services =
+        ApiServices(
+            healthService,
+            incomingWebhookService,
+            dashboardUpdatesService,
+            DeleteAllDatabaseRowsService(JdbiDatabaseHandle(jdbi)))
 
     val server =
         createApiServer(apiOptions, config.webhookOptions, services)

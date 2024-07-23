@@ -4,11 +4,11 @@ import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.persistence.CiStatusRepo
 import org.jdbi.v3.core.Jdbi
 
-class DashboardUpdatesService(private val withHandle: DatabaseHandle<DashboardData>) {
+class DashboardUpdatesService(private val useRepo: UseRepo<DashboardData>) {
 
   fun getUpdatedDashboardData(dashboardId: String?): DashboardData {
     // TODO use dashboardId to get settings and filters repos etc.
-    return withHandle { repo ->
+    return useRepo { repo ->
       val all = repo.getAll()
 
       val maxStatusesToReturn = 20
@@ -21,12 +21,13 @@ class DashboardUpdatesService(private val withHandle: DatabaseHandle<DashboardDa
 
 data class DashboardData(val lastBuilds: List<CiStatus>, val allFailedBuilds: List<CiStatus>)
 
-fun interface DatabaseHandle<T> {
+/** Makes testing of Services easier, because mocking JDBI directly is a hassle. */
+fun interface UseRepo<T> {
   operator fun invoke(block: (CiStatusRepo) -> T): T
 }
 
-class JdbiDatabaseHandle(private val jdbi: Jdbi) : DatabaseHandle<DashboardData> {
-  override fun invoke(block: (CiStatusRepo) -> DashboardData): DashboardData {
-    return jdbi.withHandle<DashboardData, Exception> { handle -> block(CiStatusRepo(handle)) }
+class JdbiDatabaseHandle<T>(private val jdbi: Jdbi) : UseRepo<T> {
+  override fun invoke(block: (CiStatusRepo) -> T): T {
+    return jdbi.withHandle<T, Exception> { handle -> block(CiStatusRepo(handle)) }
   }
 }
