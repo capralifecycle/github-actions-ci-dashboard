@@ -23,9 +23,7 @@ class DeleteAllDatabaseRowsEndpointTest {
     val request = Request(Method.POST, "/admin/nuke")
 
     // When
-    assertThrows<LensFailure> {
-      endpoint(request)
-    }
+    assertThrows<LensFailure> { endpoint(request) }
 
     // Then
     verify(inverse = true) { service.deleteAll() }
