@@ -27,6 +27,11 @@ data class CiStatus(
     val startedAt: Instant,
     /** The timestamp of the workflow event that updated this [lastStatus]. */
     val lastUpdatedAt: Instant,
+    /**
+     * Most CI tools count how many times they have run, and increment a counter by 1. This gives
+     * you an ordering of builds. It is useful for us because we can ignore data from older builds.
+     */
+    val buildNumber: Long,
     val lastCommit: Commit,
     @get:JvmName("getTriggeredBy") val triggeredBy: Username,
     val lastSuccessfulCommit: Commit? = null,

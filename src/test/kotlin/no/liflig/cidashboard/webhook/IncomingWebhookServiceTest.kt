@@ -8,6 +8,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.time.Instant
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import no.liflig.cidashboard.persistence.CiStatus
@@ -20,11 +21,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import test.util.Integration
-import test.util.IntegrationTest
 import test.util.loadResource
 
-@Integration
 class IncomingWebhookServiceTest {
 
   @Test
@@ -61,7 +59,7 @@ class IncomingWebhookServiceTest {
     }
 
     /** We always keep the latest data, because if reflects the current workflow state. */
-    @IntegrationTest
+    @Test
     fun `should persist workflow_run when the received data is newer`() {
       // Create event
       val workflowRun =
@@ -79,7 +77,7 @@ class IncomingWebhookServiceTest {
      * database's data. Might happen if two servers run and webhooks are triggered rapidly. Or it
      * might happen on retry caused by a failure.
      */
-    @IntegrationTest
+    @Test
     fun `should discard outdated workflow_run events`() {
       // Database has newer event
       val newWorkflowRun =
@@ -111,7 +109,7 @@ class IncomingWebhookServiceTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @DisplayName("Duration Of Last Success")
     inner class DurationOfLastSuccess {
-      @IntegrationTest
+      @Test
       fun `should persist build duration when event is success`() {
         // Create event
         val workflowRun =
@@ -152,6 +150,73 @@ class IncomingWebhookServiceTest {
 
         assertThat(saved.captured.durationOfLastSuccess).isEqualTo(oldDuration)
       }
+    }
+
+    /**
+     * If two CI runs are started in rapid succession because you commit and push quickly, the older
+     * commit's workflow _could_ finish after the head-commit's workflow. But we want the status for
+     * the head of the branch, so the events for older workflow runs must be discarded.
+     *
+     * (Maybe it's more correct to use the build's HeadCommit timestamp?)
+     */
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @DisplayName("Build Number")
+    inner class BuildNumber {
+      private val existingCiStatus =
+          createCiStatus(
+              "105563496-master", repoName = "github-actions-ci-dashboard", buildNumber = 10)
+
+      @Test
+      fun `should discard events from lower build numbers than the persisted status`() {
+        // Given
+        every { repo.getById(CiStatusId("105563496-master")) } returns existingCiStatus
+
+        val oldBuildNumberEvent = createWorkflowRunEventWithBuildNumber(9)
+
+        // When
+        service.handleWorkflowRun(oldBuildNumberEvent)
+
+        // Then
+        verify(inverse = true) { repo.save(any()) }
+      }
+
+      @Test
+      fun `should persist events for build numbers equal to the previously persisted status`() {
+        // Given
+        every { repo.getById(CiStatusId("105563496-master")) } returns existingCiStatus
+
+        val sameBuildNumberEvent = createWorkflowRunEventWithBuildNumber(10)
+
+        // When
+        service.handleWorkflowRun(sameBuildNumberEvent)
+
+        // Then
+        verify { repo.save(any()) }
+      }
+
+      @Test
+      fun `should persist events for build numbers higher than the previously persisted status`() {
+        // Given
+        every { repo.getById(CiStatusId("105563496-master")) } returns existingCiStatus
+
+        val newBuildNumberEvent = createWorkflowRunEventWithBuildNumber(11)
+
+        // When
+        service.handleWorkflowRun(newBuildNumberEvent)
+
+        // Then
+        verify { repo.save(any()) }
+      }
+
+      private fun createWorkflowRunEventWithBuildNumber(number: Long) =
+          GitHubWebhookWorkflowRun.fromJson(
+                  loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json"))
+              .let { event ->
+                event.copy(
+                    workflowRun =
+                        event.workflowRun.copy(runNumber = number, updatedAt = Instant.now()))
+              }
     }
 
     /** CALS-820 */

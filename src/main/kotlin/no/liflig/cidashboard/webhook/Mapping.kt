@@ -61,6 +61,7 @@ fun GitHubWebhookWorkflowRun.toCiStatus() =
                         avatarUrl = workflowRun.actor.avatarUrl)),
         triggeredBy = Username(workflowRun.triggeringActor.login),
         lastSuccessfulCommit = null,
+        buildNumber = workflowRun.runNumber,
         durationOfLastSuccess =
             if (workflowRun.conclusion == Success) {
               timeBetween(workflowRun.runStartedAt, workflowRun.updatedAt)

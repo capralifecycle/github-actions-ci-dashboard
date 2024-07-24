@@ -23,6 +23,7 @@ class CiStatusTest {
             lastStatus = CiStatus.PipelineStatus.SUCCEEDED,
             startedAt = Instant.parse("2024-07-05T12:20:40Z"),
             lastUpdatedAt = Instant.parse("2024-07-05T12:25:40Z"),
+            buildNumber = 5,
             lastCommit =
                 Commit(
                     sha = "123abc",

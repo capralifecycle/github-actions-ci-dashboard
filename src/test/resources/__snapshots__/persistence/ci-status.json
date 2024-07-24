@@ -10,6 +10,7 @@
   "lastStatus": "SUCCEEDED",
   "startedAt": "2024-07-05T12:20:40Z",
   "lastUpdatedAt": "2024-07-05T12:25:40Z",
+  "buildNumber": 5,
   "lastCommit": {
     "sha": "123abc",
     "commitDate": "2024-07-05T12:25:40Z",

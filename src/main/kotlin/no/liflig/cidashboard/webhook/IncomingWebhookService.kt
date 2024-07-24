@@ -48,6 +48,9 @@ class IncomingWebhookService(
       if (DiscardOutdatedEventsPolicy.shouldDiscard(existing, incoming)) {
         return@inTransaction
       }
+      if (DiscardLowerBuildNumberStatusesPolicy.shouldDiscard(existing, incoming)) {
+        return@inTransaction
+      }
 
       if (incoming.lastStatus != CiStatus.PipelineStatus.SUCCEEDED) {
         // Keep old build duration
