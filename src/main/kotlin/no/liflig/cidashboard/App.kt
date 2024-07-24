@@ -8,7 +8,6 @@ import no.liflig.cidashboard.common.database.DatabaseConfigurator
 import no.liflig.cidashboard.common.database.DbPassword
 import no.liflig.cidashboard.common.database.DbUrl
 import no.liflig.cidashboard.common.database.DbUsername
-import no.liflig.cidashboard.common.observability.OpenTelemetryConfig
 import no.liflig.cidashboard.dashboard.DashboardUpdatesService
 import no.liflig.cidashboard.dashboard.JdbiDatabaseHandle
 import no.liflig.cidashboard.health.HealthService
@@ -28,7 +27,6 @@ class App(val config: Config) {
   private val jdbi: Jdbi = createJdbiInstance(config)
 
   fun start() {
-    OpenTelemetryConfig().configure()
     logger.info(Markers.append("buildInfo", config.buildInfo.toJson())) { "Starting application" }
 
     startApi(jdbi)

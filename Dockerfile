@@ -5,37 +5,9 @@ RUN set -eux; \
     adduser -S app
 
 RUN mkdir -p -m 777 /tmp/heapdump
-ENV JAVA_TOOL_OPTIONS="-javaagent:/aws-opentelemetry-agent.jar -XX:MaxRAMPercentage=80.0 -XX:InitialRAMPercentage=25.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/heapdump"
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=80.0 -XX:InitialRAMPercentage=25.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/heapdump"
 
 EXPOSE 8080
-
-# Adds openTelemetry metrics and tracing: https://aws-otel.github.io/docs/getting-started/java-sdk/trace-auto-instr
-# REQUIRES YOU TO ADD AN OTEL COLLECTOR SIDECAR IN AWS CDK!
-ENV OTEL_TRACES_SAMPLER parentbased_traceidratio
-ENV OTEL_TRACES_SAMPLER_ARG 1
-# Change if you are not using xray tracing and let xray generate Trace IDs:
-ENV OTEL_PROPAGATORS xray
-# Disable all traces. Remove the line if you want tracing:
-ENV OTEL_TRACES_EXPORTER none
-
-ENV OTEL_METRICS_EXPORTER otlp
-ENV OTEL_EXPORTER_OTLP_ENDPOINT http://127.0.0.1:4317
-ENV OTEL_EXPORTER_OTLP_COMPRESSION gzip
-ENV OTEL_METRIC_EXPORT_INTERVAL 15000
-
-# Disable logs. We use stdout and CloudWatch logs instead.
-ENV OTEL_LOGS_EXPORTER none
-
-# Disables the entire agent. Use your AWS ECS config to enable the agent by overriding this to true
-ENV OTEL_JAVAAGENT_ENABLED false
-
-ADD https://github.com/aws-observability/aws-otel-java-instrumentation/releases/download/v1.31.1/aws-opentelemetry-agent.jar /aws-opentelemetry-agent.jar
-RUN chmod 777 /aws-opentelemetry-agent.jar
-
-ARG service_name=GitHubActionsCiDashboard
-ARG service_namespace=ci-dashboard
-ARG service_version=git_commit_hash
-ENV OTEL_RESOURCE_ATTRIBUTES service.name=$service_name,service.namespace=$service_namespace,service.version=$service_version,service=$service_name,version=$service_version
 
 USER app
 WORKDIR /

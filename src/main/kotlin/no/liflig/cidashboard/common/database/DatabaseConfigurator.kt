@@ -9,8 +9,7 @@ import java.util.concurrent.TimeUnit
 import javax.sql.DataSource
 import kotlin.concurrent.thread
 import mu.KotlinLogging
-import no.liflig.cidashboard.common.observability.OpenTelemetryConfig
-import no.liflig.cidashboard.common.observability.use
+import no.liflig.cidashboard.common.database.DatabaseConfigurator.createJdbiInstance
 import org.flywaydb.core.Flyway
 import org.jdbi.v3.core.ConnectionFactory
 import org.jdbi.v3.core.Jdbi
@@ -142,7 +141,7 @@ object DatabaseConfigurator {
      */
 
     log.debug("Running database migrations...")
-    OpenTelemetryConfig.tracer.spanBuilder("database migrate").use { flyway.migrate() }
+    flyway.migrate()
   }
 }
 

@@ -1,6 +1,5 @@
 package no.liflig.cidashboard.common.serialization
 
-import java.math.BigDecimal
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import kotlinx.serialization.KSerializer
@@ -21,14 +20,4 @@ object InstantSerializer : KSerializer<Instant> {
 
   override fun deserialize(decoder: Decoder): Instant =
       formatter.parse(decoder.decodeString(), Instant::from)
-}
-
-object BigDecimalSerializer : KSerializer<BigDecimal> {
-  override val descriptor: SerialDescriptor =
-      PrimitiveSerialDescriptor("BigDecimal", PrimitiveKind.STRING)
-
-  override fun serialize(encoder: Encoder, value: BigDecimal) =
-      encoder.encodeString(value.toString())
-
-  override fun deserialize(decoder: Decoder): BigDecimal = BigDecimal(decoder.decodeString())
 }
