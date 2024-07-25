@@ -17,14 +17,14 @@
                                                                                                     tz=config.timezone}}</time></span>
       <div class="triggered-by status__triggered-by">
         <span class="triggered-by__label">Build triggered by</span> <span
-        class="triggered-by__username">{{capitalize triggeredBy}}</span>
+        class="triggered-by__username">{{triggeredBy}}</span>
       </div>
       <div class="commit status__commit">
         <p class="commit__title">{{lastCommit.title}}</p>
         <span class="commit__sha">SHA: {{substring lastCommit.sha 0 6}}</span>
         <div class="commiter commit__commiter">
           <img src="{{lastCommit.commiter.avatarUrl}}" alt="Avatar" class="commiter__avatar">
-          <span class="commiter__username">{{capitalize lastCommit.commiter.username}}</span>
+          <span class="commiter__username">{{lastCommit.commiter.username}}</span>
         </div>
       </div>
     </div>
@@ -39,7 +39,7 @@
       {{#each failedBuilds}}
         <li class="failed-build failed-builds__failed-build"><span
           class="failed-build__repo">{{repo.name}}</span><span
-          class="failed-build__commiter"> by {{capitalize lastCommit.commiter.username}}</span></li>
+          class="failed-build__commiter"> by {{lastCommit.commiter.username}}</span></li>
       {{/each}}
     </ul>
   </div>
