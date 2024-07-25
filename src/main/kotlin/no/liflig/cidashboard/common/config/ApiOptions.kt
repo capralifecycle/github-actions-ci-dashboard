@@ -21,7 +21,8 @@ data class ApiOptions(
      * [UpdatesEndpoint][no.liflig.cidashboard.dashboard.DashboardUpdatesEndpoint]
      */
     val updatesPollRate: Duration,
-    val clientSecretToken: ClientSecretToken
+    val clientSecretToken: ClientSecretToken,
+    val devtoolSecretToken: DevtoolSecretToken
 ) {
 
   companion object {
@@ -34,7 +35,8 @@ data class ApiOptions(
             hotReloadTemplates = props.boolean("dashboard.renderer.hotreload") ?: false,
             updatesPollRate = (props.long("dashboard.client.pollRateSeconds") ?: 5).seconds,
             clientSecretToken =
-                ClientSecretToken(props.stringNotEmpty("dashboard.client.secretToken")))
+                ClientSecretToken(props.stringNotEmpty("dashboard.client.secretToken")),
+            devtoolSecretToken = DevtoolSecretToken(props.stringNotEmpty("api.devtool.secret")))
   }
 }
 
@@ -47,3 +49,6 @@ value class Port(val value: Int) {
 
 /** Web browsers must specify this token in the url to authorize access to the dashboard. */
 @JvmInline value class ClientSecretToken(val value: String)
+
+/** Developers can set a token for local running tooling using the api. */
+@JvmInline value class DevtoolSecretToken(val value: String)

@@ -11,6 +11,7 @@ import no.liflig.cidashboard.common.database.DbUsername
 import no.liflig.cidashboard.dashboard.DashboardUpdatesService
 import no.liflig.cidashboard.dashboard.JdbiDatabaseHandle
 import no.liflig.cidashboard.health.HealthService
+import no.liflig.cidashboard.status_api.FilteredStatusesService
 import no.liflig.cidashboard.webhook.IncomingWebhookService
 import no.liflig.cidashboard.webhook.JdbiTransaction
 import org.jdbi.v3.core.Jdbi
@@ -52,7 +53,8 @@ class App(val config: Config) {
             healthService,
             incomingWebhookService,
             dashboardUpdatesService,
-            DeleteAllDatabaseRowsService(JdbiDatabaseHandle(jdbi)))
+            DeleteAllDatabaseRowsService(JdbiDatabaseHandle(jdbi)),
+            FilteredStatusesService(JdbiDatabaseHandle(jdbi)))
 
     val server =
         createApiServer(apiOptions, config.webhookOptions, services)

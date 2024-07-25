@@ -10,6 +10,8 @@ import no.liflig.cidashboard.dashboard.DashboardUpdatesService
 import no.liflig.cidashboard.dashboard.IndexEndpoint
 import no.liflig.cidashboard.health.HealthEndpoint
 import no.liflig.cidashboard.health.HealthService
+import no.liflig.cidashboard.status_api.FetchStatusesEndpoint
+import no.liflig.cidashboard.status_api.FilteredStatusesService
 import no.liflig.cidashboard.webhook.IncomingWebhookService
 import no.liflig.cidashboard.webhook.WebhookEndpoint
 import no.liflig.cidashboard.webhook.WebhookSecretValidatorFilter
@@ -67,6 +69,10 @@ fun createApiServer(
               WebhookSecretValidatorFilter(webhookOptions.secret)
                   .then(WebhookEndpoint(services.incomingWebhookService)),
           "/health" bind Method.GET to HealthEndpoint(services.healthService),
+          "/api/statuses" bind
+              Method.GET to
+              ServerFilters.BearerAuth(options.devtoolSecretToken.value)
+                  .then(FetchStatusesEndpoint(services.filteredStatusesService)),
           "/admin/nuke" bind
               Method.POST to
               DeleteAllDatabaseRowsEndpoint(services.deleteAllDatabaseRowsService),
@@ -83,5 +89,6 @@ data class ApiServices(
     val healthService: HealthService,
     val incomingWebhookService: IncomingWebhookService,
     val dashboardUpdatesService: DashboardUpdatesService,
-    val deleteAllDatabaseRowsService: DeleteAllDatabaseRowsService
+    val deleteAllDatabaseRowsService: DeleteAllDatabaseRowsService,
+    val filteredStatusesService: FilteredStatusesService
 )
