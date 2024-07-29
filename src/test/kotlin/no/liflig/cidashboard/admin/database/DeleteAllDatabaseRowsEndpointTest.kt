@@ -1,4 +1,4 @@
-package no.liflig.cidashboard.admin
+package no.liflig.cidashboard.admin.database
 
 import io.mockk.Runs
 import io.mockk.every

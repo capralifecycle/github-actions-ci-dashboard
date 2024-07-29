@@ -28,7 +28,7 @@ class IncomingWebhookServiceTest {
   @Test
   fun `should do nothing on ping`() {
     // Given
-    val inTransaction = mockk<Transaction>()
+    val inTransaction = mockk<CiStatusTransaction>()
     val service = IncomingWebhookService(inTransaction)
 
     // When
@@ -46,7 +46,7 @@ class IncomingWebhookServiceTest {
   inner class WorkflowRun {
 
     private val repo: CiStatusRepo = mockk()
-    private val inTransaction = Transaction { callback -> callback(repo) }
+    private val inTransaction = CiStatusTransaction { callback -> callback(repo) }
     private val service = IncomingWebhookService(inTransaction)
 
     @BeforeEach

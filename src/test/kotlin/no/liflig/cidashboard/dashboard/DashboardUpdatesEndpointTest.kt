@@ -2,6 +2,7 @@ package no.liflig.cidashboard.dashboard
 
 import io.mockk.every
 import io.mockk.mockk
+import no.liflig.cidashboard.DashboardConfigId
 import no.liflig.cidashboard.common.config.ClientSecretToken
 import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.persistence.createCiStatus
@@ -17,8 +18,8 @@ class DashboardUpdatesEndpointTest {
   @Test
   fun `should render empty list to say no builds`() {
     // Given
-    val ciStatuses: DashboardData = DashboardData(emptyList(), emptyList())
-    val dashboardId = "1"
+    val ciStatuses = DashboardData(emptyList(), emptyList())
+    val dashboardId = DashboardConfigId("1")
     val updatesService: DashboardUpdatesService = mockk {
       every { getUpdatedDashboardData(dashboardId) } returns ciStatuses
     }
@@ -30,7 +31,7 @@ class DashboardUpdatesEndpointTest {
 
     val request =
         Request(Method.GET, "")
-            .with(DashboardUpdatesEndpoint.dashboardIdLens of dashboardId)
+            .with(DashboardConfigId.queryLens of dashboardId)
             .with(DashboardUpdatesEndpoint.tokenLens of secretToken)
 
     // When
@@ -48,7 +49,7 @@ class DashboardUpdatesEndpointTest {
   @Test
   fun `should render all ci statuses from the service to html`() {
     // Given
-    val ciStatuses: DashboardData =
+    val ciStatuses =
         DashboardData(
             lastBuilds =
                 listOf(
@@ -68,7 +69,7 @@ class DashboardUpdatesEndpointTest {
                     createCiStatus(
                         id = "3", repoName = "repo-c", lastStatus = CiStatus.PipelineStatus.FAILED),
                 ))
-    val dashboardId = "2"
+    val dashboardId = DashboardConfigId("2")
     val updatesService: DashboardUpdatesService =
         mockk() { every { getUpdatedDashboardData(dashboardId) } returns ciStatuses }
 
@@ -79,7 +80,7 @@ class DashboardUpdatesEndpointTest {
 
     val request =
         Request(Method.GET, "")
-            .with(DashboardUpdatesEndpoint.dashboardIdLens of dashboardId)
+            .with(DashboardConfigId.queryLens of dashboardId)
             .with(DashboardUpdatesEndpoint.tokenLens of secretToken)
 
     // When

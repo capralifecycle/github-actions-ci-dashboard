@@ -13,7 +13,7 @@ import org.jdbi.v3.core.Jdbi
  * CALS-821
  */
 class IncomingWebhookService(
-    private val inTransaction: Transaction,
+    private val inTransaction: CiStatusTransaction,
     /**
      * If non-empty, the events in [handleWorkflowRun] will only be persisted if the branch is
      * exactly contained in this list. It is case-sensitive.
@@ -62,11 +62,11 @@ class IncomingWebhookService(
   }
 }
 
-fun interface Transaction {
+fun interface CiStatusTransaction {
   operator fun invoke(block: (CiStatusRepo) -> Unit)
 }
 
-class JdbiTransaction(private val jdbi: Jdbi) : Transaction {
+class JdbiCiStatusTransaction(private val jdbi: Jdbi) : CiStatusTransaction {
   override fun invoke(block: (CiStatusRepo) -> Unit) {
     jdbi.useTransaction<Exception> { handle -> block(CiStatusRepo(handle)) }
   }

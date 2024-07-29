@@ -1,9 +1,9 @@
 package no.liflig.cidashboard.status_api
 
-import no.liflig.cidashboard.dashboard.UseRepo
+import no.liflig.cidashboard.dashboard.UseCiStatusRepo
 import no.liflig.cidashboard.persistence.CiStatus
 
-class FilteredStatusesService(private val withCiStatusRepo: UseRepo<List<CiStatus>>) {
+class FilteredStatusesService(private val withCiStatusRepo: UseCiStatusRepo<List<CiStatus>>) {
 
   fun getFilteredCiStatuses(
       repoFilter: List<Regex>,

@@ -1,0 +1,33 @@
+{
+  "id": "123",
+  "locale": "el-GR",
+  "timezone": "Europe/Athens",
+  "orgMatchers": [
+    {
+      "matcher": "org-1.*",
+      "repoMatchers": [
+        {
+          "matcher": "repo-1.*",
+          "branchMatchers": [
+            {
+              "matcher": "branch-1.*"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "matcher": "org-2.*",
+      "repoMatchers": [
+        {
+          "matcher": "repo-2.*",
+          "branchMatchers": [
+            {
+              "matcher": "branch-2.*"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

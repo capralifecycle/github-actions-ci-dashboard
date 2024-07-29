@@ -22,7 +22,8 @@ data class ApiOptions(
      */
     val updatesPollRate: Duration,
     val clientSecretToken: ClientSecretToken,
-    val devtoolSecretToken: DevtoolSecretToken
+    val adminSecretToken: AdminSecretToken,
+    val devtoolSecretToken: DevtoolSecretToken,
 ) {
 
   companion object {
@@ -36,6 +37,7 @@ data class ApiOptions(
             updatesPollRate = (props.long("dashboard.client.pollRateSeconds") ?: 5).seconds,
             clientSecretToken =
                 ClientSecretToken(props.stringNotEmpty("dashboard.client.secretToken")),
+            adminSecretToken = AdminSecretToken(props.stringNotEmpty("admin.secretToken")),
             devtoolSecretToken = DevtoolSecretToken(props.stringNotEmpty("api.devtool.secret")))
   }
 }
@@ -49,6 +51,9 @@ value class Port(val value: Int) {
 
 /** Web browsers must specify this token in the url to authorize access to the dashboard. */
 @JvmInline value class ClientSecretToken(val value: String)
+
+/** Web browsers must specify this token in the url to authorize access to the dashboard. */
+@JvmInline value class AdminSecretToken(val value: String)
 
 /** Developers can set a token for local running tooling using the api. */
 @JvmInline value class DevtoolSecretToken(val value: String)

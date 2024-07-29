@@ -5,8 +5,14 @@ import io.mockk.mockk
 import io.mockk.verify
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicInteger
+import no.liflig.cidashboard.BranchMatcher
+import no.liflig.cidashboard.DashboardConfig
+import no.liflig.cidashboard.DashboardConfigId
+import no.liflig.cidashboard.OrganizationMatcher
+import no.liflig.cidashboard.RepositoryMatcher
 import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.persistence.CiStatusRepo
+import no.liflig.cidashboard.persistence.DashboardConfigRepo
 import no.liflig.cidashboard.persistence.createCiStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -24,14 +30,17 @@ class DashboardUpdatesServiceTest {
     // Given
     val statuses: List<CiStatus> = createStatuses()
 
-    val repo = mockk<CiStatusRepo> { every { getAll() } returns statuses }
-    val service = DashboardUpdatesService({ callback -> callback(repo) })
+    val ciStatusRepo = mockk<CiStatusRepo> { every { getAll() } returns statuses }
+    val configRepo = mockk<DashboardConfigRepo> { every { getById(any()) } returns null }
+    val service =
+        DashboardUpdatesService(
+            { callback -> callback(ciStatusRepo) }, { callback -> callback(configRepo) })
 
     // When
-    val actualData = service.getUpdatedDashboardData("1")
+    val actualData = service.getUpdatedDashboardData(DashboardConfigId("1"))
 
     // Then
-    verify { repo.getAll() }
+    verify { ciStatusRepo.getAll() }
 
     assertThat(actualData.allFailedBuilds)
         .hasSize(10)
@@ -39,6 +48,42 @@ class DashboardUpdatesServiceTest {
         .isSortedAccordingTo(newestFirst)
 
     assertThat(actualData.lastBuilds).hasSizeLessThanOrEqualTo(20).isSortedAccordingTo(newestFirst)
+  }
+
+  @Test
+  fun `should filter statuses based on config`() {
+    // Given
+    val statuses: List<CiStatus> = createStatuses()
+
+    val dashboardConfigId = DashboardConfigId("1")
+
+    val dashboardConfig =
+        DashboardConfig(
+            dashboardConfigId,
+            listOf(
+                OrganizationMatcher(
+                    "owner\\d".toRegex(),
+                    listOf(
+                        RepositoryMatcher(
+                            "repo-.*".toRegex(), listOf(BranchMatcher("bra.*\\d".toRegex())))))))
+
+    val ciStatusRepo = mockk<CiStatusRepo> { every { getAll() } returns statuses }
+    val configRepo =
+        mockk<DashboardConfigRepo> { every { getById(dashboardConfigId) } returns dashboardConfig }
+    val service =
+        DashboardUpdatesService(
+            { callback -> callback(ciStatusRepo) }, { callback -> callback(configRepo) })
+
+    // When
+    val actualData = service.getUpdatedDashboardData(dashboardConfigId)
+
+    // Then
+    verify { ciStatusRepo.getAll() }
+
+    assertThat(actualData.allFailedBuilds).hasSize(0)
+
+    assertThat(actualData.lastBuilds).hasSize(1)
+    assertThat(actualData.lastBuilds[0].id.value).isEqualTo("1")
   }
 
   /** @return List of 1 in-progress, 15 successes and 10 failed. */
@@ -51,6 +96,8 @@ class DashboardUpdatesServiceTest {
           createCiStatus(
               id,
               repoName = "repo-$id",
+              repoOwner = "non-owner",
+              branchName = "master",
               lastStatus = CiStatus.PipelineStatus.FAILED,
               lastUpdatedAt = Instant.now()))
     }
@@ -61,6 +108,8 @@ class DashboardUpdatesServiceTest {
           createCiStatus(
               id,
               repoName = "repo-$id",
+              repoOwner = "non-owner",
+              branchName = "master",
               lastStatus = CiStatus.PipelineStatus.SUCCEEDED,
               lastUpdatedAt = Instant.now()))
     }
@@ -69,6 +118,8 @@ class DashboardUpdatesServiceTest {
         createCiStatus(
             "1",
             repoName = "repo-1",
+            repoOwner = "owner1",
+            branchName = "branch1",
             lastStatus = CiStatus.PipelineStatus.IN_PROGRESS,
             lastUpdatedAt = Instant.now()))
   }

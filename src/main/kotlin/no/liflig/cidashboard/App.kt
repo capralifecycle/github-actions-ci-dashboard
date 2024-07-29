@@ -2,18 +2,21 @@ package no.liflig.cidashboard
 
 import mu.KotlinLogging
 import net.logstash.logback.marker.Markers
-import no.liflig.cidashboard.admin.DeleteAllDatabaseRowsService
+import no.liflig.cidashboard.admin.config.DashboardConfigService
+import no.liflig.cidashboard.admin.config.JdbiDashboardConfigTransaction
+import no.liflig.cidashboard.admin.database.DeleteAllDatabaseRowsService
 import no.liflig.cidashboard.common.config.Config
 import no.liflig.cidashboard.common.database.DatabaseConfigurator
 import no.liflig.cidashboard.common.database.DbPassword
 import no.liflig.cidashboard.common.database.DbUrl
 import no.liflig.cidashboard.common.database.DbUsername
 import no.liflig.cidashboard.dashboard.DashboardUpdatesService
-import no.liflig.cidashboard.dashboard.JdbiDatabaseHandle
+import no.liflig.cidashboard.dashboard.JdbiCiStatusDatabaseHandle
+import no.liflig.cidashboard.dashboard.JdbiDashboardConfigDatabaseHandle
 import no.liflig.cidashboard.health.HealthService
 import no.liflig.cidashboard.status_api.FilteredStatusesService
 import no.liflig.cidashboard.webhook.IncomingWebhookService
-import no.liflig.cidashboard.webhook.JdbiTransaction
+import no.liflig.cidashboard.webhook.JdbiCiStatusTransaction
 import org.jdbi.v3.core.Jdbi
 
 /**
@@ -44,17 +47,22 @@ class App(val config: Config) {
     val healthService = HealthService(apiOptions.applicationName, config.buildInfo)
     val incomingWebhookService =
         IncomingWebhookService(
-            JdbiTransaction(jdbi),
+            JdbiCiStatusTransaction(jdbi),
             config.webhookOptions.branchWhitelist,
             config.webhookOptions.workflowNameWhitelist)
-    val dashboardUpdatesService = DashboardUpdatesService(JdbiDatabaseHandle(jdbi))
+    val dashboardUpdatesService =
+        DashboardUpdatesService(
+            JdbiCiStatusDatabaseHandle(jdbi), JdbiDashboardConfigDatabaseHandle(jdbi))
+    val dashboardConfigService = DashboardConfigService(JdbiDashboardConfigTransaction(jdbi))
+
     val services =
         ApiServices(
             healthService,
             incomingWebhookService,
             dashboardUpdatesService,
-            DeleteAllDatabaseRowsService(JdbiDatabaseHandle(jdbi)),
-            FilteredStatusesService(JdbiDatabaseHandle(jdbi)))
+            dashboardConfigService,
+            DeleteAllDatabaseRowsService(JdbiCiStatusDatabaseHandle(jdbi)),
+            FilteredStatusesService(JdbiCiStatusDatabaseHandle(jdbi)))
 
     val server =
         createApiServer(apiOptions, config.webhookOptions, services)

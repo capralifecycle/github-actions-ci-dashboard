@@ -1,4 +1,4 @@
-package no.liflig.cidashboard.admin
+package no.liflig.cidashboard.admin.database
 
 import org.http4k.core.HttpHandler
 import org.http4k.core.Request
@@ -12,7 +12,7 @@ class DeleteAllDatabaseRowsEndpoint(
 ) : HttpHandler {
 
   companion object {
-    private val secretQuery = Query.required("secret", "To provide accidental nukes")
+    private val secretQuery = Query.required("secret", "To prevent accidental nukes")
   }
 
   override fun invoke(request: Request): Response {
