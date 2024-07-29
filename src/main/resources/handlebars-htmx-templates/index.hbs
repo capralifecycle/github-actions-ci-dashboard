@@ -92,6 +92,7 @@
     :root {
       --page-background-color: #2d2c2c;
       --title-color-light: #eaeaea;
+      --title-color-weak: #ababab;
       --text-color-weak: #4e4e4e;
 
       --body-side-padding: 2em;
@@ -120,12 +121,26 @@
 
     .title {
       font-size: 2em;
-      margin-bottom: 1em;
       color: var(--title-color-light);
       text-align: center;
     }
 
+    .dashboardConfigId{
+      font-size: 1em;
+      color: var(--title-color-weak);
+      text-align: center;
+    }
+
     /* Grid container */
+
+    #response {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      grid-row-gap: 1em;
+
+      width: 100%;
+      height: 100%;
+    }
 
     #content {
       display: grid;
@@ -366,10 +381,9 @@
 </head>
 <body>
 <h1 class="title">GitHub Actions CI Dashboard</h1>
-
 <span id="loading" class="htmx-indicator">...</span>
-<div id="content"
-     hx-get="{{pollUrl}}?dashboardConfigId={{dashboardId}}&token={{secretToken}}&version={{version}}"
+<div id="response"
+     hx-get="{{pollUrl}}?id={{dashboardId}}&token={{secretToken}}&version={{version}}"
 hx-trigger="load, every {{pollRateSeconds}}s"
 hx-indicator="#loading"
 hx-ext="morph"

@@ -22,7 +22,7 @@ import org.http4k.lens.Query
 @Persisted
 data class DashboardConfig(
     val id: DashboardConfigId,
-    val orgMatchers: List<OrganizationMatcher> = listOf(),
+    val orgMatchers: List<OrganizationMatcher> = allMatchers,
     val locale: String = LocaleUtils.toLocale("en_US").toString(),
     val timezone: String = ZoneId.of("Europe/Oslo").id,
 ) {
@@ -39,6 +39,12 @@ data class DashboardConfig(
 
     fun fromJson(jsonString: String): DashboardConfig =
         json.decodeFromString(serializer(), jsonString)
+
+    val allMatchers =
+        listOf(
+            OrganizationMatcher(
+                Regex(".*"),
+                listOf(RepositoryMatcher(Regex(".*"), listOf(BranchMatcher(Regex(".*")))))))
   }
 
   fun toJson(): String = json.encodeToString(serializer(), this)

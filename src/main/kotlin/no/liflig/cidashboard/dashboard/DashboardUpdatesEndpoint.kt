@@ -2,11 +2,10 @@ package no.liflig.cidashboard.dashboard
 
 import java.time.Clock
 import java.time.Instant
-import java.time.ZoneId
+import no.liflig.cidashboard.DashboardConfig
 import no.liflig.cidashboard.DashboardConfigId
 import no.liflig.cidashboard.common.config.ClientSecretToken
 import no.liflig.cidashboard.persistence.CiStatus
-import org.apache.commons.lang3.LocaleUtils
 import org.http4k.core.Body
 import org.http4k.core.ContentType
 import org.http4k.core.HttpHandler
@@ -74,27 +73,21 @@ class DashboardUpdatesEndpoint(
         .with(
             bodyLens of
                 Dashboard(
-                    (dashboardConfigId ?: "all").toString(),
+                    id = data.config?.id?.value ?: "default",
                     statuses = data.lastBuilds,
                     failedBuilds = data.allFailedBuilds,
-                    config = data.config?.let { ClientDashboardConfig(it.locale, it.timezone) }
-                            ?: ClientDashboardConfig(),
+                    config = data.config ?: DashboardConfig("default"),
                     now = clock.instant()))
         .with(reloadEntirePageLens of shouldReload)
   }
 }
 
 data class Dashboard(
-    val dashboardId: String,
+    val id: String,
     val statuses: List<CiStatus>,
     val failedBuilds: List<CiStatus>,
     val now: Instant,
-    val config: ClientDashboardConfig = ClientDashboardConfig(),
+    val config: DashboardConfig,
 ) : ViewModel {
   override fun template() = "dashboard"
 }
-
-data class ClientDashboardConfig(
-    val locale: String = LocaleUtils.toLocale("en_US").toString(),
-    val timezone: String = ZoneId.of("Europe/Oslo").id
-)

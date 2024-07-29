@@ -1,5 +1,7 @@
 {{! Use BEM for css class naming. block__element--modifier }}
 {{! Uses variables from CiStatus.kt }}
+<h3 class="title dashboardConfigId">{{id}}</h3>
+<div id="content">
 <div id="statuses" class="statuses">
   {{#each statuses}}
     <div class="status status--{{lastStatus}}" id="{{id}}"
@@ -44,3 +46,4 @@
     </ul>
   </div>
 {{/if}}
+</div>
