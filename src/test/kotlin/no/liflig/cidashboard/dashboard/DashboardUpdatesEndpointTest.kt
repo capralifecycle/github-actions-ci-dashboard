@@ -6,6 +6,7 @@ import no.liflig.cidashboard.DashboardConfigId
 import no.liflig.cidashboard.common.config.ClientSecretToken
 import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.persistence.createCiStatus
+import no.liflig.snapshot.verifyJsonSnapshot
 import no.liflig.snapshot.verifyStringSnapshot
 import org.assertj.core.api.Assertions.assertThat
 import org.http4k.core.Method
@@ -38,12 +39,7 @@ class DashboardUpdatesEndpointTest {
     val response = endpoint(request)
 
     // Then
-    assertThat(response.bodyString())
-        .isEqualTo(
-            """<div id="statuses" class="statuses">
-              |    <span class="no-builds">No builds</span>
-              |</div>"""
-                .trimMargin())
+    verifyStringSnapshot("dashboard-updates-endpoint/empty-list.html", response.bodyString())
   }
 
   @Test
