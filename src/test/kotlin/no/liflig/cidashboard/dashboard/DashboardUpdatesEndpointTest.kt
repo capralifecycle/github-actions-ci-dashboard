@@ -6,7 +6,6 @@ import no.liflig.cidashboard.DashboardConfigId
 import no.liflig.cidashboard.common.config.ClientSecretToken
 import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.persistence.createCiStatus
-import no.liflig.snapshot.verifyJsonSnapshot
 import no.liflig.snapshot.verifyStringSnapshot
 import org.assertj.core.api.Assertions.assertThat
 import org.http4k.core.Method
