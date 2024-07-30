@@ -18,7 +18,7 @@ class DashboardConfigServiceTest {
     val configRepo = mockk<DashboardConfigRepo> { every { save(any()) } just Runs }
     val service = DashboardConfigService { callback -> callback(configRepo) }
 
-    val dashboards = List(3) { index -> DashboardConfig("$index") }
+    val dashboards = List(3) { index -> DashboardConfig("$index", listOf()) }
 
     service.handleListUpdate(dashboards)
 

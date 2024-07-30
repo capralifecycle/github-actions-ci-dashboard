@@ -16,17 +16,20 @@ import no.liflig.cidashboard.persistence.Persisted
 import org.apache.commons.lang3.LocaleUtils
 import org.http4k.core.Body
 import org.http4k.format.KotlinxSerialization.auto
-import org.http4k.lens.Query
 
 @Serializable
 @Persisted
 data class DashboardConfig(
     val id: DashboardConfigId,
-    val orgMatchers: List<OrganizationMatcher> = allMatchers,
+    val orgMatchers: List<OrganizationMatcher> = allMatchers(),
     val locale: String = LocaleUtils.toLocale("en_US").toString(),
     val timezone: String = ZoneId.of("Europe/Oslo").id,
 ) {
   constructor(id: String) : this(DashboardConfigId(id))
+  constructor(
+      id: String,
+      orgMatchers: List<OrganizationMatcher>
+  ) : this(DashboardConfigId(id), orgMatchers)
 
   companion object {
 
@@ -35,12 +38,13 @@ data class DashboardConfig(
     private val json = Json {
       ignoreUnknownKeys = false
       encodeDefaults = true
+      isLenient = true
     }
 
     fun fromJson(jsonString: String): DashboardConfig =
         json.decodeFromString(serializer(), jsonString)
 
-    val allMatchers =
+    fun allMatchers() =
         listOf(
             OrganizationMatcher(
                 Regex(".*"),
@@ -50,16 +54,7 @@ data class DashboardConfig(
   fun toJson(): String = json.encodeToString(serializer(), this)
 }
 
-@Serializable
-@Persisted
-@JvmInline
-value class DashboardConfigId(val value: String) {
-  companion object {
-    val queryLens =
-        Query.auto<DashboardConfigId>()
-            .optional("dashboardConfigId", "Id to identify which config to use")
-  }
-}
+@Serializable @Persisted @JvmInline value class DashboardConfigId(val value: String) {}
 
 interface Matcher {
   val matcher: Regex

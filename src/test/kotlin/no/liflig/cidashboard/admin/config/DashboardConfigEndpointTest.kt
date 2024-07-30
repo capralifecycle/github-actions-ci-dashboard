@@ -22,7 +22,7 @@ class DashboardConfigEndpointTest {
     val service = DashboardConfigService { callback -> callback(configRepo) }
     val endpoint = DashboardConfigEndpoint(service)
 
-    val dashboards = List(3) { index -> DashboardConfig("$index") }
+    val dashboards = List(3) { index -> DashboardConfig("$index", listOf()) }
 
     val request = Request(Method.POST, "").with(DashboardConfig.bodyLensOfList of dashboards)
 

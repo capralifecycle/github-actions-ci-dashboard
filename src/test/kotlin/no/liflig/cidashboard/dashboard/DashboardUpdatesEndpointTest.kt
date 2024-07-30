@@ -20,9 +20,9 @@ class DashboardUpdatesEndpointTest {
   fun `should render empty list to say no builds`() {
     // Given
     val ciStatuses = DashboardData(emptyList(), emptyList())
-    val dashboardId = DashboardConfigId("1")
+    val dashboardId = "1"
     val updatesService: DashboardUpdatesService = mockk {
-      every { getUpdatedDashboardData(dashboardId) } returns ciStatuses
+      every { getUpdatedDashboardData(DashboardConfigId(dashboardId)) } returns ciStatuses
     }
 
     val secretToken = "my-secret-token"
@@ -32,7 +32,7 @@ class DashboardUpdatesEndpointTest {
 
     val request =
         Request(Method.GET, "")
-            .with(DashboardConfigId.queryLens of dashboardId)
+            .with(DashboardUpdatesEndpoint.dashboardConfigIdLens of dashboardId)
             .with(DashboardUpdatesEndpoint.tokenLens of secretToken)
 
     // When
@@ -65,9 +65,11 @@ class DashboardUpdatesEndpointTest {
                     createCiStatus(
                         id = "3", repoName = "repo-c", lastStatus = CiStatus.PipelineStatus.FAILED),
                 ))
-    val dashboardId = null
+    val dashboardId = ""
     val updatesService: DashboardUpdatesService =
-        mockk() { every { getUpdatedDashboardData(dashboardId) } returns ciStatuses }
+        mockk() {
+          every { getUpdatedDashboardData(DashboardConfigId(dashboardId)) } returns ciStatuses
+        }
 
     val secretToken = "my-secret-token"
     val endpoint =
@@ -76,7 +78,7 @@ class DashboardUpdatesEndpointTest {
 
     val request =
         Request(Method.GET, "")
-            .with(DashboardConfigId.queryLens of dashboardId)
+            .with(DashboardUpdatesEndpoint.dashboardConfigIdLens of dashboardId)
             .with(DashboardUpdatesEndpoint.tokenLens of secretToken)
 
     // When
@@ -95,7 +97,7 @@ class DashboardUpdatesEndpointTest {
   @Test
   fun `should render all ci statuses form service to html with config`() {
     // Given
-    val dashboardId = DashboardConfigId("custom-config")
+    val dashboardId = "custom-config"
     val ciStatuses =
         DashboardData(
             config = DashboardConfig(dashboardId),
@@ -119,7 +121,9 @@ class DashboardUpdatesEndpointTest {
                 ))
 
     val updatesService: DashboardUpdatesService =
-        mockk() { every { getUpdatedDashboardData(dashboardId) } returns ciStatuses }
+        mockk() {
+          every { getUpdatedDashboardData(DashboardConfigId(dashboardId)) } returns ciStatuses
+        }
 
     val secretToken = "my-secret-token"
     val endpoint =
@@ -128,7 +132,7 @@ class DashboardUpdatesEndpointTest {
 
     val request =
         Request(Method.GET, "")
-            .with(DashboardConfigId.queryLens of dashboardId)
+            .with(DashboardUpdatesEndpoint.dashboardConfigIdLens of dashboardId)
             .with(DashboardUpdatesEndpoint.tokenLens of secretToken)
 
     // When

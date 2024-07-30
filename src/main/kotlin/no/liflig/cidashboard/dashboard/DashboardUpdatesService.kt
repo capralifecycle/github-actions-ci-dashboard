@@ -13,9 +13,9 @@ class DashboardUpdatesService(
     private val useDashboardConfigRepo: UseDashboardConfigRepo<DashboardConfig?>
 ) {
 
-  fun getUpdatedDashboardData(dashboardConfigId: DashboardConfigId?): DashboardData {
+  fun getUpdatedDashboardData(dashboardConfigId: DashboardConfigId): DashboardData {
 
-    val config = dashboardConfigId?.let { useDashboardConfigRepo { repo -> repo.getById(it) } }
+    val config = dashboardConfigId.let { useDashboardConfigRepo { repo -> repo.getById(it) } }
 
     return useCiStatusRepo { repo ->
       val all = repo.getAll()

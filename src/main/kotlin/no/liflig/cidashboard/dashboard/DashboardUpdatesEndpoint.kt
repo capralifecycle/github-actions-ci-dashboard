@@ -55,6 +55,8 @@ class DashboardUpdatesEndpoint(
     val tokenLens =
         Query.required(
             "token", "Authorization so strangers don't see our repositories and thus customers.")
+
+    val dashboardConfigIdLens = Query.required("dashboardConfigId", "Id of dashboard config")
   }
 
   override fun invoke(request: Request): Response {
@@ -65,7 +67,7 @@ class DashboardUpdatesEndpoint(
 
     val shouldReload: Boolean = versionLens(request) != Index.LATEST_VERSION
 
-    val dashboardConfigId = DashboardConfigId.queryLens(request)
+    val dashboardConfigId = DashboardConfigId(dashboardConfigIdLens(request))
 
     val data = dashboardUpdatesService.getUpdatedDashboardData(dashboardConfigId)
 

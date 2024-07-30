@@ -2,6 +2,7 @@ package test.util
 
 import com.microsoft.playwright.Browser
 import com.microsoft.playwright.BrowserContext
+import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
 import com.microsoft.playwright.assertions.LocatorAssertions
@@ -218,7 +219,7 @@ END${'$'}${'$'};""")
             .chromium()
             .launch(
                 // Uncomment for manual testing:
-                /*BrowserType.LaunchOptions().setHeadless(false).setSlowMo(1000.0)*/ )
+                BrowserType.LaunchOptions().setHeadless(false).setSlowMo(5000.0))
     private val context: BrowserContext =
         browser.newContext(
             Browser.NewContextOptions()
