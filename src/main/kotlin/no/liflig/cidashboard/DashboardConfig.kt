@@ -16,6 +16,7 @@ import no.liflig.cidashboard.persistence.Persisted
 import org.apache.commons.lang3.LocaleUtils
 import org.http4k.core.Body
 import org.http4k.format.KotlinxSerialization.auto
+import org.http4k.lens.Query
 
 @Serializable
 @Persisted
@@ -54,7 +55,16 @@ data class DashboardConfig(
   fun toJson(): String = json.encodeToString(serializer(), this)
 }
 
-@Serializable @Persisted @JvmInline value class DashboardConfigId(val value: String) {}
+@Serializable
+@Persisted
+@JvmInline
+value class DashboardConfigId(val value: String) {
+  companion object {
+    val queryLens =
+        Query.map(nextIn = { DashboardConfigId(it) }, nextOut = { it.value })
+            .required("dashboardId", "Id of config dashboard")
+  }
+}
 
 interface Matcher {
   val matcher: Regex
