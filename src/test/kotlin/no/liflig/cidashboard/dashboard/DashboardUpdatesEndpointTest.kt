@@ -67,9 +67,7 @@ class DashboardUpdatesEndpointTest {
                 ))
     val dashboardId = DashboardConfigId("default")
     val updatesService: DashboardUpdatesService =
-        mockk() {
-          every { getUpdatedDashboardData(dashboardId) } returns ciStatuses
-        }
+        mockk() { every { getUpdatedDashboardData(dashboardId) } returns ciStatuses }
 
     val secretToken = "my-secret-token"
     val endpoint =
@@ -121,9 +119,7 @@ class DashboardUpdatesEndpointTest {
                 ))
 
     val updatesService: DashboardUpdatesService =
-        mockk() {
-          every { getUpdatedDashboardData(dashboardId) } returns ciStatuses
-        }
+        mockk() { every { getUpdatedDashboardData(dashboardId) } returns ciStatuses }
 
     val secretToken = "my-secret-token"
     val endpoint =
