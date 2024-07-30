@@ -1,0 +1,73 @@
+<h3 class="title dashboardConfigId">custom-config</h3>
+<div id="content">
+<div id="statuses" class="statuses">
+    <div class="status status--SUCCEEDED" id="1"
+    >
+      <div class="status__repo">
+        <span class="status__repo-name">repo-a</span><br/><span
+        class="status__repo-branch">master</span><span class="status__repo-owner">test-organization </span>
+      </div>
+      <span class="status__last-updated">Succeeded at <time>14:25 02/Jul</time></span>
+      <div class="triggered-by status__triggered-by">
+        <span class="triggered-by__label">Build triggered by</span> <span
+        class="triggered-by__username">krissrex</span>
+      </div>
+      <div class="commit status__commit">
+        <p class="commit__title">Add feature</p>
+        <span class="commit__sha">SHA: 123abc</span>
+        <div class="commiter commit__commiter">
+          <img src="https://avatars.githubusercontent.com/u/7364831?v&#x3D;4" alt="Avatar" class="commiter__avatar">
+          <span class="commiter__username">krissrex</span>
+        </div>
+      </div>
+    </div>
+    <div class="status status--IN_PROGRESS" id="2"
+      style="background-image: linear-gradient(to right, var(--build-progress-statusbar-color), var(--build-progress-statusbar-color) 0%, transparent 0%, transparent 100%)"
+    >
+      <div class="status__repo">
+        <span class="status__repo-name">repo-b</span><br/><span
+        class="status__repo-branch">master</span><span class="status__repo-owner">test-organization </span>
+      </div>
+      <span class="status__last-updated">In_progress at <time>14:25 02/Jul</time></span>
+      <div class="triggered-by status__triggered-by">
+        <span class="triggered-by__label">Build triggered by</span> <span
+        class="triggered-by__username">krissrex</span>
+      </div>
+      <div class="commit status__commit">
+        <p class="commit__title">Add feature</p>
+        <span class="commit__sha">SHA: 123abc</span>
+        <div class="commiter commit__commiter">
+          <img src="https://avatars.githubusercontent.com/u/7364831?v&#x3D;4" alt="Avatar" class="commiter__avatar">
+          <span class="commiter__username">krissrex</span>
+        </div>
+      </div>
+    </div>
+    <div class="status status--FAILED" id="3"
+    >
+      <div class="status__repo">
+        <span class="status__repo-name">repo-c</span><br/><span
+        class="status__repo-branch">master</span><span class="status__repo-owner">test-organization </span>
+      </div>
+      <span class="status__last-updated">Failed at <time>14:25 02/Jul</time></span>
+      <div class="triggered-by status__triggered-by">
+        <span class="triggered-by__label">Build triggered by</span> <span
+        class="triggered-by__username">krissrex</span>
+      </div>
+      <div class="commit status__commit">
+        <p class="commit__title">Add feature</p>
+        <span class="commit__sha">SHA: 123abc</span>
+        <div class="commiter commit__commiter">
+          <img src="https://avatars.githubusercontent.com/u/7364831?v&#x3D;4" alt="Avatar" class="commiter__avatar">
+          <span class="commiter__username">krissrex</span>
+        </div>
+      </div>
+    </div>
+</div>  <div id="failed-builds" class="failed-builds">
+    <h2 class="failed-builds__title">All Failed Builds</h2>
+    <ul class="failed-builds__list">
+        <li class="failed-build failed-builds__failed-build"><span
+          class="failed-build__repo">repo-c</span><span
+          class="failed-build__commiter"> by krissrex</span></li>
+    </ul>
+  </div>
+</div>
