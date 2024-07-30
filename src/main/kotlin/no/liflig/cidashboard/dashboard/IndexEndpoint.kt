@@ -25,9 +25,7 @@ class IndexEndpoint(
     val tokenLens =
         Query.required(
             "token", "Authorization so strangers don't see our repositories and thus customers.")
-    val dashboardIdLens =
-        Query.optional(
-            "dashboardId", "The Id of a dashboard")
+    val dashboardIdLens = Query.optional("dashboardId", "The Id of a dashboard")
   }
 
   private val renderer =
