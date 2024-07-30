@@ -25,6 +25,9 @@ class IndexEndpoint(
     val tokenLens =
         Query.required(
             "token", "Authorization so strangers don't see our repositories and thus customers.")
+    val dashboardIdLens =
+        Query.optional(
+            "dashboardId", "The Id of a dashboard")
   }
 
   private val renderer =
@@ -37,6 +40,7 @@ class IndexEndpoint(
 
   override fun invoke(request: Request): Response {
     val actualToken = tokenLens(request)
+    val dashboardId = dashboardIdLens(request)
     if (actualToken != secretToken.value) {
       return Response(Status.FORBIDDEN).body("Invalid token in query")
     }
@@ -47,7 +51,7 @@ class IndexEndpoint(
             bodyLens of
                 Index(
                     // FIXME: dont use placeholders; read from request.
-                    "1",
+                    dashboardId ?: "default",
                     actualToken,
                     "/dashboard-updates",
                     pollRateSeconds = updatesPollRate.toDouble(DurationUnit.SECONDS)))
