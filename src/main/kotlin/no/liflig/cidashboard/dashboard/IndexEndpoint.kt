@@ -48,7 +48,6 @@ class IndexEndpoint(
         .with(
             bodyLens of
                 Index(
-                    // FIXME: dont use placeholders; read from request.
                     dashboardId ?: "default",
                     actualToken,
                     "/dashboard-updates",

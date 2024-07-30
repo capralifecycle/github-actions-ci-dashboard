@@ -62,7 +62,7 @@ value class DashboardConfigId(val value: String) {
   companion object {
     val queryLens =
         Query.map(nextIn = { DashboardConfigId(it) }, nextOut = { it.value })
-            .required("dashboardId", "Id of config dashboard")
+            .required("dashboardConfigId", "Id of config dashboard")
   }
 }
 
