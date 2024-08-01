@@ -22,7 +22,7 @@ import org.http4k.lens.Query
 @Persisted
 data class DashboardConfig(
     val id: DashboardConfigId,
-    val orgMatchers: List<OrganizationMatcher> = allMatchers(),
+    val orgMatchers: List<OrganizationMatcher> = listOf(OrganizationMatcher(Regex(".*"))),
     val locale: String = LocaleUtils.toLocale("en_US").toString(),
     val timezone: String = ZoneId.of("Europe/Oslo").id,
 ) {
@@ -44,12 +44,6 @@ data class DashboardConfig(
 
     fun fromJson(jsonString: String): DashboardConfig =
         json.decodeFromString(serializer(), jsonString)
-
-    fun allMatchers() =
-        listOf(
-            OrganizationMatcher(
-                Regex(".*"),
-                listOf(RepositoryMatcher(Regex(".*"), listOf(BranchMatcher(Regex(".*")))))))
   }
 
   fun toJson(): String = json.encodeToString(serializer(), this)
@@ -74,13 +68,15 @@ interface Matcher {
 @Persisted
 data class OrganizationMatcher(
     override val matcher: Regex,
-    val repoMatchers: List<RepositoryMatcher>
+    val repoMatchers: List<RepositoryMatcher> = listOf(RepositoryMatcher(Regex(".*")))
 ) : Matcher
 
 @Serializable
 @Persisted
-data class RepositoryMatcher(override val matcher: Regex, val branchMatchers: List<BranchMatcher>) :
-    Matcher
+data class RepositoryMatcher(
+    override val matcher: Regex,
+    val branchMatchers: List<BranchMatcher> = listOf(BranchMatcher(Regex(".*")))
+) : Matcher
 
 @Serializable @Persisted data class BranchMatcher(override val matcher: Regex) : Matcher
 
