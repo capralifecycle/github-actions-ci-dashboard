@@ -22,6 +22,7 @@ import org.http4k.lens.Query
 @Persisted
 data class DashboardConfig(
     val id: DashboardConfigId,
+    val displayName: String = id.value,
     val orgMatchers: List<OrganizationMatcher> = listOf(OrganizationMatcher(Regex(".*"))),
     val locale: String = LocaleUtils.toLocale("en_US").toString(),
     val timezone: String = ZoneId.of("Europe/Oslo").id,
@@ -30,7 +31,7 @@ data class DashboardConfig(
   constructor(
       id: String,
       orgMatchers: List<OrganizationMatcher>
-  ) : this(DashboardConfigId(id), orgMatchers)
+  ) : this(DashboardConfigId(id), orgMatchers = orgMatchers)
 
   companion object {
 

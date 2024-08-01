@@ -60,12 +60,14 @@ class DashboardUpdatesServiceTest {
     val dashboardConfig =
         DashboardConfig(
             dashboardConfigId,
-            listOf(
-                OrganizationMatcher(
-                    "owner\\d".toRegex(),
-                    listOf(
-                        RepositoryMatcher(
-                            "repo-.*".toRegex(), listOf(BranchMatcher("bra.*\\d".toRegex())))))))
+            orgMatchers =
+                listOf(
+                    OrganizationMatcher(
+                        "owner\\d".toRegex(),
+                        listOf(
+                            RepositoryMatcher(
+                                "repo-.*".toRegex(),
+                                listOf(BranchMatcher("bra.*\\d".toRegex())))))))
 
     val ciStatusRepo = mockk<CiStatusRepo> { every { getAll() } returns statuses }
     val configRepo =

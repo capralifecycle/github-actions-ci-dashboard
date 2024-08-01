@@ -1,7 +1,6 @@
 {
   "id": "123",
-  "locale": "el-GR",
-  "timezone": "Europe/Athens",
+  "displayName": "123",
   "orgMatchers": [
     {
       "matcher": "org-1.*",
@@ -29,5 +28,7 @@
         }
       ]
     }
-  ]
+  ],
+  "locale": "el-GR",
+  "timezone": "Europe/Athens"
 }

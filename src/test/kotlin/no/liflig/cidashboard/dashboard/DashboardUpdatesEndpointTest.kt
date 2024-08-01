@@ -98,7 +98,7 @@ class DashboardUpdatesEndpointTest {
     val dashboardId = DashboardConfigId("custom-config")
     val ciStatuses =
         DashboardData(
-            config = DashboardConfig(dashboardId),
+            config = DashboardConfig(dashboardId, displayName = "display-name"),
             lastBuilds =
                 listOf(
                     createCiStatus(
