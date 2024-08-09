@@ -8,6 +8,8 @@ Requires `jq` installed via homebrew to work.
 It will add a top-bar widget to your mac, which polls the repos and notifies you if a build has failed. The 5m means it
 polls every 5 minutes. You can set this to any duration you want, such as 10s.
 
+Make sure to change credentials in script with a real one. Ours is in 1Password (`liflig-shared/Liflig GitHub Actions CI Dashboard developer key`)
+
 ![Xbar preview](xbar-preview.png)
 
 
