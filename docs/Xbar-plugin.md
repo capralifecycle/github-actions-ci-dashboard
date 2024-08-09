@@ -25,8 +25,8 @@ set -eu -o pipefail
 export PATH='/usr/local/bin:/usr/bin:/opt/homebrew/bin:$PATH'
 
 # Change the host and token to match your setup.
-#data=$(curl --silent 'https://ci-dashboard.liflig.io/api/statuses?repo_name=my-prefix-.*' -H "Authorization: Bearer change-me-to-something-secret")
-data=$(curl --silent 'https://ci-dashboard.liflig.io/api/statuses' -H "Authorization: Bearer change-me-to-something-secret")
+#data=$(curl --silent --fail 'https://ci-dashboard.liflig.io/api/statuses?repo_name=my-prefix-.*' -H "Authorization: Bearer change-me-to-something-secret")
+data=$(curl --silent --fail 'https://ci-dashboard.liflig.io/api/statuses' -H "Authorization: Bearer change-me-to-something-secret")
 
 if [[ $data =~ "FAILED" ]]; then
   echo "❌Something failed"
