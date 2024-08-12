@@ -29,7 +29,7 @@
 
     <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
     <java.version>17</java.version>
-    <kotlin.version>2.0.0</kotlin.version>
+    <kotlin.version>2.0.10</kotlin.version>
 
     <!-- Liflig-dependencies -->
     <liflig-document-store.version>1.20240715.075751</liflig-document-store.version>
