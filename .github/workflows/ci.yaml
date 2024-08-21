@@ -48,7 +48,7 @@ jobs:
       - uses: actions/setup-java@6a0805fcefea3d4657a47ac4c165951e33482018 # v4.2.2
         with:
           distribution: "zulu"
-          java-version: "17.0.9"
+          java-version: "21"
           java-package: jdk
 
       - name: cache mvn
