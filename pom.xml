@@ -35,7 +35,7 @@
     <liflig-document-store.version>1.20240715.075751</liflig-document-store.version>
     <liflig-properties.version>2.20240825.121950</liflig-properties.version>
     <liflig-http4k-setup.version>1.20240827.085124</liflig-http4k-setup.version>
-    <liflig-snapshot-test.version>1.20240819.221105</liflig-snapshot-test.version>
+    <liflig-snapshot-test.version>1.20240827.180306</liflig-snapshot-test.version>
 
     <!-- App -->
     <kotlinx-serialization.version>1.7.1</kotlinx-serialization.version>
