@@ -34,7 +34,7 @@
     <!-- Liflig-dependencies -->
     <liflig-document-store.version>1.20240715.075751</liflig-document-store.version>
     <liflig-properties.version>2.20240830.114316</liflig-properties.version>
-    <liflig-http4k-setup.version>1.20240830.051044</liflig-http4k-setup.version>
+    <liflig-http4k-setup.version>1.20240831.113913</liflig-http4k-setup.version>
     <liflig-snapshot-test.version>1.20240827.180306</liflig-snapshot-test.version>
 
     <!-- App -->
