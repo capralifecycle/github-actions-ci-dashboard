@@ -62,7 +62,7 @@
     <!-- Maven -->
     <ktfmt.version>0.43</ktfmt.version>
     <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
-    <maven-failsafe-plugin.version>3.5.1</maven-failsafe-plugin.version>
+    <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
     <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
     <sonar.version>4.0.0.4121</sonar.version>
   </properties>
