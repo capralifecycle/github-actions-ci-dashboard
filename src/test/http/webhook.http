@@ -1,4 +1,4 @@
-@host = http://localhost:61143
+@host = http://localhost:8080
 
 POST {{host}}/webhook
 X-GitHub-Event: workflow_run

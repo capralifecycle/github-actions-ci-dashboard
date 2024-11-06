@@ -14,14 +14,15 @@ status.
 
 ## Documentation
 
-More information is found here:
+**Usage:**
+- [Webhooks and secrets](docs/webhooks-and-secrets.md)
+- [Adding configs to show specific repos on dashboards](docs/admin-config.md)
+- [Xbar for local machine](docs/Xbar-plugin.md), useful for remote working employees without dedicated dashboard monitors.
 
+**Development:**
 - [Requirements (Norwegian)](./docs/requirements.md)
 - [Solution specification/architecture (Confluence)](https://liflig.atlassian.net/l/cp/Qc1oFmJF)
 - [Overview of the design process (Confluence)](https://liflig.atlassian.net/wiki/x/PgBSDg)
-- [Webhooks and secrets](docs/webhooks-and-secrets.md)
-- [Xbar for local machine](docs/Xbar-plugin.md), useful for remote working employees without dedicated dashboard
-  monitors.
 
 ### Architecture
 
@@ -92,13 +93,6 @@ You can track the progress
 in [GitHub Actions](https://github.com/capralifecycle/github-actions-ci-dashboard/actions/workflows/ci.yaml)
 and in
 the [AWS CodePipeline](https://eu-west-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/experiments-apps/view?region=eu-west-1) (`liflig-experiments`).
-
-## Open Telemetry
-
-You can disable the java agent in ECS by setting the environment parameter `OTEL_JAVAAGENT_ENABLED` to `false`.
-
-You can collect data by attaching a sidecar in ECS with the AWS Distro of Otel
-Collector: https://aws-otel.github.io/docs/setup/ecs.
 
 ## License
 

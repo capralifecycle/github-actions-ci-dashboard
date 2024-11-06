@@ -1,0 +1,25 @@
+POST http://localhost:8080/admin/config
+Content-Type: application/json
+Authorization: Bearer very-very-secret-admin-token
+
+[{
+  "id": "a3",
+  "orgMatchers": [
+    {
+      "matcher": ".*",
+      "repoMatchers": [
+        {
+          "matcher": "my-team-.*",
+          "branchMatchers": [
+            {
+              "matcher": ".*"
+            }
+          ]
+        },
+        {
+          "matcher": "(TEAM|team)-.*"
+        }
+      ]
+    }
+  ]
+}]
