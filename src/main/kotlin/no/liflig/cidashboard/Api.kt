@@ -2,7 +2,6 @@ package no.liflig.cidashboard
 
 import no.liflig.cidashboard.admin.config.DashboardConfigEndpoint
 import no.liflig.cidashboard.admin.config.DashboardConfigService
-import no.liflig.cidashboard.admin.database.DeleteAllDatabaseRowsEndpoint
 import no.liflig.cidashboard.admin.database.DeleteAllDatabaseRowsService
 import no.liflig.cidashboard.common.config.ApiOptions
 import no.liflig.cidashboard.common.config.WebhookOptions
@@ -75,9 +74,9 @@ fun createApiServer(
               Method.GET to
               ServerFilters.BearerAuth(options.devtoolSecretToken.value)
                   .then(FetchStatusesEndpoint(services.filteredStatusesService)),
-          "/admin/nuke" bind
-              Method.POST to
-              DeleteAllDatabaseRowsEndpoint(services.deleteAllDatabaseRowsService),
+          /*"/admin/nuke" bind
+          Method.POST to
+          DeleteAllDatabaseRowsEndpoint(services.deleteAllDatabaseRowsService),*/
           "/admin/config" bind
               Method.POST to
               ServerFilters.BearerAuth(token = options.adminSecretToken.value)
