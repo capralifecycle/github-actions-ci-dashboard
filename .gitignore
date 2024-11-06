@@ -4,8 +4,8 @@
 /liflig-rest-baseline.iml
 *log.json
 dependency-reduced-pom.xml
-
-
+!.idea/ktfmt.xml
+.idea/externalDependencies.xml
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij+all,intellij+iml,intellij,macos,vim,linux,windows,java,kotlin,maven
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij+all,intellij+iml,intellij,macos,vim,linux,windows,java,kotlin,maven
