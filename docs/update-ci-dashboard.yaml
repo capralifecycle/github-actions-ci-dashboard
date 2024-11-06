@@ -1,0 +1,30 @@
+# Before using this, set a repo secret 'CI_DASHBOARD_ADMIN_CONFIG_TOKEN' in GitHub with the 'admin.secretToken' value.
+# Also update the URL at the bottom of this file to your dashboard instance
+name: CI-Dashboard Config Update
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - "github-actions-ci-dashboards.json"
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -euo pipefail {0}
+concurrency: ci-${{ github.ref }}-${{ github.workflow }}
+
+jobs:
+  upload-config:
+    timeout-minutes: 5
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: upload config
+        run: |
+          curl --silent \
+            -H "Authorization: Bearer ${{ secrets.CI_DASHBOARD_ADMIN_CONFIG_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "@github-actions-ci-dashboards.json" \
+            -w "%{http_code}" \
+            "https://localhost:8080/admin/config"
