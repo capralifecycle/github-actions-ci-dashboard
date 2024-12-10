@@ -18,6 +18,7 @@ status.
 - [Webhooks and secrets](docs/webhooks-and-secrets.md)
 - [Adding configs to show specific repos on dashboards](docs/admin-config.md)
 - [Xbar for local machine](docs/Xbar-plugin.md), useful for remote working employees without dedicated dashboard monitors.
+- [Deleting CI statuses](docs/delete-endpoint.md) to clean up statuses you don't want.
 
 **Development:**
 - [Requirements (Norwegian)](./docs/requirements.md)

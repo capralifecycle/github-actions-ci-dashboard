@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import net.logstash.logback.marker.Markers
 import no.liflig.cidashboard.admin.config.DashboardConfigService
 import no.liflig.cidashboard.admin.config.JdbiDashboardConfigTransaction
-import no.liflig.cidashboard.admin.database.DeleteAllDatabaseRowsService
+import no.liflig.cidashboard.admin.database.DeleteDatabaseRowsService
 import no.liflig.cidashboard.common.config.Config
 import no.liflig.cidashboard.common.database.DatabaseConfigurator
 import no.liflig.cidashboard.common.database.DbPassword
@@ -61,7 +61,7 @@ class App(val config: Config) {
             incomingWebhookService,
             dashboardUpdatesService,
             dashboardConfigService,
-            DeleteAllDatabaseRowsService(JdbiCiStatusDatabaseHandle(jdbi)),
+            DeleteDatabaseRowsService(JdbiCiStatusDatabaseHandle(jdbi)),
             FilteredStatusesService(JdbiCiStatusDatabaseHandle(jdbi)))
 
     val server =

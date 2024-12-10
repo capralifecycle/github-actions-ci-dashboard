@@ -2,7 +2,8 @@ package no.liflig.cidashboard
 
 import no.liflig.cidashboard.admin.config.DashboardConfigEndpoint
 import no.liflig.cidashboard.admin.config.DashboardConfigService
-import no.liflig.cidashboard.admin.database.DeleteAllDatabaseRowsService
+import no.liflig.cidashboard.admin.database.DeleteCiStatusEndpoint
+import no.liflig.cidashboard.admin.database.DeleteDatabaseRowsService
 import no.liflig.cidashboard.common.config.ApiOptions
 import no.liflig.cidashboard.common.config.WebhookOptions
 import no.liflig.cidashboard.common.http4k.httpNoServerVersionHeader
@@ -76,7 +77,11 @@ fun createApiServer(
                   .then(FetchStatusesEndpoint(services.filteredStatusesService)),
           /*"/admin/nuke" bind
           Method.POST to
-          DeleteAllDatabaseRowsEndpoint(services.deleteAllDatabaseRowsService),*/
+          DeleteAllDatabaseRowsEndpoint(services.deleteDatabaseRowsService),*/
+          "/admin/delete" bind
+              Method.DELETE to
+              ServerFilters.BearerAuth(token = options.adminSecretToken.value)
+                  .then(DeleteCiStatusEndpoint(services.deleteDatabaseRowsService)),
           "/admin/config" bind
               Method.POST to
               ServerFilters.BearerAuth(token = options.adminSecretToken.value)
@@ -95,6 +100,6 @@ data class ApiServices(
     val incomingWebhookService: IncomingWebhookService,
     val dashboardUpdatesService: DashboardUpdatesService,
     val dashboardConfigService: DashboardConfigService,
-    val deleteAllDatabaseRowsService: DeleteAllDatabaseRowsService,
+    val deleteDatabaseRowsService: DeleteDatabaseRowsService,
     val filteredStatusesService: FilteredStatusesService
 )

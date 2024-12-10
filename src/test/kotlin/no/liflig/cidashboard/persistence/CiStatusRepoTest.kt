@@ -12,6 +12,7 @@ import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import test.util.AcceptanceTestExtension
 import test.util.Integration
@@ -119,6 +120,26 @@ class CiStatusRepoTest {
         jdbi.withHandle<List<CiStatus>, Exception> { handle -> CiStatusRepo(handle).getAll() }
 
     assertThat(actualRemaining).isEmpty()
+  }
+
+  @Test
+  fun `should delete by id`() {
+    // Given
+    val ciStatusToDelete = createCiStatus(id = "1")
+    val ciStatusToKeep = createCiStatus(id = "2")
+    jdbi.useHandle<Exception> { handle ->
+      CiStatusRepo(handle).save(ciStatusToDelete)
+      CiStatusRepo(handle).save(ciStatusToKeep)
+    }
+
+    // When
+    jdbi.useHandle<Exception> { handle -> CiStatusRepo(handle).deleteById(CiStatusId("1")) }
+
+    // Then
+    val actualRemaining: List<CiStatus> =
+        jdbi.withHandle<List<CiStatus>, Exception> { handle -> CiStatusRepo(handle).getAll() }
+
+    assertThat(actualRemaining).containsExactly(ciStatusToKeep)
   }
 }
 

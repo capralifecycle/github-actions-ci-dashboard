@@ -71,4 +71,11 @@ class CiStatusRepo(private val databaseHandle: Handle) {
   fun deleteAll() {
     databaseHandle.createUpdate("TRUNCATE TABLE $TABLE_NAME").execute()
   }
+
+  fun deleteById(id: CiStatusId) {
+    databaseHandle
+        .createUpdate("DELETE FROM $TABLE_NAME WHERE id = :id")
+        .bind("id", id.value)
+        .execute()
+  }
 }

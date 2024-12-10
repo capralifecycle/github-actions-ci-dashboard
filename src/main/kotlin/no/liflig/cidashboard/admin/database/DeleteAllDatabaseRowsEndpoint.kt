@@ -8,7 +8,7 @@ import org.http4k.lens.Query
 
 /** Used instead of migrating the database during development. */
 class DeleteAllDatabaseRowsEndpoint(
-    private val deleteAllDatabaseRowsService: DeleteAllDatabaseRowsService
+    private val deleteDatabaseRowsService: DeleteDatabaseRowsService
 ) : HttpHandler {
 
   companion object {
@@ -20,7 +20,7 @@ class DeleteAllDatabaseRowsEndpoint(
       return Response(Status.UNAUTHORIZED).body("Invalid query parameter 'secret'")
     }
 
-    deleteAllDatabaseRowsService.deleteAll()
+    deleteDatabaseRowsService.deleteAll()
 
     return Response(Status.OK)
   }

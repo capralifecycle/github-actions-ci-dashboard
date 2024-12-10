@@ -1,0 +1,3 @@
+DELETE http://localhost:8080/admin/delete?secret=do-harm&id=120856855-master
+Content-Type: application/json
+Authorization: Bearer very-very-secret-admin-token
