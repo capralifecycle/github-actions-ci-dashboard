@@ -7,7 +7,7 @@ Sometimes you get unwanted CI Statuses:
 There is an endpoint at:
 
 ```http request
-DELETE localhost/admin/delete?secret=do-harm&id=123-master
+DELETE http://localhost:8080/admin/delete?secret=do-harm&id=123-master
 Authorization: Bearer very-very-secret-admin-token
 ```
 
