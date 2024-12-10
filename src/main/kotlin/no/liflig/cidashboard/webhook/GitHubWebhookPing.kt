@@ -16,7 +16,7 @@ import org.http4k.lens.BiDiBodyLens
 
 /** Sent when you first register a webhook. */
 @Serializable
-data class GitHubWebhookPing(val hook: Hook, val organization: Organization, val sender: Sender) :
+data class GitHubWebhookPing(val hook: Hook, val organization: Organization?, val sender: Sender) :
     WebhookPayload {
   companion object {
     val bodyLens: BiDiBodyLens<GitHubWebhookPing> = Body.auto<GitHubWebhookPing>().toLens()
