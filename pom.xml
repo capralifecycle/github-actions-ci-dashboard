@@ -50,7 +50,7 @@
     <jdbi.version>3.47.0</jdbi.version>
     <flyway.version>11.1.0</flyway.version>
     <htmx.org.version>2.0.1</htmx.org.version>
-    <htmx-idiomorph.version>0.3.0</htmx-idiomorph.version>
+    <htmx-idiomorph.version>0.4.0</htmx-idiomorph.version>
 
     <!-- Test-dependencies -->
     <junit.version>5.11.4</junit.version>
