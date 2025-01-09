@@ -44,7 +44,7 @@
     <slf4j.version>2.0.16</slf4j.version>
     <logback-classic.version>1.5.16</logback-classic.version>
     <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
-    <http4k.version>5.44.1.0</http4k.version>
+    <http4k.version>5.44.2.0</http4k.version>
     <postgresql.version>42.7.4</postgresql.version>
     <hikari-connectionpool.version>6.2.1</hikari-connectionpool.version>
     <jdbi.version>3.47.0</jdbi.version>
