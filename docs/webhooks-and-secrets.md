@@ -38,9 +38,10 @@ Generate a New Secret: Use a reliable password manager or tool to generate a 32-
 1. Update in 1Password: Save the new secret in 1Password under liflig-team-infra/GitHub Actions CI Dashboard Webhook Secret.
 2. Notify the Team: Inform #dev-utvikling at least 30 minutes before rotating the secret. Use a message template like:
    1. "The GitHub Actions CI Dashboard Webhook Secret will be rotated at [time]. Downtime is expected for approximately 10 minutes. The new secret is available in 1Password under liflig-team-infra/GitHub Actions CI Dashboard Webhook Secret."
-3. Update the Secret in Code: Run the load-secrets-script in the liflig-experiments repository to update the secret.
-4. Redeploy: Force a new deployment of liflig-ci-dashboards.
-5. Validate and Notify: Confirm that GitHub Actions are reporting correctly. Notify #dev-utvikling that the rotation was successful.
+3. Update the Secret trough CLI: Run the load-secrets-script in the liflig-experiments repository to update the secret.
+4. Update the secret in capralifecycle organization (you will need admin access)
+5. Redeploy: Force a new deployment of liflig-ci-dashboards.
+6. Validate and Notify: Confirm that GitHub Actions are reporting correctly. Notify #dev-utvikling that the rotation was successful.
 
 
 ## References
