@@ -28,6 +28,21 @@ X-Hub-Signature-256: sha256=5c5134a624883d7df34eae110bf37f78a0620b159fd884760c40
 { "requestBody": "goes here" }
 ```
 
+## Rotating secret
+Note: This process will result in approximately 10 minutes of downtime for github-actions-ci-dashboards.
+
+### When to Use
+If the GitHub signing secret is compromised, it is necessary to rotate the secret. All GitHub organizations and repositories using this secret must be updated simultaneously, as this project does not support staggered secret updates (expand and contract).
+Generate a New Secret: Use a reliable password manager or tool to generate a 32-character random password.
+
+1. Update in 1Password: Save the new secret in 1Password under liflig-team-infra/GitHub Actions CI Dashboard Webhook Secret.
+2. Notify the Team: Inform #dev-utvikling at least 30 minutes before rotating the secret. Use a message template like:
+   1. "The GitHub Actions CI Dashboard Webhook Secret will be rotated at [time]. Downtime is expected for approximately 10 minutes. The new secret is available in 1Password under liflig-team-infra/GitHub Actions CI Dashboard Webhook Secret."
+3. Update the Secret in Code: Run the load-secrets-script in the liflig-experiments repository to update the secret.
+4. Redeploy: Force a new deployment of liflig-ci-dashboards.
+5. Validate and Notify: Confirm that GitHub Actions are reporting correctly. Notify #dev-utvikling that the rotation was successful.
+
+
 ## References
 
 - [HMAC signature header (GitHub Docs)](https://docs.github.com/en/webhooks/webhook-events-and-payloads#delivery-headers)
