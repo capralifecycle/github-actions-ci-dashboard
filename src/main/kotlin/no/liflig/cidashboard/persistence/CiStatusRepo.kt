@@ -16,32 +16,35 @@ class CiStatusRepo(private val databaseHandle: Handle) {
   }
 
   fun save(status: CiStatus) {
-    val updatedCount =
-        databaseHandle
-            .createUpdate(
-                """INSERT INTO $TABLE_NAME (id, data)
+    withLoggingContext(
+        "status.lastUpdatedAt" to status.lastUpdatedAt.toString(),
+        "status.repo" to status.repo.name.value,
+        "status.owner" to status.repo.owner.value,
+        "status.id" to status.id.value) {
+          val updatedCount =
+              databaseHandle
+                  .createUpdate(
+                      """INSERT INTO $TABLE_NAME (id, data)
                   |     VALUES (:id, :data::jsonb)
                   |ON CONFLICT (id) DO UPDATE
                   |        SET data = :data::jsonb"""
-                    .trimMargin())
-            .bind("id", status.id.value)
-            .bind("data", status.toJson())
-            .execute()
+                          .trimMargin())
+                  .bind("id", status.id.value)
+                  .bind("data", status.toJson())
+                  .execute()
 
-    if (updatedCount != 1) {
-      log.warn {
-        "Update of status ${status.id} (${status.repo.owner.value}/${status.repo.name.value}/${status.branch.value}) " +
-            "did not result in the expected number of changed rows 1, but instead: $updatedCount"
-      }
-    } else {
-      withLoggingContext(
-          "status.lastUpdatedAt" to status.lastUpdatedAt.toString(),
-          "status.id" to status.id.value) {
+          if (updatedCount != 1) {
+            log.warn {
+              "Update of status ${status.id} (${status.repo.owner.value}/${status.repo.name.value}/${status.branch.value})" +
+                  " did not result in the expected number of changed rows 1, but instead: $updatedCount"
+            }
+          } else {
             log.debug {
-              "Saved status id ${status.id} to table $TABLE_NAME with state ${status.lastStatus.name}"
+              "Saved status id ${status.id} for repo ${status.repo.owner.value}/${status.repo.name.value}" +
+                  " to table $TABLE_NAME with state ${status.lastStatus.name}"
             }
           }
-    }
+        }
   }
 
   /** @return list of all statuses, sorted by [CiStatus.lastUpdatedAt] descending. */
