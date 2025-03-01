@@ -7,7 +7,7 @@
   <parent>
     <groupId>no.liflig</groupId>
     <artifactId>kotlin-parent</artifactId>
-    <version>3.20250228.111411</version>
+    <version>3.20250301.045433</version>
     <relativePath/>
   </parent>
 
