@@ -27,7 +27,7 @@ services:
       - POSTGRES_DB=app
   otel:
     # open-telemetry is for collecting metrics and traces from the application. The app must use the java agent or otel SDK.
-    image: "ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.122.0"
+    image: "ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.122.1"
     ports:
       - "4317:4317"
       - "1777:1777" # pprof
