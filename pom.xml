@@ -56,7 +56,7 @@
     <junit.version>5.12.2</junit.version>
     <mockk.version>1.14.2</mockk.version>
     <assertj-core.version>3.27.3</assertj-core.version>
-    <rest-assured.version>5.5.1</rest-assured.version>
+    <rest-assured.version>5.5.2</rest-assured.version>
     <testcontainers.postgresql.version>1.21.0</testcontainers.postgresql.version>
     <playwright.version>1.52.0</playwright.version>
 
