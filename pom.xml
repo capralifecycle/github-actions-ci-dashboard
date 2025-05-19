@@ -22,7 +22,7 @@
     <major-version>1</major-version>
     <revision>${major-version}.local-SNAPSHOT</revision>
 
-    <!-- Overwritten in jenkins-build profile -->
+    <!-- Overwritten in ci-build profile -->
     <build.commit>LOCAL</build.commit>
     <build.branch>LOCAL</build.branch>
     <build.number>0</build.number>
