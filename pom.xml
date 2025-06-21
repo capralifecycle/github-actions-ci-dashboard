@@ -57,7 +57,7 @@
     <mockk.version>1.14.2</mockk.version>
     <assertj-core.version>3.27.3</assertj-core.version>
     <rest-assured.version>5.5.5</rest-assured.version>
-    <testcontainers.postgresql.version>1.21.1</testcontainers.postgresql.version>
+    <testcontainers.postgresql.version>1.21.2</testcontainers.postgresql.version>
     <playwright.version>1.52.0</playwright.version>
 
     <!-- Maven -->
