@@ -33,9 +33,9 @@
     <kotlin.compiler.apiVersion>2.1</kotlin.compiler.apiVersion>
 
     <!-- Liflig-dependencies -->
-    <liflig-document-store.version>1.20240715.075751</liflig-document-store.version>
+    <liflig-document-store.version>3.20250624.044422</liflig-document-store.version>
     <liflig-properties.version>2.20250626.090221</liflig-properties.version>
-    <liflig-http4k-setup.version>1.20241228.202215</liflig-http4k-setup.version>
+    <liflig-http4k-setup.version>4.20250624.100616</liflig-http4k-setup.version>
     <liflig-logging.version>2.20250611.101355</liflig-logging.version>
     <liflig-snapshot-test.version>1.20250624.184514</liflig-snapshot-test.version>
 
@@ -44,7 +44,7 @@
     <slf4j.version>2.0.17</slf4j.version>
     <logback-classic.version>1.5.18</logback-classic.version>
     <logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
-    <http4k.version>5.47.0.0</http4k.version>
+    <http4k.version>6.15.0.1</http4k.version>
     <postgresql.version>42.7.7</postgresql.version>
     <hikari-connectionpool.version>6.3.0</hikari-connectionpool.version>
     <jdbi.version>3.49.5</jdbi.version>
