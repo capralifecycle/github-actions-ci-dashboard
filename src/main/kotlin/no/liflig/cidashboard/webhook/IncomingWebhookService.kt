@@ -1,10 +1,9 @@
 package no.liflig.cidashboard.webhook
 
-import mu.KotlinLogging
-import mu.withLoggingContext
 import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.persistence.CiStatusId
 import no.liflig.cidashboard.persistence.CiStatusRepo
+import no.liflig.logging.getLogger
 import org.jdbi.v3.core.Jdbi
 
 /**
@@ -23,11 +22,14 @@ class IncomingWebhookService(
 ) {
 
   companion object {
-    private val log = KotlinLogging.logger {}
+    private val log = getLogger()
   }
 
   fun handlePing(ping: GitHubWebhookPing) {
-    withLoggingContext("webhook.event" to ping.toString()) { log.info { "Got ping from GitHub" } }
+    log.info {
+      field("webhook.event", ping)
+      "Got ping from GitHub"
+    }
   }
 
   fun handleWorkflowRun(workflowRun: GitHubWebhookWorkflowRun) {

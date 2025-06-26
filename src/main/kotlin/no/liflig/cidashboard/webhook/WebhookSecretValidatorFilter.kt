@@ -1,8 +1,8 @@
 package no.liflig.cidashboard.webhook
 
 import java.security.MessageDigest
-import mu.KotlinLogging
 import no.liflig.cidashboard.common.config.WebhookOptions
+import no.liflig.logging.getLogger
 import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
 import org.http4k.core.Request
@@ -23,7 +23,7 @@ import org.http4k.security.HmacSha256
 class WebhookSecretValidatorFilter(private val secret: WebhookOptions.Secret) : Filter {
 
   companion object {
-    private val log = KotlinLogging.logger {}
+    private val log = getLogger()
 
     /**
      * Signed with the secret. Uses HMAC with SHA-256.

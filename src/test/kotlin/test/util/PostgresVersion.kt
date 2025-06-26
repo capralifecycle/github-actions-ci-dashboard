@@ -1,12 +1,12 @@
 package test.util
 
 import java.io.File
-import mu.KotlinLogging
+import no.liflig.logging.getLogger
+
+private val log = getLogger()
 
 /** Use the same postgres image for testing as we use when running app locally. */
 fun extractPostgresImageFromDockerCompose(): String {
-  val logger = KotlinLogging.logger {}
-
   var dir = File(System.getProperty("user.dir"))
   var dockerComposeFile: File
 
@@ -26,5 +26,5 @@ fun extractPostgresImageFromDockerCompose(): String {
       .first { "image: postgres" in it }
       .substringAfter("image:")
       .trim()
-      .also { logger.info { "Using postgres image [$it]" } }
+      .also { log.info { "Using postgres image [$it]" } }
 }

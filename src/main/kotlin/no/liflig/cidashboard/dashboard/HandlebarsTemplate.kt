@@ -10,10 +10,9 @@ import java.time.Instant
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.time.Duration
-import mu.KotlinLogging
-import mu.withLoggingContext
 import no.liflig.cidashboard.dashboard.MissingHelper.ERROR_PREFIX
 import no.liflig.cidashboard.persistence.CiStatus
+import no.liflig.logging.getLogger
 import org.http4k.template.HandlebarsTemplates
 import org.http4k.template.TemplateRenderer
 
@@ -44,21 +43,19 @@ object Renderer {
 
 /** Logs errors and inserts a [ERROR_PREFIX] and template when a block/variable is missing. */
 object MissingHelper : Helper<Any> {
-  private val log = KotlinLogging.logger {}
+  private val log = getLogger()
 
   /** If you have bugs, this will show up in your HTML. */
   const val ERROR_PREFIX = "ERROR: NOT FOUND"
 
   override fun apply(context: Any?, options: Options?): Any {
-    withLoggingContext(
-        "handlebars.context.class" to context?.javaClass?.name,
-        /* Works for any com.github.jknack.handlebars.internal.BaseTemplate: */
-        "handlebars.location" to options?.fn?.toString(),
-        "handlebars.tagType" to options?.tagType?.name) {
-          log.error {
-            "Missing helper ${options?.helperName} in ${options?.fn?.text()} at ${options?.fn?.filename()}"
-          }
-        }
+    log.error {
+      field("handlebars.context.class", context?.javaClass?.name)
+      /* Works for any com.github.jknack.handlebars.internal.BaseTemplate: */
+      field("handlebars.location", options?.fn?.toString())
+      field("handlebars.tagType", options?.tagType?.name)
+      "Missing helper ${options?.helperName} in ${options?.fn?.text()} at ${options?.fn?.filename()}"
+    }
 
     return "$ERROR_PREFIX ${options?.fn?.text()}"
   }

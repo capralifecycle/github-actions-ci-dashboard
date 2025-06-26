@@ -2,10 +2,9 @@ package no.liflig.cidashboard.persistence
 
 import java.sql.ResultSet
 import kotlin.jvm.optionals.getOrNull
-import mu.KotlinLogging
-import mu.withLoggingContext
 import no.liflig.cidashboard.DashboardConfig
 import no.liflig.cidashboard.DashboardConfigId
+import no.liflig.logging.getLogger
 import org.jdbi.v3.core.Handle
 
 /** Reads and writes [CiStatus] to a database. */
@@ -14,7 +13,7 @@ class DashboardConfigRepo(private val databaseHandle: Handle) {
   companion object {
     const val TABLE_NAME = "dashboard_config"
 
-    private val log = KotlinLogging.logger {}
+    private val log = getLogger()
   }
 
   fun save(config: DashboardConfig) {
@@ -25,7 +24,8 @@ class DashboardConfigRepo(private val databaseHandle: Handle) {
                   |     VALUES (:id, :data::jsonb)
                   |ON CONFLICT (id) DO UPDATE
                   |        SET data = :data::jsonb"""
-                    .trimMargin())
+                    .trimMargin(),
+            )
             .bind("id", config.id.value)
             .bind("data", config.toJson())
             .execute()
@@ -36,8 +36,9 @@ class DashboardConfigRepo(private val databaseHandle: Handle) {
             "but instead: $updatedCount"
       }
     } else {
-      withLoggingContext("config.id" to config.id.value) {
-        log.debug { "Saved status id ${config.id} to table $TABLE_NAME" }
+      log.debug {
+        field("config.id", config.id.value)
+        "Saved status id ${config.id} to table $TABLE_NAME"
       }
     }
   }
