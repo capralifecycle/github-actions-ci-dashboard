@@ -1,7 +1,5 @@
 package no.liflig.cidashboard
 
-import mu.KotlinLogging
-import net.logstash.logback.marker.Markers
 import no.liflig.cidashboard.admin.config.DashboardConfigService
 import no.liflig.cidashboard.admin.config.JdbiDashboardConfigTransaction
 import no.liflig.cidashboard.admin.database.DeleteDatabaseRowsService
@@ -17,6 +15,7 @@ import no.liflig.cidashboard.health.HealthService
 import no.liflig.cidashboard.status_api.FilteredStatusesService
 import no.liflig.cidashboard.webhook.IncomingWebhookService
 import no.liflig.cidashboard.webhook.JdbiCiStatusTransaction
+import no.liflig.logging.getLogger
 import org.jdbi.v3.core.Jdbi
 
 /**
@@ -26,12 +25,15 @@ import org.jdbi.v3.core.Jdbi
  *   when doing testing of [App].
  */
 class App(val config: Config) {
-  private val logger = KotlinLogging.logger {}
+  private val log = getLogger()
   private val runningTasks = mutableListOf<AutoCloseable>()
   private val jdbi: Jdbi = createJdbiInstance(config)
 
   fun start() {
-    logger.info(Markers.append("buildInfo", config.buildInfo.toJson())) { "Starting application" }
+    log.info {
+      field("buildInfo", config.buildInfo)
+      "Starting application"
+    }
 
     startApi(jdbi)
   }
@@ -49,10 +51,13 @@ class App(val config: Config) {
         IncomingWebhookService(
             JdbiCiStatusTransaction(jdbi),
             config.webhookOptions.branchWhitelist,
-            config.webhookOptions.workflowNameWhitelist)
+            config.webhookOptions.workflowNameWhitelist,
+        )
     val dashboardUpdatesService =
         DashboardUpdatesService(
-            JdbiCiStatusDatabaseHandle(jdbi), JdbiDashboardConfigDatabaseHandle(jdbi))
+            JdbiCiStatusDatabaseHandle(jdbi),
+            JdbiDashboardConfigDatabaseHandle(jdbi),
+        )
     val dashboardConfigService = DashboardConfigService(JdbiDashboardConfigTransaction(jdbi))
 
     val services =
@@ -62,14 +67,15 @@ class App(val config: Config) {
             dashboardUpdatesService,
             dashboardConfigService,
             DeleteDatabaseRowsService(JdbiCiStatusDatabaseHandle(jdbi)),
-            FilteredStatusesService(JdbiCiStatusDatabaseHandle(jdbi)))
+            FilteredStatusesService(JdbiCiStatusDatabaseHandle(jdbi)),
+        )
 
     val server =
         createApiServer(apiOptions, config.webhookOptions, services)
             .asJettyServer(config.apiOptions)
     server.start()
     runningTasks.add(server)
-    logger.info { "Server started on http://0.0.0.0:${apiOptions.serverPort.value}" }
+    log.info { "Server started on http://0.0.0.0:${apiOptions.serverPort.value}" }
   }
 }
 

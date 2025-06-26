@@ -12,6 +12,9 @@
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <!-- Writes object values from logging context as actual JSON (not escaped) -->
+      <mdcEntryWriter class="no.liflig.logging.LoggingContextJsonFieldWriter"/>
+
       <!-- Apply to all logs. The service and version are important for some services like Datadog. -->
       <customFields>{"service":"${service.name}","version":"${service.version}"}</customFields>
     </encoder>

@@ -16,7 +16,6 @@ import java.net.ServerSocket
 import java.nio.file.Paths
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
-import mu.KotlinLogging
 import no.liflig.cidashboard.App
 import no.liflig.cidashboard.common.config.ClientSecretToken
 import no.liflig.cidashboard.common.config.Config
@@ -24,6 +23,7 @@ import no.liflig.cidashboard.common.config.DbConfig
 import no.liflig.cidashboard.common.config.Port
 import no.liflig.cidashboard.common.config.WebhookOptions
 import no.liflig.cidashboard.persistence.CiStatus
+import no.liflig.logging.getLogger
 import org.http4k.security.HmacSha256
 import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.extension.AfterAllCallback
@@ -103,7 +103,7 @@ class AcceptanceTestExtension(val fastPoll: Boolean = true) :
   }
 
   class GitHub {
-    private val log = KotlinLogging.logger {}
+    private val log = getLogger()
 
     private var webhookDestinationPort: Port = Port(8080)
     private lateinit var webhookPath: String
@@ -209,7 +209,7 @@ END${'$'}${'$'};""")
   }
 
   class TvBrowser : AutoCloseable {
-    private val log = KotlinLogging.logger {}
+    private val log = getLogger()
 
     // Failed Playwright Traces can be viewed in https://trace.playwright.dev/
     private val playwright: Playwright = Playwright.create()

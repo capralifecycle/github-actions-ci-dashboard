@@ -8,8 +8,8 @@ import java.sql.SQLException
 import java.util.concurrent.TimeUnit
 import javax.sql.DataSource
 import kotlin.concurrent.thread
-import mu.KotlinLogging
 import no.liflig.cidashboard.common.database.DatabaseConfigurator.createJdbiInstance
+import no.liflig.logging.getLogger
 import org.flywaydb.core.Flyway
 import org.jdbi.v3.core.ConnectionFactory
 import org.jdbi.v3.core.Jdbi
@@ -24,7 +24,7 @@ import org.jdbi.v3.postgres.PostgresPlugin
 
 /** Creates new instances of JDBI ready to use in your application with [createJdbiInstance]. */
 object DatabaseConfigurator {
-  private val log = KotlinLogging.logger {}
+  private val log = getLogger()
 
   /**
    * Defined by `cpuCount * 2 + 2`.
@@ -140,7 +140,7 @@ object DatabaseConfigurator {
     for more.
      */
 
-    log.debug("Running database migrations...")
+    log.debug { "Running database migrations..." }
     flyway.migrate()
   }
 }

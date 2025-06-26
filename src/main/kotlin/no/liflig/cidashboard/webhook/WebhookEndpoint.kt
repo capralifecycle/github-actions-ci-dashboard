@@ -1,7 +1,6 @@
 package no.liflig.cidashboard.webhook
 
-import mu.KotlinLogging
-import mu.withLoggingContext
+import no.liflig.logging.getLogger
 import org.http4k.core.HttpHandler
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -15,7 +14,7 @@ import org.http4k.lens.nonBlankString
  */
 class WebhookEndpoint(private val incomingWebhookService: IncomingWebhookService) : HttpHandler {
   companion object {
-    private val log = KotlinLogging.logger {}
+    private val log = getLogger()
 
     /** E.g. `"workflow_run"`, `"ping"`. */
     private val webhookEventType: HeaderLens<String> =
@@ -38,11 +37,11 @@ class WebhookEndpoint(private val incomingWebhookService: IncomingWebhookService
           incomingWebhookService.handleWorkflowRun(event)
         }
         else -> {
-          withLoggingContext(
-              "request.body" to request.bodyString(),
-              "request.headers" to request.headers.joinToString()) {
-                log.error { "Unrecognized event: $eventType" }
-              }
+          log.error {
+            field("request.body", request.bodyString())
+            field("request.headers", request.headers.joinToString())
+            "Unrecognized event: $eventType"
+          }
         }
       }
 

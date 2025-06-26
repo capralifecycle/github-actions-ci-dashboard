@@ -7,7 +7,6 @@ import java.time.format.DateTimeParseException
 import java.util.Properties
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
-import kotlinx.serialization.json.Json
 import no.liflig.cidashboard.common.serialization.InstantSerializer
 import no.liflig.properties.intRequired
 import no.liflig.properties.stringNotNull
@@ -23,8 +22,6 @@ data class BuildInfo(
     /** CI build number. */
     val number: Int,
 ) {
-  fun toJson(): String = Json.encodeToString(serializer(), this)
-
   companion object {
     /** Create [BuildInfo] based on keys in `application.properties`. */
     fun from(properties: Properties) =
@@ -32,7 +29,7 @@ data class BuildInfo(
             timestamp =
                 try {
                   Instant.parse(properties.stringNotNull("build.timestamp"))
-                } catch (ex: DateTimeParseException) {
+                } catch (_: DateTimeParseException) {
                   Instant.ofEpochMilli(
                       0L,
                   )
@@ -42,7 +39,7 @@ data class BuildInfo(
             number =
                 try {
                   properties.intRequired("build.number")
-                } catch (ex: IllegalArgumentException) {
+                } catch (_: IllegalArgumentException) {
                   0
                 },
         )
