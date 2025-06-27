@@ -17,11 +17,15 @@ build: maven-build docker-build
 
 .PHONY: maven-build
 maven-build:
-	mvn clean package
+	mvn clean verify
 
 .PHONY: docker-build
 docker-build:
 	docker build -t $(APP_IMAGE_NAME):$(APP_IMAGE_TAG) .
+
+.PHONY: clean
+clean:
+	mvn clean
 
 .PHONY: run-jar
 run-jar:
