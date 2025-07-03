@@ -49,7 +49,7 @@
     <hikari-connectionpool.version>6.3.0</hikari-connectionpool.version>
     <jdbi.version>3.49.5</jdbi.version>
     <flyway.version>11.10.0</flyway.version>
-    <htmx.org.version>2.0.5</htmx.org.version>
+    <htmx.org.version>2.0.6</htmx.org.version>
     <htmx-idiomorph.version>0.7.3</htmx-idiomorph.version>
 
     <!-- Test-dependencies -->
