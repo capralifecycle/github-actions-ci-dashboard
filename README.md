@@ -1,4 +1,10 @@
-# GitHub Actions CI-Dashboard
+<h1 align="center">
+
+![logo](logo.svg)
+<br>
+  GitHub Actions CI-Dashboard
+<br>
+</h1>
 
 ![Java Badge](https://img.shields.io/badge/java-17-blue?logo=java)
 ![Kotlin Badge](https://img.shields.io/badge/kotlin--blue?logo=kotlin)
@@ -7,8 +13,10 @@
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=capralifecycle_github-actions-ci-dashboard&metric=code_smells&token=c098b4d25bf2f8a05ee55cb9aeb4b84eb1329689)](https://sonarcloud.io/summary/new_code?id=capralifecycle_github-actions-ci-dashboard)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=capralifecycle_github-actions-ci-dashboard&metric=coverage&token=c098b4d25bf2f8a05ee55cb9aeb4b84eb1329689)](https://sonarcloud.io/summary/new_code?id=capralifecycle_github-actions-ci-dashboard)
 
+
+
 Responsible for collecting GitHub Actions `workflow_run` webhook data and providing a web dashboard with recent CI build
-status.
+status. Put this on a TV in your office.
 
 ![Screenshot](docs/dashboard-screenshot.png)
 
@@ -98,7 +106,7 @@ the [AWS CodePipeline](https://eu-west-1.console.aws.amazon.com/codesuite/codepi
 ## License
 
 ```text
-Copyright 2024 Liflig By Capra AS
+Copyright 2025 Liflig AS (org.nr. 925906093)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

@@ -1,0 +1,48 @@
+<svg width="200" height="200" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CI Dashboard Logo">
+  <style>
+  .check-box {
+    transform-origin: 50px 60px;
+    animation: rotateBox 3s ease-in-out infinite;
+  }
+
+  .check-path {
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    animation: drawCheck 3s ease-out infinite;
+  }
+
+  @keyframes rotateBox {
+    0% { transform: rotate(0deg) scale(1); }
+    40% { transform: rotate(180deg) scale(0); }
+    60% { transform: rotate(180deg) scale(0); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+
+  @keyframes drawCheck {
+    0% { stroke-dashoffset: 30; }
+    32% { stroke-dashoffset: 30; }
+    40% { stroke-dashoffset: 0; }
+    60% { stroke-dashoffset: 0; }
+    68% { stroke-dashoffset: 30; }
+    100% { stroke-dashoffset: 30; }
+  }
+</style>
+
+  <rect width="160" height="160" rx="24" fill="#ffffff"/>
+  <rect x="30" y="40" width="100" height="80" rx="16" fill="none" stroke="#220038" stroke-width="4"/>
+
+  <!-- Top-left box (animated rotation) -->
+  <rect class="check-box" x="40" y="50" width="20" height="20" rx="6" fill="#4a11b7"/>
+
+  <!-- Check mark (drawn after box disappears) -->
+  <path class="check-path" d="M42 60 l6 6 l12 -14" fill="none" stroke="#4a11b7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Other grid tiles -->
+  <g fill="#220038">
+    <rect x="70" y="50" width="20" height="20" rx="6"/>
+    <rect x="100" y="50" width="20" height="20" rx="6"/>
+    <rect x="40" y="80" width="20" height="20" rx="6"/>
+    <rect x="70" y="80" width="20" height="20" rx="6"/>
+    <rect x="100" y="80" width="20" height="20" rx="6"/>
+  </g>
+</svg>
