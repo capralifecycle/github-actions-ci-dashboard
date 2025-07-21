@@ -51,6 +51,8 @@ class IndexEndpoint(
                     dashboardId ?: "default",
                     actualToken,
                     "/dashboard-updates",
+                    htmxVersion = "2.0.5",
+                    idiomorphVersion = "0.7.3",
                     pollRateSeconds = updatesPollRate.toDouble(DurationUnit.SECONDS)))
   }
 }
@@ -59,8 +61,10 @@ data class Index(
     val dashboardId: String,
     val secretToken: String,
     val pollUrl: String,
+    val htmxVersion: String,
+    val idiomorphVersion: String,
     val pollRateSeconds: Double = 5.0,
-    val version: String = LATEST_VERSION
+    val version: String = LATEST_VERSION,
 ) : ViewModel {
   override fun template(): String = "index"
 
