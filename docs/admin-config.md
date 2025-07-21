@@ -43,6 +43,6 @@ Since the POST payload is a list, you can specify multiple configurations at onc
 
 ## Automatic Reconfiguration
 
-Keep your configs in a json file in a repo. Then use the GitHub Actions
+Keep your configs in a `github-actions-ci-dashboards.json` file in a repo. Then use the GitHub Actions
 workflow [update-ci-dashboard.yaml](update-ci-dashboard.yaml) to automatically POST the config.
 
