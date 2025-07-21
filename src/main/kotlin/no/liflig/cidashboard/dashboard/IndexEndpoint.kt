@@ -3,6 +3,7 @@ package no.liflig.cidashboard.dashboard
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import no.liflig.cidashboard.common.config.ClientSecretToken
+import no.liflig.cidashboard.common.http4k.Webjars
 import org.http4k.core.Body
 import org.http4k.core.ContentType
 import org.http4k.core.HttpHandler
@@ -51,8 +52,6 @@ class IndexEndpoint(
                     dashboardId ?: "default",
                     actualToken,
                     "/dashboard-updates",
-                    htmxVersion = "2.0.5",
-                    idiomorphVersion = "0.7.3",
                     pollRateSeconds = updatesPollRate.toDouble(DurationUnit.SECONDS)))
   }
 }
@@ -61,11 +60,12 @@ data class Index(
     val dashboardId: String,
     val secretToken: String,
     val pollUrl: String,
-    val htmxVersion: String,
-    val idiomorphVersion: String,
     val pollRateSeconds: Double = 5.0,
-    val version: String = LATEST_VERSION,
 ) : ViewModel {
+  val htmxVersion: String = Webjars.htmxVersion
+  val idiomorphVersion: String = Webjars.idiomorphVersion
+  val version: String = LATEST_VERSION
+
   override fun template(): String = "index"
 
   companion object {
