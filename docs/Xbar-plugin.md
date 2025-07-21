@@ -36,16 +36,17 @@ fi
 
 echo "---"
 
-echo "$data" | jq '.[]' -c | while read -r line; do
-  
-  name=$(jq '.repo.name' -r <<< $line)
-  org=$(jq '.repo.owner' -r <<< $line)
-  status=$(jq '.lastStatus' -r <<< $line)
+while read -r line; do
+  name=$(echo $line | jq '.repo.name' -r)
+  org=$(echo $line | jq '.repo.owner' -r)
+  status=$(echo $line | jq '.lastStatus' -r)
 
   if [[ "$status" = "SUCCEEDED" ]]; then
     icon=✅
   elif [[ "$status" = "IN_PROGRESS" ]]; then
     icon=🔄
+  elif [[ "$status" = "QUEUED" ]]; then
+    icon=⏳
   elif [[ "$status" = "FAILED" ]]; then
     icon=❌
   else
@@ -53,5 +54,7 @@ echo "$data" | jq '.[]' -c | while read -r line; do
   fi
 
   echo "$icon $name | href=https://github.com/$org/$name"
-done
+done <<< "$(echo $data | jq '.[]' -c)"
+
+
 ```
