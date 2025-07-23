@@ -18,11 +18,11 @@
     "message": "Add feature\nThis is helpful",
     "commiter": {
       "id": 5,
-      "username": "krissrex",
+      "username": "username_y",
       "avatarUrl": "https://avatars.githubusercontent.com/u/7364831?v=4"
     }
   },
-  "triggeredBy": "krissrex",
+  "triggeredBy": "username_y",
   "lastSuccessfulCommit": {
     "sha": "456def",
     "commitDate": "2024-07-03T10:00:00Z",
@@ -30,7 +30,7 @@
     "message": "Initial commit",
     "commiter": {
       "id": 9,
-      "username": "mikaelthd",
+      "username": "username_x",
       "avatarUrl": ""
     }
   },

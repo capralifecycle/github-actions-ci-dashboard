@@ -119,10 +119,10 @@ data class GitHubWebhookWorkflowRun(
 
       @Serializable
       data class Committer(
-          /** `"Kristian Rekstad"` */
+          /** `"Kari Nordmann"` */
           val name: String,
 
-      // /** `"kre@capraconsulting.no"` */
+      // /** `"kristian@example.com"` */
       // val email: String?,
       )
     }

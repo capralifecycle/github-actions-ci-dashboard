@@ -174,9 +174,9 @@ fun createCiStatus(
                 commiter =
                     User(
                         id = UserId(5),
-                        username = Username("krissrex"),
+                        username = Username("username_y"),
                         avatarUrl = "https://avatars.githubusercontent.com/u/7364831?v=4")),
-        triggeredBy = Username("krissrex"),
+        triggeredBy = Username("username_y"),
         lastSuccessfulCommit = null,
         buildNumber = buildNumber,
         durationOfLastSuccess = durationOfLastSuccess)

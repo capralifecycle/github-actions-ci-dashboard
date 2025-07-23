@@ -16,7 +16,7 @@ class GitHubWebhookWorkflowRunTest {
     // Then
     assertThat(event.action).isEqualTo(GitHubWebhookWorkflowRun.Action.Requested)
     assertThat(event.workflowRun.name).isEqualTo("ci")
-    assertThat(event.sender.login).isEqualTo("krissrex")
+    assertThat(event.sender.login).isEqualTo("username_y")
   }
 
   @Test
@@ -31,7 +31,7 @@ class GitHubWebhookWorkflowRunTest {
     // Then
     assertThat(event.action).isEqualTo(GitHubWebhookWorkflowRun.Action.InProgress)
     assertThat(event.workflowRun.name).isEqualTo("ci")
-    assertThat(event.sender.login).isEqualTo("krissrex")
+    assertThat(event.sender.login).isEqualTo("username_y")
   }
 
   @Test
@@ -46,6 +46,6 @@ class GitHubWebhookWorkflowRunTest {
     // Then
     assertThat(event.action).isEqualTo(GitHubWebhookWorkflowRun.Action.Completed)
     assertThat(event.workflowRun.name).isEqualTo("ci")
-    assertThat(event.sender.login).isEqualTo("krissrex")
+    assertThat(event.sender.login).isEqualTo("username_y")
   }
 }

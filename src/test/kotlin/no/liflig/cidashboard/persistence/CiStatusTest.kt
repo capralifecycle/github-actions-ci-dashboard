@@ -33,9 +33,9 @@ class CiStatusTest {
                     commiter =
                         User(
                             id = UserId(5),
-                            username = Username("krissrex"),
+                            username = Username("username_y"),
                             avatarUrl = "https://avatars.githubusercontent.com/u/7364831?v=4")),
-            triggeredBy = Username("krissrex"),
+            triggeredBy = Username("username_y"),
             lastSuccessfulCommit =
                 Commit(
                     sha = "456def",
@@ -43,7 +43,7 @@ class CiStatusTest {
                     title = "Initial commit",
                     message = "Initial commit",
                     commiter =
-                        User(id = UserId(9), username = Username("mikaelthd"), avatarUrl = "")),
+                        User(id = UserId(9), username = Username("username_x"), avatarUrl = "")),
             durationOfLastSuccess = 5.minutes)
 
     // When
