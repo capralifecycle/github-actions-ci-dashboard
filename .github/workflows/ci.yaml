@@ -3,13 +3,6 @@ on:
   push:
     branches:
       - "**"
-  workflow_dispatch:
-    inputs:
-      deploy-to-dev:
-        description: "Whether to deploy to dev"
-        type: boolean
-        required: true
-        default: false
 
 env:
   APPLICATION_NAME: "GitHubActionsCiDashboard"
@@ -102,7 +95,7 @@ jobs:
         env:
           ECR_REPOSITORY_URI: "${{ steps.config.outputs.accountId }}.dkr.ecr.eu-west-1.amazonaws.com/${{ steps.config.outputs.ecrRepository }}"
           DEFAULT_TAG: "${{ steps.tag.outputs.tag }}"
-          CONDITIONAL_PUSH: "${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) || inputs.deploy-to-dev }}"
+          CONDITIONAL_PUSH: "${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}"
           GIT_COMMIT_SHA: "${{ github.sha }}"
         run: |
           image_id="$(docker build -q --build-arg service_version=$GIT_COMMIT_SHA .)"
@@ -110,21 +103,6 @@ jobs:
             docker tag "$image_id" "$ECR_REPOSITORY_URI:$DEFAULT_TAG"
             docker push "$ECR_REPOSITORY_URI:$DEFAULT_TAG"
           fi
-
-      #- name: trigger development deployment pipelines
-      #  uses: capralifecycle/actions-lib/trigger-deployment-pipeline@6eec40efec972ae86feb9dac823a34067f1d2384 # v1.3.0
-      #  if: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) || inputs.deploy-to-dev }}
-      #  env:
-      #    AWS_ACCESS_KEY_ID: ${{ steps.aws.outputs.aws-access-key-id }}
-      #    AWS_SECRET_ACCESS_KEY: ${{ steps.aws.outputs.aws-secret-access-key }}
-      #    AWS_SESSION_TOKEN: ${{ steps.aws.outputs.aws-session-token }}
-      #  with:
-      #    pipelines: ${{ steps.config.outputs.devPipelines }}
-      #    aws-s3-bucket-name: ${{ steps.config.outputs.artifactBucket }}
-      #    trigger-type: "artifact"
-      #    # NOTE: The key passed to artifact-parameters will be the name of
-      #    # the SSM parameter where the reference to the artifact is stored.
-      #    artifact-parameters: "dev${{ env.CDK_ECR_TAG_NAME }}EcrTag=${{ steps.tag.outputs.tag }}"
 
       - name: trigger production deployment pipelines
         uses: capralifecycle/actions-lib/trigger-deployment-pipeline@15d6e3ef41e608eb59e4c12c656018b832c0117c # v1.6.1
