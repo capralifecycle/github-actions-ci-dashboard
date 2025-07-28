@@ -1,6 +1,6 @@
 {
   "extends": ["github>capraconsulting/renovate-config:default"],
-  "automerge": false,
+  "automerge": true,
   "automergeType": "branch",
   "packageRules": []
 }
