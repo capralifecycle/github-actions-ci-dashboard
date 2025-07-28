@@ -46,7 +46,7 @@
     <kotlin.compiler.apiVersion>2.1</kotlin.compiler.apiVersion>
 
     <!-- Liflig-dependencies -->
-    <liflig-document-store.version>3.20250626.132500</liflig-document-store.version>
+    <liflig-document-store.version>3.20250725.170539</liflig-document-store.version>
     <liflig-properties.version>2.20250728.101328</liflig-properties.version>
     <liflig-http4k-setup.version>4.20250724.184711</liflig-http4k-setup.version>
     <liflig-logging.version>2.20250628.065931</liflig-logging.version>
