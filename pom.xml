@@ -50,7 +50,7 @@
     <liflig-properties.version>2.20250729.081227</liflig-properties.version>
     <liflig-http4k-setup.version>4.20250729.143816</liflig-http4k-setup.version>
     <liflig-logging.version>2.20250628.065931</liflig-logging.version>
-    <liflig-snapshot-test.version>1.20250724.180835</liflig-snapshot-test.version>
+    <liflig-snapshot-test.version>1.20250801.035219</liflig-snapshot-test.version>
 
     <!-- App -->
     <kotlinx-serialization.version>1.9.0</kotlinx-serialization.version>
