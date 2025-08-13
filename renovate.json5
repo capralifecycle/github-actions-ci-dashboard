@@ -2,5 +2,13 @@
   "extends": ["github>capraconsulting/renovate-config:default"],
   "automerge": true,
   "automergeType": "branch",
-  "packageRules": []
+  "packageRules": [
+    {
+      // Chrome 75 does not support htmx 2.0.5+. It is used by Chromebit sticks
+      "matchPackageNames": [
+        "org.webjars.npm:htmx.org"
+      ],
+      "allowedVersions": "2.0.4"
+    }
+  ]
 }
