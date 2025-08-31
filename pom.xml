@@ -71,7 +71,7 @@
     <assertj-core.version>3.27.4</assertj-core.version>
     <rest-assured.version>5.5.6</rest-assured.version>
     <testcontainers.postgresql.version>1.21.3</testcontainers.postgresql.version>
-    <playwright.version>1.54.0</playwright.version>
+    <playwright.version>1.55.0</playwright.version>
 
     <!-- Maven -->
     <ktfmt.version>0.43</ktfmt.version>
