@@ -5,7 +5,7 @@
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
     <encoder class="net.logstash.logback.encoder.LogstashEncoder">
       <!-- Writes object values from logging context as actual JSON (not escaped) -->
-      <mdcEntryWriter class="no.liflig.logging.LoggingContextJsonFieldWriter"/>
+      <mdcEntryWriter class="no.liflig.logging.output.logback.JsonContextFieldWriter"/>
     </encoder>
 
     <file>log.json</file>

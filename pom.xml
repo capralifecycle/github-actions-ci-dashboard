@@ -11,6 +11,7 @@
     <relativePath/>
   </parent>
 
+  <!--suppress MavenRedundantGroupId -->
   <groupId>no.liflig</groupId>
   <artifactId>github-actions-ci-dashboard</artifactId>
   <packaging>jar</packaging>
@@ -45,11 +46,11 @@
     <kotlin.version>2.2.10</kotlin.version>
     <kotlin.compiler.apiVersion>2.1</kotlin.compiler.apiVersion>
 
-    <!-- Liflig-dependencies -->
-    <liflig-document-store.version>3.20250725.170539</liflig-document-store.version>
-    <liflig-properties.version>2.20250901.165507</liflig-properties.version>
-    <liflig-http4k-setup.version>4.20250901.085937</liflig-http4k-setup.version>
-    <liflig-logging.version>2.20250901.091145</liflig-logging.version>
+    <!-- Liflig -->
+    <liflig-document-store.version>3.20250902.120624</liflig-document-store.version>
+    <liflig-properties.version>2.20250907.151241</liflig-properties.version>
+    <liflig-http4k-setup.version>4.20250907.152958</liflig-http4k-setup.version>
+    <liflig-logging.version>2.20250907.150844</liflig-logging.version>
     <liflig-snapshot-test.version>1.20250902.120604</liflig-snapshot-test.version>
 
     <!-- App -->
@@ -141,6 +142,14 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- Liflig -->
+      <dependency>
+        <groupId>no.liflig</groupId>
+        <artifactId>liflig-logging</artifactId>
+        <version>${liflig-logging.version}</version>
+      </dependency>
+
+      <!-- App -->
       <dependency>
         <groupId>org.http4k</groupId>
         <artifactId>http4k-bom</artifactId>
@@ -149,6 +158,7 @@
         <scope>import</scope>
       </dependency>
 
+      <!-- Testing -->
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
@@ -167,12 +177,29 @@
       <version>${kotlin.version}</version>
     </dependency>
 
-    <!--        Logging         -->
+    <!--        Liflig          -->
+    <dependency>
+      <groupId>no.liflig</groupId>
+      <artifactId>liflig-http4k-setup</artifactId>
+      <version>${liflig-http4k-setup.version}</version>
+    </dependency>
     <dependency>
       <groupId>no.liflig</groupId>
       <artifactId>liflig-logging</artifactId>
-      <version>${liflig-logging.version}</version>
     </dependency>
+    <dependency>
+      <groupId>no.liflig</groupId>
+      <artifactId>properties</artifactId>
+      <version>${liflig-properties.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>no.liflig</groupId>
+      <artifactId>snapshot-test</artifactId>
+      <version>${liflig-snapshot-test.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!--        Logging         -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
@@ -188,25 +215,6 @@
       <artifactId>jul-to-slf4j</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
-
-    <!--        Liflig          -->
-    <dependency>
-      <groupId>no.liflig</groupId>
-      <artifactId>liflig-http4k-setup</artifactId>
-      <version>${liflig-http4k-setup.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>no.liflig</groupId>
-      <artifactId>properties</artifactId>
-      <version>${liflig-properties.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>no.liflig</groupId>
-      <artifactId>snapshot-test</artifactId>
-      <version>${liflig-snapshot-test.version}</version>
-      <scope>test</scope>
-    </dependency>
-
 
     <!--        HTTP4K          -->
     <dependency>
