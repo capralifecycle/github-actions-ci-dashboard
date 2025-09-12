@@ -391,3 +391,9 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+all,intellij+iml,intellij,macos,vim,linux,windows,java,kotlin,maven
+
+# Claude and local development files
+.claude/
+AGENTS/
+.mcp.json
+.mise.local.toml
