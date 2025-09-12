@@ -35,14 +35,16 @@ fun GitHubWebhookWorkflowRun.toCiStatus() =
               GitHubWebhookWorkflowRun.Action.Completed ->
                   when (workflowRun.conclusion) {
                     null,
-                    GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.ActionRequired ->
+                    GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.ActionRequired, ->
                         PipelineStatus.IN_PROGRESS
-                    GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Cancelled,
                     GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Neutral,
                     GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Skipped,
                     GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Stale,
                     GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.TimedOut,
-                    GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Failure -> PipelineStatus.FAILED
+                    GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Failure, ->
+                        PipelineStatus.FAILED
+                    GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Cancelled ->
+                        PipelineStatus.CANCELLED
                     Success -> PipelineStatus.SUCCEEDED
                   }
             },
@@ -58,7 +60,9 @@ fun GitHubWebhookWorkflowRun.toCiStatus() =
                     User(
                         id = UserId(workflowRun.actor.id),
                         username = Username(workflowRun.actor.login),
-                        avatarUrl = workflowRun.actor.avatarUrl)),
+                        avatarUrl = workflowRun.actor.avatarUrl,
+                    ),
+            ),
         triggeredBy = Username(workflowRun.triggeringActor.login),
         lastSuccessfulCommit = null,
         buildNumber = workflowRun.runNumber,
@@ -67,11 +71,14 @@ fun GitHubWebhookWorkflowRun.toCiStatus() =
               timeBetween(workflowRun.runStartedAt, workflowRun.updatedAt)
             } else {
               null
-            })
+            },
+    )
 
 fun CiStatusId.Companion.from(workflowRunEvent: GitHubWebhookWorkflowRun): CiStatusId =
     // Not sure if we need more identifiers. Is the workflow id unique per fork of a repo?
     CiStatusId("${workflowRunEvent.workflow.id}-${workflowRunEvent.workflowRun.headBranch}")
 
-private fun timeBetween(start: Instant, stop: Instant): Duration =
-    abs(stop.toEpochMilli() - start.toEpochMilli()).milliseconds
+private fun timeBetween(
+    start: Instant,
+    stop: Instant,
+): Duration = abs(stop.toEpochMilli() - start.toEpochMilli()).milliseconds
