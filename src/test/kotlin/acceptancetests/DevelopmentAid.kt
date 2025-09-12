@@ -39,6 +39,7 @@ class DevelopmentAid {
 
     infra.gitHub.sendWebhook(createPayload("repo-c", CiStatus.PipelineStatus.SUCCEEDED))
     infra.gitHub.sendWebhook(createPayload("repo-d", CiStatus.PipelineStatus.FAILED))
+    infra.gitHub.sendWebhook(createPayload("repo-e", CiStatus.PipelineStatus.CANCELLED))
 
     // Give it a previous success runtime, to measure progress
     infra.gitHub.sendWebhook(createPayload("repo-b", CiStatus.PipelineStatus.SUCCEEDED))
@@ -77,6 +78,8 @@ class DevelopmentAid {
                           "acceptancetests/webhook/user-workflow_run-in_progress.json"
                       CiStatus.PipelineStatus.FAILED ->
                           "acceptancetests/webhook/user-workflow_run-completed-failure.json"
+                      CiStatus.PipelineStatus.CANCELLED ->
+                          "acceptancetests/webhook/renovate-bot-workflow_run-completed-cancelled.json"
                       CiStatus.PipelineStatus.SUCCEEDED ->
                           "acceptancetests/webhook/renovate-bot-workflow_run-completed-success.json"
                     }))
