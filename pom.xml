@@ -75,7 +75,7 @@
     <playwright.version>1.55.0</playwright.version>
 
     <!-- Maven -->
-    <ktfmt.version>0.43</ktfmt.version>
+    <ktfmt.version>0.56</ktfmt.version>
     <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
     <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
     <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
@@ -532,7 +532,7 @@
           <kotlin>
             <ktfmt>
               <version>${ktfmt.version}</version>
-              <style>DEFAULT</style>
+              <style>META</style>
             </ktfmt>
           </kotlin>
         </configuration>

@@ -46,16 +46,14 @@ data class WebhookOptions(
                     ?.split(",")
                     ?.map { it.trim() }
                     ?.filter { it.isNotBlank() }
-                    ?.let { BranchWhitelist(it) }
-                    ?: BranchWhitelist(emptyList()),
+                    ?.let { BranchWhitelist(it) } ?: BranchWhitelist(emptyList()),
             workflowNameWhitelist =
                 properties
                     .string("webhook.workflowNameWhitelist")
                     ?.split(",")
                     ?.map { it.trim() }
                     ?.filter { it.isNotBlank() }
-                    ?.let { WorkflowNameWhitelist(it) }
-                    ?: WorkflowNameWhitelist(emptyList()),
+                    ?.let { WorkflowNameWhitelist(it) } ?: WorkflowNameWhitelist(emptyList()),
         )
   }
 }

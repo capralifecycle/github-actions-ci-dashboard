@@ -28,6 +28,7 @@ data class DashboardConfig(
     val timezone: String = ZoneId.of("Europe/Oslo").id,
 ) {
   constructor(id: String) : this(DashboardConfigId(id))
+
   constructor(
       id: String,
       orgMatchers: List<OrganizationMatcher>

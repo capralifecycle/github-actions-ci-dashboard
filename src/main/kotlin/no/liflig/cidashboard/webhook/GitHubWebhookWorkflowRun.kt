@@ -122,8 +122,8 @@ data class GitHubWebhookWorkflowRun(
           /** `"Kari Nordmann"` */
           val name: String,
 
-      // /** `"kristian@example.com"` */
-      // val email: String?,
+          // /** `"kristian@example.com"` */
+          // val email: String?,
       )
     }
   }
