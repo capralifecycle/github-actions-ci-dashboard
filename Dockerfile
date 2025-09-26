@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:21-jre-headless-latest@sha256:fa28fd282d7bbf1fa9cf5f21121254c7e6e340254ea3b833eb3d60ee922a293d
+FROM azul/zulu-openjdk-alpine:25-jre-headless-latest@sha256:b5048391a8465e10e04ee4091726402ef08d936be5ad14591c8e23fb5c34edbc
 
 RUN apk add --update --no-cache bind-tools
 RUN set -eux; \
