@@ -38,7 +38,8 @@ data class ApiOptions(
             clientSecretToken =
                 ClientSecretToken(props.stringNotEmpty("dashboard.client.secretToken")),
             adminSecretToken = AdminSecretToken(props.stringNotEmpty("admin.secretToken")),
-            devtoolSecretToken = DevtoolSecretToken(props.stringNotEmpty("api.devtool.secret")))
+            devtoolSecretToken = DevtoolSecretToken(props.stringNotEmpty("api.devtool.secret")),
+        )
   }
 }
 

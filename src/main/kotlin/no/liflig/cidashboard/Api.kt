@@ -43,13 +43,14 @@ import org.http4k.server.asServer
 fun createApiServer(
     options: ApiOptions,
     webhookOptions: WebhookOptions,
-    services: ApiServices
+    services: ApiServices,
 ): RoutingHttpHandler {
   val basicApiSetup =
       LifligBasicApiSetup(
           logHandler = LoggingFilter.createLogHandler(suppressSuccessfulHealthChecks = true),
           logHttpBody = options.logHttpBody,
-          corsPolicy = options.corsPolicy)
+          corsPolicy = options.corsPolicy,
+      )
 
   val coreFilters =
       basicApiSetup.create(principalLog = { null }).coreFilters.then(ServerFilters.GZip())
@@ -65,7 +66,8 @@ fun createApiServer(
               DashboardUpdatesEndpoint(
                   services.dashboardUpdatesService,
                   options.clientSecretToken,
-                  options.hotReloadTemplates),
+                  options.hotReloadTemplates,
+              ),
           webhookOptions.path bind
               Method.POST to
               WebhookSecretValidatorFilter(webhookOptions.secret)
@@ -87,12 +89,15 @@ fun createApiServer(
               ServerFilters.BearerAuth(token = options.adminSecretToken.value)
                   .then(DashboardConfigEndpoint(services.dashboardConfigService)),
           static(Classpath("/static")),
-          webJars()))
+          webJars(),
+      )
+  )
 }
 
 fun RoutingHttpHandler.asJettyServer(options: ApiOptions): Http4kServer =
     this.asServer(
-        Jetty(options.serverPort.value, httpNoServerVersionHeader(options.serverPort.value)))
+        Jetty(options.serverPort.value, httpNoServerVersionHeader(options.serverPort.value))
+    )
 
 /** Service registry for creating endpoints. */
 data class ApiServices(
@@ -101,5 +106,5 @@ data class ApiServices(
     val dashboardUpdatesService: DashboardUpdatesService,
     val dashboardConfigService: DashboardConfigService,
     val deleteDatabaseRowsService: DeleteDatabaseRowsService,
-    val filteredStatusesService: FilteredStatusesService
+    val filteredStatusesService: FilteredStatusesService,
 )

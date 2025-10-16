@@ -36,7 +36,8 @@ class CiStatusRepoTest {
           DatabaseConfigurator.createJdbiInstance(
               DbUrl(config.database.jdbcUrl),
               DbUsername(config.database.username),
-              DbPassword(config.database.password))
+              DbPassword(config.database.password),
+          )
     }
 
     @AfterAll
@@ -160,7 +161,8 @@ fun createCiStatus(
                 id = RepoId(2),
                 name = RepoName(repoName),
                 owner = Username(repoOwner),
-                defaultBranch = BranchName("master")),
+                defaultBranch = BranchName("master"),
+            ),
         branch = BranchName(branchName),
         lastStatus = lastStatus,
         startedAt = Instant.ofEpochMilli(0),
@@ -175,8 +177,11 @@ fun createCiStatus(
                     User(
                         id = UserId(5),
                         username = Username("username_y"),
-                        avatarUrl = "https://avatars.githubusercontent.com/u/7364831?v=4")),
+                        avatarUrl = "https://avatars.githubusercontent.com/u/7364831?v=4",
+                    ),
+            ),
         triggeredBy = Username("username_y"),
         lastSuccessfulCommit = null,
         buildNumber = buildNumber,
-        durationOfLastSuccess = durationOfLastSuccess)
+        durationOfLastSuccess = durationOfLastSuccess,
+    )

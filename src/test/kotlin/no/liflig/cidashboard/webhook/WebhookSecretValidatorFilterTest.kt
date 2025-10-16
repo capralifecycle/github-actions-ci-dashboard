@@ -23,7 +23,8 @@ class WebhookSecretValidatorFilterTest {
     val headers: Headers =
         listOf(
             "X-Hub-Signature-256" to
-                "sha256=757107ea0eb2509fc211221cce984b8a37570b6d7586c22c46f4379c8b043e17")
+                "sha256=757107ea0eb2509fc211221cce984b8a37570b6d7586c22c46f4379c8b043e17"
+        )
 
     val nextHandlerWasCalled = AtomicBoolean(false)
     val okHandler: HttpHandler = { _ ->
@@ -46,7 +47,8 @@ class WebhookSecretValidatorFilterTest {
     val headers: Headers =
         listOf(
             "X-Hub-Signature-256" to
-                "sha256=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+                "sha256=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        )
 
     val nextHandlerWasCalled = AtomicBoolean(false)
     val okHandler: HttpHandler = { _ ->

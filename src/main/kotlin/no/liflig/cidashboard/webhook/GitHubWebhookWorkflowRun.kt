@@ -17,7 +17,7 @@ data class GitHubWebhookWorkflowRun(
     val workflow: Workflow,
     val repository: Repository,
     val organization: Organization?,
-    val sender: Sender
+    val sender: Sender,
 ) : WebhookPayload {
 
   companion object {
@@ -33,7 +33,7 @@ data class GitHubWebhookWorkflowRun(
   enum class Action {
     @SerialName("requested") Requested,
     @SerialName("in_progress") InProgress,
-    @SerialName("completed") Completed
+    @SerialName("completed") Completed,
   }
 
   @Serializable
@@ -191,7 +191,7 @@ data class GitHubWebhookWorkflowRun(
     @Serializable
     enum class Type {
       User,
-      Bot
+      Bot,
     }
   }
 }

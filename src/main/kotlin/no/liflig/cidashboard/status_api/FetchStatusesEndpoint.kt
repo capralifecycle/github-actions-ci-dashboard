@@ -31,7 +31,8 @@ class FetchStatusesEndpoint(private val filteredStatusesService: FilteredStatuse
             .defaulted(
                 "exceed_count_to_include_failures",
                 true,
-                "Return more than <count> statuses to ensure all failures are included.")
+                "Return more than <count> statuses to ensure all failures are included.",
+            )
     private val countLens =
         Query.int().optional("count", "Max number of latest build statuses to fetch")
 
@@ -46,7 +47,11 @@ class FetchStatusesEndpoint(private val filteredStatusesService: FilteredStatuse
 
     val filteredCiStatuses =
         filteredStatusesService.getFilteredCiStatuses(
-            repoFilter, userFilter, count, includeAllFailures)
+            repoFilter,
+            userFilter,
+            count,
+            includeAllFailures,
+        )
 
     return Response(Status.OK).with(bodyLens of filteredCiStatuses)
   }

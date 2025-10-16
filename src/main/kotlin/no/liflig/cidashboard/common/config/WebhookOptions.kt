@@ -11,7 +11,7 @@ data class WebhookOptions(
     val path: String,
     val secret: Secret,
     val branchWhitelist: BranchWhitelist,
-    val workflowNameWhitelist: WorkflowNameWhitelist
+    val workflowNameWhitelist: WorkflowNameWhitelist,
 ) {
 
   init {

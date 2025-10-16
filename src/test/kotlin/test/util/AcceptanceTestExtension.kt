@@ -72,12 +72,14 @@ class AcceptanceTestExtension(val fastPoll: Boolean = true) :
     gitHub.initialize(
         port = config.apiOptions.serverPort,
         webhookPath = config.webhookOptions.path,
-        webhookSecret = config.webhookOptions.secret)
+        webhookSecret = config.webhookOptions.secret,
+    )
 
     tvBrowser.initialize(
         port = config.apiOptions.serverPort,
         authToken = config.apiOptions.clientSecretToken,
-        dashboardId = "abc")
+        dashboardId = "abc",
+    )
   }
 
   override fun afterAll(context: ExtensionContext) {
@@ -129,7 +131,8 @@ class AcceptanceTestExtension(val fastPoll: Boolean = true) :
           "X-Hub-Signature-256",
           "sha256=" +
               HmacSha256.hmacSHA256(webhookSecret.value.toByteArray(Charsets.UTF_8), body)
-                  .toHexString(HexFormat.Default))
+                  .toHexString(HexFormat.Default),
+      )
     }
 
     fun sendWebhook(payload: WebhookPayload) {
@@ -185,8 +188,10 @@ class AcceptanceTestExtension(val fastPoll: Boolean = true) :
                       password = password,
                       dbname = databaseName,
                       hostname = host,
-                      port = firstMappedPort)
-                })
+                      port = firstMappedPort,
+                  )
+                }
+        )
 
     /** Does not clear Flyway migrations table or delete tables. This only deletes rows */
     fun clearAllData() {
@@ -203,7 +208,8 @@ BEGIN
     LOOP
         EXECUTE 'TRUNCATE TABLE ' || tablename || ' RESTART IDENTITY CASCADE;';
     END LOOP;
-END${'$'}${'$'};""")
+END${'$'}${'$'};"""
+        )
       }
     }
   }
@@ -219,14 +225,15 @@ END${'$'}${'$'};""")
             .launch(
                 // Uncomment for manual testing:
                 // BrowserType.LaunchOptions().setHeadless(false).setSlowMo(5000.0)
-                )
+            )
     private val context: BrowserContext =
         browser.newContext(
             Browser.NewContextOptions()
                 .setLocale("no-nb")
                 .setTimezoneId("Europe/Oslo")
                 .setScreenSize(1920, 1080)
-                .setViewportSize(1920, 1080))
+                .setViewportSize(1920, 1080)
+        )
 
     val page: Page = context.newPage()
 
@@ -279,8 +286,10 @@ END${'$'}${'$'};""")
           Page.ScreenshotOptions()
               .setAnimations(
                   ScreenshotAnimations
-                      .DISABLED /* Avoid generating new screenshots just because the in-progress status is animated */)
-              .setPath(Paths.get("docs/dashboard-screenshot.png")))
+                      .DISABLED /* Avoid generating new screenshots just because the in-progress status is animated */
+              )
+              .setPath(Paths.get("docs/dashboard-screenshot.png"))
+      )
     }
   }
 }
@@ -295,7 +304,7 @@ interface WebhookPayload {
 data class FileWebhookPayload(
     val name: String,
     private val filePath: String,
-    override val type: String
+    override val type: String,
 ) : WebhookPayload {
   init {
     require(!filePath.startsWith("/")) { "Path should not start with '/'" }
@@ -304,7 +313,10 @@ data class FileWebhookPayload(
   object Ping {
     val WEBHOOK_CREATED_PING =
         FileWebhookPayload(
-            "WEBHOOK_CREATED_PING", "acceptancetests/webhook/github-ping-body.json", "ping")
+            "WEBHOOK_CREATED_PING",
+            "acceptancetests/webhook/github-ping-body.json",
+            "ping",
+        )
   }
 
   object ExampleRepo {
@@ -314,22 +326,26 @@ data class FileWebhookPayload(
         FileWebhookPayload(
             "WORKFLOW_RUN_1_REQUESTED",
             "acceptancetests/webhook/user-workflow_run-requested.json",
-            "workflow_run")
+            "workflow_run",
+        )
     val WORKFLOW_RUN_1_IN_PROGRESS =
         FileWebhookPayload(
             "WORKFLOW_RUN_1_IN_PROGRESS",
             "acceptancetests/webhook/user-workflow_run-in_progress.json",
-            "workflow_run")
+            "workflow_run",
+        )
     val WORKFLOW_RUN_1_COMPLETED_FAILURE =
         FileWebhookPayload(
             "WORKFLOW_RUN_1_FAILURE",
             "acceptancetests/webhook/user-workflow_run-completed-failure.json",
-            "workflow_run")
+            "workflow_run",
+        )
     val WORKFLOW_RUN_1_COMPLETED_SUCCESS =
         FileWebhookPayload(
             "WORKFLOW_RUN_1_SUCCESS",
             "acceptancetests/webhook/renovate-bot-workflow_run-completed-success.json",
-            "workflow_run")
+            "workflow_run",
+        )
   }
 
   /** Just used to generate a screenshot with a failed build. */
@@ -339,14 +355,16 @@ data class FileWebhookPayload(
         FileWebhookPayload(
             "WORKFLOW_RUN_1_FAILURE",
             "acceptancetests/webhook/liflig-properties-user-workflow_run-completed-failure.json",
-            "workflow_run")
+            "workflow_run",
+        )
 
     const val repoNameLifligCdk = "liflig-cdk"
     val LIFLIG_CDK_WORKFLOW_RUN_2_IN_PROGRESS =
         FileWebhookPayload(
             "WORKFLOW_RUN_2_IN_PROGRESS",
             "acceptancetests/webhook/liflig-cdk-user-workflow_run-in_progress.json",
-            "workflow_run")
+            "workflow_run",
+        )
   }
 
   override fun asJson(): String {

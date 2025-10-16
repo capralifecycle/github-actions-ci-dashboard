@@ -7,7 +7,7 @@
   <parent>
     <groupId>no.liflig</groupId>
     <artifactId>kotlin-parent</artifactId>
-    <version>3.20251003.025713</version>
+    <version>3.20251016.053254</version>
     <relativePath/>
   </parent>
 
@@ -48,10 +48,10 @@
 
     <!-- Liflig -->
     <liflig-document-store.version>3.20250902.120624</liflig-document-store.version>
-    <liflig-properties.version>2.20250912.101119</liflig-properties.version>
-    <liflig-http4k-setup.version>4.20251001.040150</liflig-http4k-setup.version>
-    <liflig-logging.version>2.20251010.123209</liflig-logging.version>
-    <liflig-snapshot-test.version>1.20251001.035037</liflig-snapshot-test.version>
+    <liflig-properties.version>2.20251016.083228</liflig-properties.version>
+    <liflig-http4k-setup.version>4.20251016.084047</liflig-http4k-setup.version>
+    <liflig-logging.version>2.20251016.073034</liflig-logging.version>
+    <liflig-snapshot-test.version>1.20251016.094830</liflig-snapshot-test.version>
 
     <!-- App -->
     <kotlinx-serialization.version>1.9.0</kotlinx-serialization.version>
@@ -62,9 +62,9 @@
     <postgresql.version>42.7.8</postgresql.version>
     <hikari-connectionpool.version>7.0.2</hikari-connectionpool.version>
     <jdbi.version>3.49.6</jdbi.version>
-    <flyway.version>11.14.0</flyway.version>
-    <htmx.org.version>2.0.4</htmx.org.version>
-    <htmx-idiomorph.version>0.7.3</htmx-idiomorph.version>
+    <flyway.version>11.14.1</flyway.version>
+    <htmx.org.version>2.0.7</htmx.org.version>
+    <htmx-idiomorph.version>0.7.4</htmx-idiomorph.version>
 
     <!-- Test-dependencies -->
     <junit.version>6.0.0</junit.version>
@@ -75,7 +75,7 @@
     <playwright.version>1.55.0</playwright.version>
 
     <!-- Maven -->
-    <ktfmt.version>0.56</ktfmt.version>
+    <ktfmt.version>0.58</ktfmt.version>
     <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
     <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
     <maven-shade-plugin.version>3.6.1</maven-shade-plugin.version>

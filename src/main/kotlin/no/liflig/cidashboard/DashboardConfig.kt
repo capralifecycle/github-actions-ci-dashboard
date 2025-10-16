@@ -31,7 +31,7 @@ data class DashboardConfig(
 
   constructor(
       id: String,
-      orgMatchers: List<OrganizationMatcher>
+      orgMatchers: List<OrganizationMatcher>,
   ) : this(DashboardConfigId(id), orgMatchers = orgMatchers)
 
   companion object {
@@ -70,14 +70,14 @@ interface Matcher {
 @Persisted
 data class OrganizationMatcher(
     override val matcher: Regex,
-    val repoMatchers: List<RepositoryMatcher> = listOf(RepositoryMatcher(Regex(".*")))
+    val repoMatchers: List<RepositoryMatcher> = listOf(RepositoryMatcher(Regex(".*"))),
 ) : Matcher
 
 @Serializable
 @Persisted
 data class RepositoryMatcher(
     override val matcher: Regex,
-    val branchMatchers: List<BranchMatcher> = listOf(BranchMatcher(Regex(".*")))
+    val branchMatchers: List<BranchMatcher> = listOf(BranchMatcher(Regex(".*"))),
 ) : Matcher
 
 @Serializable @Persisted data class BranchMatcher(override val matcher: Regex) : Matcher

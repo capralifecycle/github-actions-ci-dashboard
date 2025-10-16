@@ -34,7 +34,8 @@ class WebhookSecretValidatorFilter(private val secret: WebhookOptions.Secret) : 
         Header.nonBlankString()
             .required(
                 "X-Hub-Signature-256",
-                "The payload signature signed with HMAC SHA-256 and the Webhook Secret")
+                "The payload signature signed with HMAC SHA-256 and the Webhook Secret",
+            )
   }
 
   override fun invoke(next: HttpHandler): HttpHandler = { request: Request ->
@@ -58,7 +59,7 @@ class WebhookSecretValidatorFilter(private val secret: WebhookOptions.Secret) : 
       secret: WebhookOptions.Secret,
       signature: String,
       /** Must be decoded using utf-8 */
-      requestBody: String
+      requestBody: String,
   ): Boolean {
     val selfCalculatedSignature =
         "sha256=" +
@@ -69,7 +70,9 @@ class WebhookSecretValidatorFilter(private val secret: WebhookOptions.Secret) : 
 
     val isValid =
         MessageDigest.isEqual(
-            selfCalculatedSignature.toByteArray(Charsets.UTF_8), untrustedSignature)
+            selfCalculatedSignature.toByteArray(Charsets.UTF_8),
+            untrustedSignature,
+        )
 
     return isValid
   }

@@ -50,11 +50,14 @@ class DashboardUpdatesEndpoint(
     private val versionLens: BiDiLens<Request, String?> =
         Query.optional(
             "version",
-            "Used to reload the entire page when the frontend is using an old index.html.")
+            "Used to reload the entire page when the frontend is using an old index.html.",
+        )
 
     val tokenLens =
         Query.required(
-            "token", "Authorization so strangers don't see our repositories and thus customers.")
+            "token",
+            "Authorization so strangers don't see our repositories and thus customers.",
+        )
   }
 
   override fun invoke(request: Request): Response {
@@ -77,7 +80,9 @@ class DashboardUpdatesEndpoint(
                     statuses = data.lastBuilds,
                     failedBuilds = data.allFailedBuilds,
                     config = data.config ?: DashboardConfig("default"),
-                    now = clock.instant()))
+                    now = clock.instant(),
+                )
+        )
         .with(reloadEntirePageLens of shouldReload)
   }
 }

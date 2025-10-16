@@ -10,7 +10,7 @@ package no.liflig.cidashboard.webhook
 object WhitelistWorkflowNamePolicy {
   fun shouldIgnore(
       workflowRun: GitHubWebhookWorkflowRun,
-      whitelist: WorkflowNameWhitelist
+      whitelist: WorkflowNameWhitelist,
   ): Boolean {
     if (whitelist.value.isEmpty()) {
       return false

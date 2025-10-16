@@ -34,14 +34,14 @@ data class GitHubWebhookPing(val hook: Hook, val organization: Organization?, va
       val id: Long,
       /** `["workflow_run"]` */
       val events: List<String>,
-      val config: Config
+      val config: Config,
   ) {
     @Serializable
     data class Config(
         /** `"json"` */
         @SerialName("content_type") val contentType: String,
         /** `"********"` */
-        @Serializable(with = SecretSerializer::class) val secret: WebhookOptions.Secret
+        @Serializable(with = SecretSerializer::class) val secret: WebhookOptions.Secret,
     )
   }
 
@@ -56,7 +56,7 @@ data class GitHubWebhookPing(val hook: Hook, val organization: Organization?, va
       /** `"krissrex"` */
       val login: String,
       /** `"User"` */
-      val type: String
+      val type: String,
   )
 }
 

@@ -10,7 +10,7 @@ import org.jdbi.v3.core.Jdbi
 
 class DashboardUpdatesService(
     private val useCiStatusRepo: UseCiStatusRepo<DashboardData>,
-    private val useDashboardConfigRepo: UseDashboardConfigRepo<DashboardConfig?>
+    private val useDashboardConfigRepo: UseDashboardConfigRepo<DashboardConfig?>,
 ) {
 
   fun getUpdatedDashboardData(dashboardConfigId: DashboardConfigId): DashboardData {
@@ -26,7 +26,8 @@ class DashboardUpdatesService(
       DashboardData(
           lastBuilds = filtered.take(maxStatusesToReturn),
           allFailedBuilds = filtered.filter { it.lastStatus == CiStatus.PipelineStatus.FAILED },
-          config = config)
+          config = config,
+      )
     }
   }
 }
@@ -34,7 +35,7 @@ class DashboardUpdatesService(
 data class DashboardData(
     val lastBuilds: List<CiStatus>,
     val allFailedBuilds: List<CiStatus>,
-    val config: DashboardConfig? = null
+    val config: DashboardConfig? = null,
 )
 
 /** Makes testing of Services easier, because mocking JDBI directly is a hassle. */

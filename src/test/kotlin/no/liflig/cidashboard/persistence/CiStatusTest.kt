@@ -18,7 +18,8 @@ class CiStatusTest {
                     id = RepoId(2),
                     name = RepoName("test-repo"),
                     owner = Username("my-orgname"),
-                    defaultBranch = BranchName("master")),
+                    defaultBranch = BranchName("master"),
+                ),
             branch = BranchName("master"),
             lastStatus = CiStatus.PipelineStatus.SUCCEEDED,
             startedAt = Instant.parse("2024-07-05T12:20:40Z"),
@@ -34,7 +35,9 @@ class CiStatusTest {
                         User(
                             id = UserId(5),
                             username = Username("username_y"),
-                            avatarUrl = "https://avatars.githubusercontent.com/u/7364831?v=4")),
+                            avatarUrl = "https://avatars.githubusercontent.com/u/7364831?v=4",
+                        ),
+                ),
             triggeredBy = Username("username_y"),
             lastSuccessfulCommit =
                 Commit(
@@ -43,8 +46,10 @@ class CiStatusTest {
                     title = "Initial commit",
                     message = "Initial commit",
                     commiter =
-                        User(id = UserId(9), username = Username("username_x"), avatarUrl = "")),
-            durationOfLastSuccess = 5.minutes)
+                        User(id = UserId(9), username = Username("username_x"), avatarUrl = ""),
+                ),
+            durationOfLastSuccess = 5.minutes,
+        )
 
     // When
     val json = ciStatus.toJson()

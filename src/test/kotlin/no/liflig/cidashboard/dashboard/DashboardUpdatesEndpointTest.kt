@@ -28,7 +28,10 @@ class DashboardUpdatesEndpointTest {
     val secretToken = "my-secret-token"
     val endpoint =
         DashboardUpdatesEndpoint(
-            updatesService, secretToken = ClientSecretToken(secretToken), useHotReload = false)
+            updatesService,
+            secretToken = ClientSecretToken(secretToken),
+            useHotReload = false,
+        )
 
     val request =
         Request(Method.GET, "")
@@ -52,19 +55,28 @@ class DashboardUpdatesEndpointTest {
                     createCiStatus(
                         id = "1",
                         repoName = "repo-a",
-                        lastStatus = CiStatus.PipelineStatus.SUCCEEDED),
+                        lastStatus = CiStatus.PipelineStatus.SUCCEEDED,
+                    ),
                     createCiStatus(
                         id = "2",
                         repoName = "repo-b",
-                        lastStatus = CiStatus.PipelineStatus.IN_PROGRESS),
+                        lastStatus = CiStatus.PipelineStatus.IN_PROGRESS,
+                    ),
                     createCiStatus(
-                        id = "3", repoName = "repo-c", lastStatus = CiStatus.PipelineStatus.FAILED),
+                        id = "3",
+                        repoName = "repo-c",
+                        lastStatus = CiStatus.PipelineStatus.FAILED,
+                    ),
                 ),
             allFailedBuilds =
                 listOf(
                     createCiStatus(
-                        id = "3", repoName = "repo-c", lastStatus = CiStatus.PipelineStatus.FAILED),
-                ))
+                        id = "3",
+                        repoName = "repo-c",
+                        lastStatus = CiStatus.PipelineStatus.FAILED,
+                    ),
+                ),
+        )
     val dashboardId = DashboardConfigId("default")
     val updatesService: DashboardUpdatesService =
         mockk() { every { getUpdatedDashboardData(dashboardId) } returns ciStatuses }
@@ -72,7 +84,10 @@ class DashboardUpdatesEndpointTest {
     val secretToken = "my-secret-token"
     val endpoint =
         DashboardUpdatesEndpoint(
-            updatesService, secretToken = ClientSecretToken(secretToken), useHotReload = false)
+            updatesService,
+            secretToken = ClientSecretToken(secretToken),
+            useHotReload = false,
+        )
 
     val request =
         Request(Method.GET, "")
@@ -104,19 +119,28 @@ class DashboardUpdatesEndpointTest {
                     createCiStatus(
                         id = "1",
                         repoName = "repo-a",
-                        lastStatus = CiStatus.PipelineStatus.SUCCEEDED),
+                        lastStatus = CiStatus.PipelineStatus.SUCCEEDED,
+                    ),
                     createCiStatus(
                         id = "2",
                         repoName = "repo-b",
-                        lastStatus = CiStatus.PipelineStatus.IN_PROGRESS),
+                        lastStatus = CiStatus.PipelineStatus.IN_PROGRESS,
+                    ),
                     createCiStatus(
-                        id = "3", repoName = "repo-c", lastStatus = CiStatus.PipelineStatus.FAILED),
+                        id = "3",
+                        repoName = "repo-c",
+                        lastStatus = CiStatus.PipelineStatus.FAILED,
+                    ),
                 ),
             allFailedBuilds =
                 listOf(
                     createCiStatus(
-                        id = "3", repoName = "repo-c", lastStatus = CiStatus.PipelineStatus.FAILED),
-                ))
+                        id = "3",
+                        repoName = "repo-c",
+                        lastStatus = CiStatus.PipelineStatus.FAILED,
+                    ),
+                ),
+        )
 
     val updatesService: DashboardUpdatesService =
         mockk() { every { getUpdatedDashboardData(dashboardId) } returns ciStatuses }
@@ -124,7 +148,10 @@ class DashboardUpdatesEndpointTest {
     val secretToken = "my-secret-token"
     val endpoint =
         DashboardUpdatesEndpoint(
-            updatesService, secretToken = ClientSecretToken(secretToken), useHotReload = false)
+            updatesService,
+            secretToken = ClientSecretToken(secretToken),
+            useHotReload = false,
+        )
 
     val request =
         Request(Method.GET, "")

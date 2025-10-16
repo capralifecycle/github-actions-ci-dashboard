@@ -25,7 +25,8 @@ class DevelopmentAid {
 
   @Test
   @Disabled(
-      "This is not a test. It is used to let developers spin up the project with sample data to develop CSS etc")
+      "This is not a test. It is used to let developers spin up the project with sample data to develop CSS etc"
+  )
   fun `should ingest webhook data and present it to dashboards when they poll`() {
     val testWithManyRepos = true
     if (testWithManyRepos) {
@@ -44,7 +45,8 @@ class DevelopmentAid {
     // Give it a previous success runtime, to measure progress
     infra.gitHub.sendWebhook(createPayload("repo-b", CiStatus.PipelineStatus.SUCCEEDED))
     infra.gitHub.sendWebhook(
-        createPayload("repo-b", CiStatus.PipelineStatus.IN_PROGRESS, startedAt = Instant.now()))
+        createPayload("repo-b", CiStatus.PipelineStatus.IN_PROGRESS, startedAt = Instant.now())
+    )
 
     infra.gitHub.sendWebhook(createPayload("repo-a", CiStatus.PipelineStatus.QUEUED))
 
@@ -52,7 +54,8 @@ class DevelopmentAid {
         "\n".repeat(10) +
             "http://localhost:" +
             infra.app.config.apiOptions.serverPort.value +
-            "/?token=${infra.app.config.apiOptions.clientSecretToken.value}")
+            "/?token=${infra.app.config.apiOptions.clientSecretToken.value}"
+    )
     while (true) {
       println("Abort the test to stop infinite sleep...")
       Thread.sleep(10000)
@@ -62,7 +65,7 @@ class DevelopmentAid {
   private fun createPayload(
       repoName: String,
       state: CiStatus.PipelineStatus,
-      startedAt: Instant = Instant.now().minus(3, ChronoUnit.MINUTES)
+      startedAt: Instant = Instant.now().minus(3, ChronoUnit.MINUTES),
   ): WebhookPayload {
     return object : WebhookPayload {
       override val type: String = "workflow_run"
@@ -82,14 +85,17 @@ class DevelopmentAid {
                           "acceptancetests/webhook/renovate-bot-workflow_run-completed-cancelled.json"
                       CiStatus.PipelineStatus.SUCCEEDED ->
                           "acceptancetests/webhook/renovate-bot-workflow_run-completed-success.json"
-                    }))
+                    }
+                )
+            )
 
         val newPayload =
             payload.copy(
                 workflow = payload.workflow.copy(id = repoName.hashCode().toLong()),
                 workflowRun =
                     payload.workflowRun.copy(updatedAt = Instant.now(), runStartedAt = startedAt),
-                repository = payload.repository.copy(name = repoName))
+                repository = payload.repository.copy(name = repoName),
+            )
 
         return Json.encodeToString(GitHubWebhookWorkflowRun.serializer(), newPayload)
       }

@@ -11,7 +11,7 @@ package no.liflig.cidashboard.webhook
 object WhitelistBranchPolicy {
   fun shouldIgnoreEvent(
       workflowRun: GitHubWebhookWorkflowRun,
-      branchWhitelist: BranchWhitelist
+      branchWhitelist: BranchWhitelist,
   ): Boolean {
     if (branchWhitelist.value.isEmpty()) {
       return false

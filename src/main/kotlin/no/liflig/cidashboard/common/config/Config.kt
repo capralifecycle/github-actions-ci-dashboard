@@ -13,7 +13,7 @@ data class Config(
     val buildInfo: BuildInfo = BuildInfo.from(properties),
     val apiOptions: ApiOptions = ApiOptions.from(properties),
     val database: DbConfig = DbConfig.from(properties),
-    val webhookOptions: WebhookOptions = WebhookOptions.from(properties)
+    val webhookOptions: WebhookOptions = WebhookOptions.from(properties),
 ) {
 
   companion object {

@@ -35,14 +35,14 @@ fun GitHubWebhookWorkflowRun.toCiStatus() =
               GitHubWebhookWorkflowRun.Action.Completed ->
                   when (workflowRun.conclusion) {
                     null,
-                    GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.ActionRequired, ->
-                        PipelineStatus.IN_PROGRESS
+                    GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.ActionRequired,
+                    -> PipelineStatus.IN_PROGRESS
                     GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Neutral,
                     GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Skipped,
                     GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Stale,
                     GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.TimedOut,
-                    GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Failure, ->
-                        PipelineStatus.FAILED
+                    GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Failure,
+                    -> PipelineStatus.FAILED
                     GitHubWebhookWorkflowRun.WorkflowRun.Conclusion.Cancelled ->
                         PipelineStatus.CANCELLED
                     Success -> PipelineStatus.SUCCEEDED

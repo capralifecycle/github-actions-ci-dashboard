@@ -19,13 +19,15 @@ import org.http4k.template.viewModel
 class IndexEndpoint(
     private val secretToken: ClientSecretToken,
     useHotReload: Boolean,
-    private val updatesPollRate: Duration
+    private val updatesPollRate: Duration,
 ) : HttpHandler {
 
   companion object {
     val tokenLens =
         Query.required(
-            "token", "Authorization so strangers don't see our repositories and thus customers.")
+            "token",
+            "Authorization so strangers don't see our repositories and thus customers.",
+        )
     val dashboardIdLens = Query.optional("dashboardId", "The Id of a dashboard")
   }
 
@@ -52,7 +54,9 @@ class IndexEndpoint(
                     dashboardId ?: "default",
                     actualToken,
                     "/dashboard-updates",
-                    pollRateSeconds = updatesPollRate.toDouble(DurationUnit.SECONDS)))
+                    pollRateSeconds = updatesPollRate.toDouble(DurationUnit.SECONDS),
+                )
+        )
   }
 }
 

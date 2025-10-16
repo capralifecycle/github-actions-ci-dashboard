@@ -33,7 +33,8 @@ class IncomingWebhookServiceTest {
 
     // When
     service.handlePing(
-        GitHubWebhookPing.fromJson(loadResource("acceptancetests/webhook/github-ping-body.json")))
+        GitHubWebhookPing.fromJson(loadResource("acceptancetests/webhook/github-ping-body.json"))
+    )
 
     // Then
     // Nothing. Should just log.
@@ -64,7 +65,8 @@ class IncomingWebhookServiceTest {
       // Create event
       val workflowRun =
           GitHubWebhookWorkflowRun.fromJson(
-              loadResource("acceptancetests/webhook/user-workflow_run-completed-failure.json"))
+              loadResource("acceptancetests/webhook/user-workflow_run-completed-failure.json")
+          )
 
       // Send event to service
       service.handleWorkflowRun(workflowRun)
@@ -82,14 +84,16 @@ class IncomingWebhookServiceTest {
       // Database has newer event
       val newWorkflowRun =
           GitHubWebhookWorkflowRun.fromJson(
-              loadResource("acceptancetests/webhook/user-workflow_run-completed-failure.json"))
+              loadResource("acceptancetests/webhook/user-workflow_run-completed-failure.json")
+          )
 
       every { repo.getById(CiStatusId.from(newWorkflowRun)) } returns newWorkflowRun.toCiStatus()
 
       // Create event
       val outdatedWorkflowRun =
           GitHubWebhookWorkflowRun.fromJson(
-              loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json"))
+              loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json")
+          )
 
       // Send event to service
       service.handleWorkflowRun(outdatedWorkflowRun)
@@ -115,7 +119,9 @@ class IncomingWebhookServiceTest {
         val workflowRun =
             GitHubWebhookWorkflowRun.fromJson(
                 loadResource(
-                    "acceptancetests/webhook/renovate-bot-workflow_run-completed-success.json"))
+                    "acceptancetests/webhook/renovate-bot-workflow_run-completed-success.json"
+                )
+            )
 
         // Send event to service
         service.handleWorkflowRun(workflowRun)
@@ -135,12 +141,14 @@ class IncomingWebhookServiceTest {
             createCiStatus(
                 "105563496-master",
                 repoName = "github-actions-ci-dashboard",
-                durationOfLastSuccess = oldDuration)
+                durationOfLastSuccess = oldDuration,
+            )
 
         // Send new event with in-progress
         val inProgressWorkflowRun =
             GitHubWebhookWorkflowRun.fromJson(
-                loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json"))
+                loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json")
+            )
 
         service.handleWorkflowRun(inProgressWorkflowRun)
 
@@ -165,7 +173,10 @@ class IncomingWebhookServiceTest {
     inner class BuildNumber {
       private val existingCiStatus =
           createCiStatus(
-              "105563496-master", repoName = "github-actions-ci-dashboard", buildNumber = 10)
+              "105563496-master",
+              repoName = "github-actions-ci-dashboard",
+              buildNumber = 10,
+          )
 
       @Test
       fun `should discard events from lower build numbers than the persisted status`() {
@@ -211,11 +222,13 @@ class IncomingWebhookServiceTest {
 
       private fun createWorkflowRunEventWithBuildNumber(number: Long) =
           GitHubWebhookWorkflowRun.fromJson(
-                  loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json"))
+                  loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json")
+              )
               .let { event ->
                 event.copy(
                     workflowRun =
-                        event.workflowRun.copy(runNumber = number, updatedAt = Instant.now()))
+                        event.workflowRun.copy(runNumber = number, updatedAt = Instant.now())
+                )
               }
     }
 
@@ -256,7 +269,8 @@ class IncomingWebhookServiceTest {
 
       private fun createWorkflowRunEventFor(branch: String) =
           GitHubWebhookWorkflowRun.fromJson(
-                  loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json"))
+                  loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json")
+              )
               .let { event ->
                 event.copy(workflowRun = event.workflowRun.copy(headBranch = branch))
               }
@@ -300,13 +314,16 @@ class IncomingWebhookServiceTest {
 
       private fun createWorkflowRunEventWithName(workflowName: String) =
           GitHubWebhookWorkflowRun.fromJson(
-                  loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json"))
+                  loadResource("acceptancetests/webhook/user-workflow_run-in_progress.json")
+              )
               .let { event ->
                 event.copy(
                     workflowRun = event.workflowRun.copy(name = workflowName),
                     workflow =
                         event.workflow.copy(
-                            name = workflowName, path = ".github/workflows/${workflowName}.yaml"),
+                            name = workflowName,
+                            path = ".github/workflows/${workflowName}.yaml",
+                        ),
                 )
               }
     }

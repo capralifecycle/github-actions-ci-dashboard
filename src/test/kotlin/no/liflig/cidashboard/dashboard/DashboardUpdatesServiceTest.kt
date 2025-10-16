@@ -34,7 +34,9 @@ class DashboardUpdatesServiceTest {
     val configRepo = mockk<DashboardConfigRepo> { every { getById(any()) } returns null }
     val service =
         DashboardUpdatesService(
-            { callback -> callback(ciStatusRepo) }, { callback -> callback(configRepo) })
+            { callback -> callback(ciStatusRepo) },
+            { callback -> callback(configRepo) },
+        )
 
     // When
     val actualData = service.getUpdatedDashboardData(DashboardConfigId("1"))
@@ -67,14 +69,21 @@ class DashboardUpdatesServiceTest {
                         listOf(
                             RepositoryMatcher(
                                 "repo-.*".toRegex(),
-                                listOf(BranchMatcher("bra.*\\d".toRegex())))))))
+                                listOf(BranchMatcher("bra.*\\d".toRegex())),
+                            )
+                        ),
+                    )
+                ),
+        )
 
     val ciStatusRepo = mockk<CiStatusRepo> { every { getAll() } returns statuses }
     val configRepo =
         mockk<DashboardConfigRepo> { every { getById(dashboardConfigId) } returns dashboardConfig }
     val service =
         DashboardUpdatesService(
-            { callback -> callback(ciStatusRepo) }, { callback -> callback(configRepo) })
+            { callback -> callback(ciStatusRepo) },
+            { callback -> callback(configRepo) },
+        )
 
     // When
     val actualData = service.getUpdatedDashboardData(dashboardConfigId)
@@ -101,7 +110,9 @@ class DashboardUpdatesServiceTest {
               repoOwner = "non-owner",
               branchName = "master",
               lastStatus = CiStatus.PipelineStatus.FAILED,
-              lastUpdatedAt = Instant.now()))
+              lastUpdatedAt = Instant.now(),
+          )
+      )
     }
 
     repeat(15) {
@@ -113,7 +124,9 @@ class DashboardUpdatesServiceTest {
               repoOwner = "non-owner",
               branchName = "master",
               lastStatus = CiStatus.PipelineStatus.SUCCEEDED,
-              lastUpdatedAt = Instant.now()))
+              lastUpdatedAt = Instant.now(),
+          )
+      )
     }
 
     add(
@@ -123,6 +136,8 @@ class DashboardUpdatesServiceTest {
             repoOwner = "owner1",
             branchName = "branch1",
             lastStatus = CiStatus.PipelineStatus.IN_PROGRESS,
-            lastUpdatedAt = Instant.now()))
+            lastUpdatedAt = Instant.now(),
+        )
+    )
   }
 }

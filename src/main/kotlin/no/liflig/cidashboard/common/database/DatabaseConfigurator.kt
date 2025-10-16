@@ -57,7 +57,7 @@ object DatabaseConfigurator {
        * A human-readable name for the Connection pool. Shows up in metrics for pool usage. Useful
        * if you have several connection pools.
        */
-      connectionPoolName: String = "default"
+      connectionPoolName: String = "default",
   ): Jdbi {
     val dataSource = createDataSource(url, username, password, connectionPoolName)
     val jdbi =
@@ -81,7 +81,7 @@ object DatabaseConfigurator {
       url: DbUrl,
       username: DbUsername,
       password: DbPassword,
-      name: String
+      name: String,
   ): DataSource {
     val config =
         HikariConfig().apply {
@@ -119,7 +119,8 @@ object DatabaseConfigurator {
           .addShutdownHook(
               thread(start = false, name = "hikari-shutdown") {
                 if (!dataSource.isClosed) dataSource.close()
-              })
+              }
+          )
     } catch (e: Exception) {
       log.error(e) { "Failed to add shutdown hook for hikari." }
     }

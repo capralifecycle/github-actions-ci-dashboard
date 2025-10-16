@@ -9,7 +9,7 @@ class FilteredStatusesService(private val withCiStatusRepo: UseCiStatusRepo<List
       repoFilter: List<Regex>,
       userFilter: List<String>,
       count: Int?,
-      includeAllFailures: Boolean
+      includeAllFailures: Boolean,
   ): List<CiStatus> {
 
     return withCiStatusRepo { repo ->
