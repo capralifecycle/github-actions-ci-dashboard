@@ -47,6 +47,8 @@ while read -r line; do
     icon=🔄
   elif [[ "$status" = "QUEUED" ]]; then
     icon=⏳
+  elif [[ "$status" = "CANCELLED" ]]; then
+    icon=⏹️
   elif [[ "$status" = "FAILED" ]]; then
     icon=❌
   else
