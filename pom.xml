@@ -48,22 +48,22 @@
 
     <!-- Liflig -->
     <liflig-document-store.version>3.20250902.120624</liflig-document-store.version>
-    <liflig-properties.version>2.20251101.070826</liflig-properties.version>
-    <liflig-http4k-setup.version>4.20251101.065450</liflig-http4k-setup.version>
-    <liflig-logging.version>2.20251027.120721</liflig-logging.version>
+    <liflig-properties.version>3.20251121.121404</liflig-properties.version>
+    <liflig-http4k-setup.version>5.20251121.121711</liflig-http4k-setup.version>
+    <liflig-logging.version>3.20251121.115719</liflig-logging.version>
     <liflig-snapshot-test.version>1.20251114.110801</liflig-snapshot-test.version>
 
     <!-- App -->
     <kotlinx-serialization.version>1.9.0</kotlinx-serialization.version>
     <slf4j.version>2.0.17</slf4j.version>
     <logback-classic.version>1.5.21</logback-classic.version>
-    <logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
-    <http4k.version>6.21.0.0</http4k.version>
+    <logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
+    <http4k.version>6.21.1.0</http4k.version>
     <postgresql.version>42.7.8</postgresql.version>
     <hikari-connectionpool.version>7.0.2</hikari-connectionpool.version>
     <jdbi.version>3.50.0</jdbi.version>
-    <flyway.version>11.17.0</flyway.version>
-    <htmx.org.version>2.0.7</htmx.org.version>
+    <flyway.version>11.17.1</flyway.version>
+    <htmx.org.version>2.0.8</htmx.org.version>
     <htmx-idiomorph.version>0.7.4</htmx-idiomorph.version>
 
     <!-- Test-dependencies -->
