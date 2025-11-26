@@ -9,9 +9,7 @@ private val log = getLogger()
 
 fun main(args: Array<String>) {
   /** Ensures that all uncaught exceptions are logged. */
-  Thread.setDefaultUncaughtExceptionHandler { _, e: Throwable ->
-    log.error(e) { "Uncaught exception in thread" }
-  }
+  Thread.setDefaultUncaughtExceptionHandler(UncaughtExceptionHandler)
 
   try {
     SLF4JBridgeHandler.removeHandlersForRootLogger()
@@ -19,11 +17,25 @@ fun main(args: Array<String>) {
 
     App(Config.load()).start()
   } catch (e: Throwable) {
-    /**
-     * If we failed to load config/start the application, we want to log it, to make sure that we
-     * don't lose the exception.
-     */
     log.error(e) { "Application startup failed" }
     exitProcess(status = 1)
+  }
+}
+
+private object UncaughtExceptionHandler : Thread.UncaughtExceptionHandler {
+  private val log = getLogger()
+
+  override fun uncaughtException(thread: Thread, exception: Throwable) {
+    try {
+      /** Logback includes a "thread_name" field in the log, so we can know which thread threw. */
+      log.error(exception) { "Uncaught exception in thread" }
+    } catch (_: Throwable) {
+      /**
+       * Fallback to default behavior of [ThreadGroup.uncaughtException], in case there's an error
+       * in our logger.
+       */
+      System.err.print("""Exception in thread "${thread.name}" """)
+      exception.printStackTrace(System.err)
+    }
   }
 }
