@@ -50,7 +50,7 @@
     <liflig-document-store.version>3.20250902.120624</liflig-document-store.version>
     <liflig-properties.version>3.20251121.121404</liflig-properties.version>
     <liflig-http4k-setup.version>5.20251201.025108</liflig-http4k-setup.version>
-    <liflig-logging.version>3.20251121.115719</liflig-logging.version>
+    <liflig-logging.version>3.20251201.114154</liflig-logging.version>
     <liflig-snapshot-test.version>1.20251201.033538</liflig-snapshot-test.version>
 
     <!-- App -->
