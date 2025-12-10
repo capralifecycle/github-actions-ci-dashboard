@@ -79,7 +79,7 @@
     <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
     <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
     <maven-shade-plugin.version>3.6.1</maven-shade-plugin.version>
-    <sonar.version>5.4.0.6343</sonar.version>
+    <sonar.version>5.5.0.6356</sonar.version>
   </properties>
 
   <profiles>
