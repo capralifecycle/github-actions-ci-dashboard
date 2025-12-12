@@ -62,7 +62,7 @@
     <postgresql.version>42.7.8</postgresql.version>
     <hikari-connectionpool.version>7.0.2</hikari-connectionpool.version>
     <jdbi.version>3.50.0</jdbi.version>
-    <flyway.version>11.18.0</flyway.version>
+    <flyway.version>11.19.0</flyway.version>
     <htmx.org.version>2.0.8</htmx.org.version>
     <htmx-idiomorph.version>0.7.4</htmx-idiomorph.version>
 
