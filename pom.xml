@@ -56,7 +56,7 @@
     <!-- App -->
     <kotlinx-serialization.version>1.9.0</kotlinx-serialization.version>
     <slf4j.version>2.0.17</slf4j.version>
-    <logback-classic.version>1.5.21</logback-classic.version>
+    <logback-classic.version>1.5.22</logback-classic.version>
     <logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
     <http4k.version>6.23.1.0</http4k.version>
     <postgresql.version>42.7.8</postgresql.version>
