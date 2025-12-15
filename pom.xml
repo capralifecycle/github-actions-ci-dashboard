@@ -63,7 +63,6 @@
     <hikari-connectionpool.version>7.0.2</hikari-connectionpool.version>
     <jdbi.version>3.51.0</jdbi.version>
     <flyway.version>11.19.0</flyway.version>
-    <htmx.org.version>2.0.8</htmx.org.version>
     <htmx-idiomorph.version>0.7.4</htmx-idiomorph.version>
 
     <!-- Test-dependencies -->
@@ -238,7 +237,7 @@
       <!-- HTMX static files -->
       <groupId>org.webjars.npm</groupId>
       <artifactId>htmx.org</artifactId>
-      <version>${htmx.org.version}</version>
+      <version>2.0.4</version>
     </dependency>
     <dependency>
       <groupId>org.webjars.npm</groupId>
