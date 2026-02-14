@@ -59,7 +59,7 @@
     <logback-classic.version>1.5.29</logback-classic.version>
     <logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
     <http4k.version>6.28.1.0</http4k.version>
-    <postgresql.version>42.7.9</postgresql.version>
+    <postgresql.version>42.7.10</postgresql.version>
     <hikari-connectionpool.version>7.0.2</hikari-connectionpool.version>
     <jdbi.version>3.51.0</jdbi.version>
     <flyway.version>12.0.0</flyway.version>
