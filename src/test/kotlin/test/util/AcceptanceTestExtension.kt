@@ -1,5 +1,7 @@
 package test.util
 
+import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.microsoft.playwright.Browser
 import com.microsoft.playwright.BrowserContext
 import com.microsoft.playwright.Page
@@ -18,6 +20,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import no.liflig.cidashboard.App
 import no.liflig.cidashboard.common.config.ClientSecretToken
+import no.liflig.cidashboard.common.config.CognitoConfig
 import no.liflig.cidashboard.common.config.Config
 import no.liflig.cidashboard.common.config.DbConfig
 import no.liflig.cidashboard.common.config.Port
@@ -42,19 +45,22 @@ import org.testcontainers.containers.PostgreSQLContainer
  * To test at this high level and end-to-end, the system requires infrastructure or mocks/simulators
  * to properly interact with external systems.
  */
-class AcceptanceTestExtension(val fastPoll: Boolean = true) :
-    Extension, BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+class AcceptanceTestExtension(
+    val fastPoll: Boolean = true,
+    val cognitoBypassEnabled: Boolean = true,
+) : Extension, BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
 
   lateinit var app: App
 
   val gitHub = GitHub()
   val database = Database()
   val tvBrowser = TvBrowser()
+  val cognito = Cognito()
 
   override fun beforeAll(context: ExtensionContext) {
     database.start()
 
-    val config =
+    var config =
         Config.load()
             .let { database.applyTo(it) }
             .let { setUnusedHttpPort(it) }
@@ -65,6 +71,11 @@ class AcceptanceTestExtension(val fastPoll: Boolean = true) :
                 it
               }
             }
+
+    if (!cognitoBypassEnabled) {
+      cognito.start()
+      config = cognito.applyTo(config)
+    }
 
     app = App(config)
     app.start()
@@ -86,6 +97,9 @@ class AcceptanceTestExtension(val fastPoll: Boolean = true) :
     app.stop()
     database.stop()
     tvBrowser.close()
+    if (!cognitoBypassEnabled) {
+      cognito.stop()
+    }
   }
 
   override fun beforeEach(context: ExtensionContext) {
@@ -291,6 +305,47 @@ END${'$'}${'$'};"""
               .setPath(Paths.get("docs/dashboard-screenshot.png"))
       )
     }
+  }
+
+  inner class Cognito {
+    private lateinit var wireMock: WireMockServer
+    private lateinit var cognitoMock: CognitoWireMock
+
+    fun start() {
+      wireMock = WireMockServer(wireMockConfig().dynamicPort())
+      wireMock.start()
+      cognitoMock = CognitoWireMock(wireMock)
+      cognitoMock.setupStubs()
+    }
+
+    fun stop() {
+      wireMock.stop()
+    }
+
+    fun applyTo(config: Config): Config {
+      return config.copy(
+          cognitoConfig =
+              CognitoConfig(
+                  userPoolId = cognitoMock.userPoolId,
+                  clientId = cognitoMock.clientId,
+                  clientSecret = cognitoMock.clientSecret,
+                  domain = cognitoMock.domain,
+                  region = cognitoMock.region,
+                  requiredGroup = "liflig-active",
+                  bypassEnabled = false,
+                  issuerUrlOverride = cognitoMock.issuer,
+                  authBaseOverride = cognitoMock.authBaseUrl,
+                  appBaseUrl = "http://localhost:${config.apiOptions.serverPort.value}",
+              )
+      )
+    }
+
+    fun generateAccessToken(
+        username: String = "test-user",
+        groups: List<String> = listOf("liflig-active"),
+    ): String = cognitoMock.generateAccessToken(username, groups)
+
+    fun baseUrl(): String = wireMock.baseUrl()
   }
 }
 

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}} - Admin</title>
+  <script src="/webjars/htmx.org/{{htmxVersion}}/dist/htmx.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; background-color: #f5f5f5; color: #333; line-height: 1.6; }
+    .admin-container { display: flex; min-height: 100vh; }
+    .admin-sidebar { width: 220px; background-color: #2d2d2d; color: #fff; padding: 1rem; }
+    .admin-sidebar__title { font-size: 1.25rem; font-weight: bold; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #444; }
+    .admin-sidebar__nav { list-style: none; }
+    .admin-sidebar__nav-item { margin-bottom: 0.5rem; }
+    .admin-sidebar__nav-link { display: block; padding: 0.5rem 0.75rem; color: #ccc; text-decoration: none; border-radius: 4px; }
+    .admin-sidebar__nav-link:hover { background-color: #3d3d3d; color: #fff; }
+    .admin-sidebar__nav-link--active { background-color: #4a90d9; color: #fff; }
+    .admin-sidebar__user { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #444; font-size: 0.875rem; color: #999; }
+    .admin-main { flex: 1; padding: 1.5rem; }
+    .admin-header { margin-bottom: 1.5rem; }
+    .admin-header__title { font-size: 1.5rem; font-weight: bold; }
+    .admin-btn { display: inline-block; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 4px; border: none; cursor: pointer; text-decoration: none; }
+    .admin-btn--secondary { background-color: #6c757d; color: #fff; }
+    .admin-btn--secondary:hover { background-color: #5a6268; }
+    .admin-card { background-color: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); padding: 1.5rem; margin-bottom: 1.5rem; }
+    .admin-card__title { font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; }
+    .admin-secret { font-family: monospace; background-color: #f5f5f5; padding: 0.5rem; border-radius: 4px; margin: 0.5rem 0; }
+    .admin-secret--hidden { filter: blur(4px); user-select: none; }
+    .admin-code-block { background-color: #f5f5f5; padding: 1rem; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+<div class="admin-container">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__title">CI Dashboard Admin</div>
+    <nav>
+      <ul class="admin-sidebar__nav">
+        <li class="admin-sidebar__nav-item">
+          <a href="/admin/ci-statuses" class="admin-sidebar__nav-link{{#if (eq activePage 'ci-statuses')}} admin-sidebar__nav-link--active{{/if}}">CI Statuses</a>
+        </li>
+        <li class="admin-sidebar__nav-item">
+          <a href="/admin/integration" class="admin-sidebar__nav-link{{#if (eq activePage 'integration')}} admin-sidebar__nav-link--active{{/if}}">Integration Guide</a>
+        </li>
+        <li class="admin-sidebar__nav-item">
+          <a href="/admin/configs" class="admin-sidebar__nav-link{{#if (eq activePage 'configs')}} admin-sidebar__nav-link--active{{/if}}">Configurations</a>
+        </li>
+      </ul>
+    </nav>
+    <div class="admin-sidebar__user">Logged in as: {{user.username}}</div>
+  </aside>
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1 class="admin-header__title">{{title}}</h1>
+    </div>
+    <div class="admin-card">
+      <h2 class="admin-card__title">Adding a New GitHub Organization</h2>
+      <p>To add a new GitHub organization to the CI Dashboard, follow these steps:</p>
+      <ol style="margin: 1rem 0; padding-left: 1.5rem;">
+        <li style="margin-bottom: 0.5rem;"><strong>Create a GitHub App or Webhook</strong> in the target organization.</li>
+        <li style="margin-bottom: 0.5rem;"><strong>Configure the webhook URL</strong> to point to:<br><code class="admin-code-block" style="display: inline-block; margin: 0.5rem 0;">https://your-domain.com/webhook</code></li>
+        <li style="margin-bottom: 0.5rem;"><strong>Set the webhook secret</strong> to the value shown below.</li>
+        <li style="margin-bottom: 0.5rem;"><strong>Subscribe to events</strong>: Select <code>workflow_run</code> events.</li>
+        <li style="margin-bottom: 0.5rem;"><strong>Save the webhook</strong> and verify it works by triggering a workflow.</li>
+      </ol>
+    </div>
+    <div class="admin-card">
+      <h2 class="admin-card__title">Webhook Secret</h2>
+      <p style="margin-bottom: 0.5rem;">Use this secret when configuring webhooks in GitHub:</p>
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0;">
+        <code id="webhook-secret" class="admin-secret admin-secret--hidden" style="flex: 1;">{{webhookSecret}}</code>
+        <button id="toggle-secret" class="admin-btn admin-btn--secondary" onclick="toggleSecret()">Show</button>
+        <button class="admin-btn admin-btn--secondary" onclick="copySecret()">Copy</button>
+      </div>
+    </div>
+    <div class="admin-card">
+      <h2 class="admin-card__title">Example Webhook Payload</h2>
+      <p style="margin-bottom: 0.5rem;">The webhook expects <code>workflow_run</code> events from GitHub Actions.</p>
+      <pre class="admin-code-block">{
+  "action": "completed",
+  "workflow_run": {
+    "id": 123456,
+    "status": "completed",
+    "conclusion": "success",
+    "name": "CI",
+    "head_branch": "main",
+    "repository": {
+      "name": "my-repo",
+      "owner": { "login": "my-org" }
+    }
+  }
+}</pre>
+    </div>
+    <script>
+      let secretVisible = false;
+      function toggleSecret() {
+        const secretEl = document.getElementById('webhook-secret');
+        const btn = document.getElementById('toggle-secret');
+        secretVisible = !secretVisible;
+        if (secretVisible) { secretEl.classList.remove('admin-secret--hidden'); btn.textContent = 'Hide'; }
+        else { secretEl.classList.add('admin-secret--hidden'); btn.textContent = 'Show'; }
+      }
+      function copySecret() {
+        const secret = '{{webhookSecret}}';
+        navigator.clipboard.writeText(secret).then(() => {
+          const btn = event.target;
+          const originalText = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => btn.textContent = originalText, 2000);
+        });
+      }
+    </script>
+  </main>
+</div>
+</body>
+</html>

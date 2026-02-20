@@ -3,6 +3,7 @@ package no.liflig.cidashboard
 import no.liflig.cidashboard.admin.config.DashboardConfigService
 import no.liflig.cidashboard.admin.config.JdbiDashboardConfigTransaction
 import no.liflig.cidashboard.admin.database.DeleteDatabaseRowsService
+import no.liflig.cidashboard.admin.gui.AdminGuiService
 import no.liflig.cidashboard.common.config.Config
 import no.liflig.cidashboard.common.database.DatabaseConfigurator
 import no.liflig.cidashboard.common.database.DbPassword
@@ -60,6 +61,16 @@ class App(val config: Config) {
         )
     val dashboardConfigService = DashboardConfigService(JdbiDashboardConfigTransaction(jdbi))
 
+    val ciStatusHandle =
+        JdbiCiStatusDatabaseHandle<List<no.liflig.cidashboard.persistence.CiStatus>>(jdbi)
+    val configHandle =
+        JdbiDashboardConfigDatabaseHandle<List<no.liflig.cidashboard.DashboardConfig>>(jdbi)
+    val adminGuiService =
+        AdminGuiService(
+            ciStatusRepo = { ciStatusHandle { repo -> repo.getAll() } },
+            configRepo = { configHandle { repo -> repo.getAll() } },
+        )
+
     val services =
         ApiServices(
             healthService,
@@ -68,10 +79,11 @@ class App(val config: Config) {
             dashboardConfigService,
             DeleteDatabaseRowsService(JdbiCiStatusDatabaseHandle(jdbi)),
             FilteredStatusesService(JdbiCiStatusDatabaseHandle(jdbi)),
+            adminGuiService,
         )
 
     val server =
-        createApiServer(apiOptions, config.webhookOptions, services)
+        createApiServer(apiOptions, config.webhookOptions, config.cognitoConfig, services)
             .asJettyServer(config.apiOptions)
     server.start()
     runningTasks.add(server)
