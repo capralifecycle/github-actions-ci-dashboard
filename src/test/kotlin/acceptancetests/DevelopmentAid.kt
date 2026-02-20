@@ -50,6 +50,8 @@ class DevelopmentAid {
 
     infra.gitHub.sendWebhook(createPayload("repo-a", CiStatus.PipelineStatus.QUEUED))
 
+    infra.admin.uploadConfiguration()
+
     println(
         "\n".repeat(10) +
             "http://localhost:" +

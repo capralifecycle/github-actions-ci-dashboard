@@ -19,6 +19,7 @@ import java.nio.file.Paths
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import no.liflig.cidashboard.App
+import no.liflig.cidashboard.common.config.AdminSecretToken
 import no.liflig.cidashboard.common.config.ClientSecretToken
 import no.liflig.cidashboard.common.config.CognitoConfig
 import no.liflig.cidashboard.common.config.Config
@@ -56,6 +57,7 @@ class AcceptanceTestExtension(
   val database = Database()
   val tvBrowser = TvBrowser()
   val cognito = Cognito()
+  val admin = Admin()
 
   override fun beforeAll(context: ExtensionContext) {
     database.start()
@@ -90,6 +92,11 @@ class AcceptanceTestExtension(
         port = config.apiOptions.serverPort,
         authToken = config.apiOptions.clientSecretToken,
         dashboardId = "abc",
+    )
+
+    admin.initialize(
+        port = config.apiOptions.serverPort,
+        adminToken = config.apiOptions.adminSecretToken,
     )
   }
 
@@ -307,7 +314,52 @@ END${'$'}${'$'};"""
     }
   }
 
-  inner class Cognito {
+  class Admin {
+    private var port: Port = Port(8080)
+    private var adminToken: AdminSecretToken = AdminSecretToken("unset")
+
+    fun initialize(port: Port, adminToken: AdminSecretToken) {
+      this.port = port
+      this.adminToken = adminToken
+    }
+
+    fun uploadConfiguration() {
+      RestAssured.given()
+          .body(
+              """[{
+    "id": "a1",
+    "displayName": "Team A",
+    "orgMatchers": [
+      {
+        "matcher": "capralifecycle",
+        "repoMatchers": [
+          {
+            "matcher": ".*-a"
+          },
+          {
+            "matcher": "repo-y.*"
+          }
+        ]
+      }
+    ]
+  }]"""
+          )
+          .header("Authorization", "Bearer ${adminToken.value}")
+          .log()
+          .method()
+          .log()
+          .uri()
+          .log()
+          .headers()
+          .post("http://localhost:${port.value}/admin/config")
+          .then()
+          .statusCode(200)
+          .log()
+          .ifError()
+    }
+  }
+
+  class Cognito {
     private lateinit var wireMock: WireMockServer
     private lateinit var cognitoMock: CognitoWireMock
 
