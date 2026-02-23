@@ -3,8 +3,9 @@ package no.liflig.cidashboard.admin.auth
 import no.liflig.cidashboard.common.config.CognitoConfig
 import no.liflig.logging.getLogger
 import org.http4k.core.Credentials
+import org.http4k.core.HttpHandler
 import org.http4k.core.Uri
-import org.http4k.security.InsecureCookieBasedOAuthPersistence
+import org.http4k.security.OAuthPersistence
 import org.http4k.security.OAuthProvider
 import org.http4k.security.OAuthProviderConfig
 
@@ -13,10 +14,9 @@ object CognitoOAuthProvider {
 
   fun create(
       config: CognitoConfig,
-      http: org.http4k.core.HttpHandler,
+      http: HttpHandler,
       callbackUri: Uri,
-      persistence: InsecureCookieBasedOAuthPersistence =
-          InsecureCookieBasedOAuthPersistence("cognito"),
+      persistence: OAuthPersistence,
       scopes: List<String> = listOf("openid", "email", "profile"),
   ): OAuthProvider {
     log.info {
@@ -30,7 +30,7 @@ object CognitoOAuthProvider {
             authBase = Uri.of(config.authBaseUrl),
             authPath = "/oauth2/authorize",
             tokenPath = "/oauth2/token",
-            credentials = Credentials(config.clientId, config.clientSecret ?: ""),
+            credentials = Credentials(config.clientId, config.clientSecret),
         )
 
     return OAuthProvider(

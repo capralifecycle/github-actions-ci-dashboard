@@ -3,6 +3,7 @@ package no.liflig.cidashboard.common.config
 import java.util.Properties
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class CognitoConfigTest {
 
@@ -10,6 +11,7 @@ class CognitoConfigTest {
   fun `should create config from properties`() {
     val props =
         Properties().apply {
+          setProperty("admin.gui.enabled", "true")
           setProperty("cognito.userPoolId", "eu-north-1_abc123")
           setProperty("cognito.clientId", "client-id-123")
           setProperty("cognito.clientSecret", "secret-123")
@@ -17,7 +19,7 @@ class CognitoConfigTest {
           setProperty("cognito.region", "eu-north-1")
           setProperty("cognito.requiredGroup", "admin-group")
           setProperty("cognito.appBaseUrl", "https://myapp.example.com")
-          setProperty("cognito.bypassEnabled", "true")
+          setProperty("cognito.bypassEnabled", "false")
         }
 
     val config = CognitoConfig.from(props)
@@ -30,21 +32,30 @@ class CognitoConfigTest {
     assertThat(config.region).isEqualTo("eu-north-1")
     assertThat(config.requiredGroup).isEqualTo("admin-group")
     assertThat(config.appBaseUrl).isEqualTo("https://myapp.example.com")
-    assertThat(config.bypassEnabled).isTrue
+    assertThat(config.bypassEnabled).isFalse
   }
 
   @Test
-  fun `should return null when required properties are missing and bypass is disabled`() {
-    val props = Properties()
+  fun `should throw when required properties are missing and bypass is disabled`() {
+    val props =
+        Properties().apply {
+          setProperty("admin.gui.enabled", "true")
+          setProperty("cognito.bypassEnabled", "false")
+        }
 
-    val config = CognitoConfig.from(props)
-
-    assertThat(config).isNull()
+    assertThrows<IllegalArgumentException> {
+      val config = CognitoConfig.from(props)
+    }
   }
 
   @Test
   fun `should create config with dummy values when bypass is enabled but properties missing`() {
-    val props = Properties().apply { setProperty("cognito.bypassEnabled", "true") }
+    val props =
+        Properties().apply {
+          setProperty("admin.gui.enabled", "true")
+          setProperty("cognito.bypassEnabled", "true")
+          setProperty("cognito.requiredGroup", "test")
+        }
 
     val config = CognitoConfig.from(props)
 
@@ -52,28 +63,9 @@ class CognitoConfigTest {
     assertThat(config!!.userPoolId).isEqualTo("not-configured")
     assertThat(config.clientId).isEqualTo("not-configured")
     assertThat(config.domain).isEqualTo("not-configured")
-    assertThat(config.region).isEqualTo("not-configured")
+    assertThat(config.region).isEqualTo("eu-west-1")
     assertThat(config.appBaseUrl).isEqualTo("not-configured")
     assertThat(config.bypassEnabled).isTrue
-  }
-
-  @Test
-  fun `should use default values for optional properties`() {
-    val props =
-        Properties().apply {
-          setProperty("cognito.userPoolId", "eu-north-1_abc123")
-          setProperty("cognito.clientId", "client-id-123")
-          setProperty("cognito.domain", "my-app")
-          setProperty("cognito.region", "eu-north-1")
-          setProperty("cognito.appBaseUrl", "https://myapp.example.com")
-        }
-
-    val config = CognitoConfig.from(props)
-
-    assertThat(config).isNotNull
-    assertThat(config!!.clientSecret).isNull()
-    assertThat(config.requiredGroup).isEqualTo("liflig-active")
-    assertThat(config.bypassEnabled).isFalse
   }
 
   @Test
@@ -82,7 +74,7 @@ class CognitoConfigTest {
         CognitoConfig(
             userPoolId = "eu-north-1_abc123",
             clientId = "client-id",
-            clientSecret = null,
+            clientSecret = "123",
             domain = "my-app",
             region = "eu-north-1",
             requiredGroup = "admin",
@@ -100,7 +92,7 @@ class CognitoConfigTest {
         CognitoConfig(
             userPoolId = "eu-north-1_abc123",
             clientId = "client-id",
-            clientSecret = null,
+            clientSecret = "123",
             domain = "my-app",
             region = "eu-north-1",
             requiredGroup = "admin",
@@ -120,7 +112,7 @@ class CognitoConfigTest {
         CognitoConfig(
             userPoolId = "eu-north-1_abc123",
             clientId = "client-id",
-            clientSecret = null,
+            clientSecret = "123",
             domain = "my-app",
             region = "eu-north-1",
             requiredGroup = "admin",

@@ -29,7 +29,7 @@ import no.liflig.http4k.setup.LifligBasicApiSetup
 import no.liflig.http4k.setup.logging.LoggingFilter
 import org.http4k.contract.openapi.v3.ApiServer
 import org.http4k.core.Method
-import org.http4k.core.Uri
+import org.http4k.core.Response
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters
 import org.http4k.routing.ResourceLoader.Companion.Classpath
@@ -68,25 +68,21 @@ fun createApiServer(
   val indexEndpoint =
       IndexEndpoint(options.clientSecretToken, options.hotReloadTemplates, options.updatesPollRate)
 
-  val adminRoutes: RoutingHttpHandler =
-      if (cognitoConfig != null) {
-        val callbackUri = Uri.of("${cognitoConfig.appBaseUrl}/admin/oauth/callback")
-        val authService =
-            CognitoAuthService(
-                config = cognitoConfig,
-                callbackUri = callbackUri,
-                httpClient = org.http4k.client.JavaHttpClient(),
-            )
-        val adminGuiService = services.adminGuiService
-
+  val adminGuiRoutes: RoutingHttpHandler =
+      if (services.cognitoAuthService != null) {
         routes(
-            "/admin/oauth/callback" bind Method.GET to authService.callbackHandler(),
+            "/admin/oauth/callback" bind
+                Method.GET to
+                services.cognitoAuthService.callbackHandler(),
             "/admin" bind
                 routes(
                         "/" bind Method.GET to AdminIndexEndpoint(),
                         "/ci-statuses" bind
                             Method.GET to
-                            CiStatusListEndpoint(adminGuiService, options.hotReloadTemplates),
+                            CiStatusListEndpoint(
+                                services.adminGuiService,
+                                options.hotReloadTemplates,
+                            ),
                         "/ci-statuses/{id}" bind
                             Method.DELETE to
                             CiStatusDeleteEndpoint(
@@ -101,17 +97,18 @@ fun createApiServer(
                             ),
                         "/configs" bind
                             Method.GET to
-                            ConfigListEndpoint(adminGuiService, options.hotReloadTemplates),
+                            ConfigListEndpoint(
+                                services.adminGuiService,
+                                options.hotReloadTemplates,
+                            ),
                     )
-                    .withFilter(authService.authFilter()),
+                    .withFilter(services.cognitoAuthService.authFilter()),
         )
       } else {
         "/admin" bind
-            org.http4k.core.Method.GET to
+            Method.GET to
             {
-              org.http4k.core
-                  .Response(org.http4k.core.Status.NOT_FOUND)
-                  .body("Admin GUI not configured")
+              Response(org.http4k.core.Status.NOT_FOUND).body("Admin GUI not configured")
             }
       }
 
@@ -143,9 +140,9 @@ fun createApiServer(
               Method.POST to
               ServerFilters.BearerAuth(token = options.adminSecretToken.value)
                   .then(DashboardConfigEndpoint(services.dashboardConfigService)),
+          adminGuiRoutes,
           static(Classpath("/static")),
           webJars(),
-          adminRoutes,
       )
   )
 }
@@ -164,4 +161,5 @@ data class ApiServices(
     val deleteDatabaseRowsService: DeleteDatabaseRowsService,
     val filteredStatusesService: FilteredStatusesService,
     val adminGuiService: AdminGuiService,
+    val cognitoAuthService: CognitoAuthService?,
 )

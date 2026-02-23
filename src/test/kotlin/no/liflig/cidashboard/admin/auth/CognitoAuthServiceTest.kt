@@ -6,7 +6,6 @@ import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
-import org.http4k.core.Uri
 import org.junit.jupiter.api.Test
 
 class CognitoAuthServiceTest {
@@ -15,15 +14,13 @@ class CognitoAuthServiceTest {
       CognitoConfig(
           userPoolId = "eu-north-1_test",
           clientId = "test-client",
-          clientSecret = null,
+          clientSecret = "",
           domain = "test",
           region = "eu-north-1",
           requiredGroup = "admin",
           bypassEnabled = false,
           appBaseUrl = "http://localhost:8080",
       )
-
-  private val callbackUri = Uri.of("http://localhost:8080/admin/oauth/callback")
 
   @Test
   fun `should redirect to oauth provider when no token present`() {
@@ -90,7 +87,6 @@ class CognitoAuthServiceTest {
   private fun createService(config: CognitoConfig): CognitoAuthService {
     return CognitoAuthService(
         config = config,
-        callbackUri = callbackUri,
         httpClient = { Response(Status.OK) },
     )
   }

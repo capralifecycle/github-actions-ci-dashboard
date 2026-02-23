@@ -1,5 +1,6 @@
 package no.liflig.cidashboard
 
+import no.liflig.cidashboard.admin.auth.CognitoAuthService
 import no.liflig.cidashboard.admin.config.DashboardConfigService
 import no.liflig.cidashboard.admin.config.JdbiDashboardConfigTransaction
 import no.liflig.cidashboard.admin.database.DeleteDatabaseRowsService
@@ -13,6 +14,7 @@ import no.liflig.cidashboard.dashboard.DashboardUpdatesService
 import no.liflig.cidashboard.dashboard.JdbiCiStatusDatabaseHandle
 import no.liflig.cidashboard.dashboard.JdbiDashboardConfigDatabaseHandle
 import no.liflig.cidashboard.health.HealthService
+import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.status_api.FilteredStatusesService
 import no.liflig.cidashboard.webhook.IncomingWebhookService
 import no.liflig.cidashboard.webhook.JdbiCiStatusTransaction
@@ -20,7 +22,7 @@ import no.liflig.logging.getLogger
 import org.jdbi.v3.core.Jdbi
 
 /**
- * The main entry point for the application. Should be started from [Main].
+ * The main entry point for the application. Should be started from [main].
  *
  * @param config any options like ports and urls should be set here. Override values in the config
  *   when doing testing of [App].
@@ -61,15 +63,21 @@ class App(val config: Config) {
         )
     val dashboardConfigService = DashboardConfigService(JdbiDashboardConfigTransaction(jdbi))
 
-    val ciStatusHandle =
-        JdbiCiStatusDatabaseHandle<List<no.liflig.cidashboard.persistence.CiStatus>>(jdbi)
-    val configHandle =
-        JdbiDashboardConfigDatabaseHandle<List<no.liflig.cidashboard.DashboardConfig>>(jdbi)
+    val ciStatusHandle = JdbiCiStatusDatabaseHandle<List<CiStatus>>(jdbi)
+    val configHandle = JdbiDashboardConfigDatabaseHandle<List<DashboardConfig>>(jdbi)
     val adminGuiService =
         AdminGuiService(
             ciStatusRepo = { ciStatusHandle { repo -> repo.getAll() } },
             configRepo = { configHandle { repo -> repo.getAll() } },
         )
+
+    val cognitoAuthService =
+        config.cognitoConfig?.let { cognitoConfig ->
+          CognitoAuthService(
+              config = cognitoConfig,
+              httpClient = org.http4k.client.JavaHttpClient(),
+          )
+        }
 
     val services =
         ApiServices(
@@ -80,6 +88,7 @@ class App(val config: Config) {
             DeleteDatabaseRowsService(JdbiCiStatusDatabaseHandle(jdbi)),
             FilteredStatusesService(JdbiCiStatusDatabaseHandle(jdbi)),
             adminGuiService,
+            cognitoAuthService,
         )
 
     val server =

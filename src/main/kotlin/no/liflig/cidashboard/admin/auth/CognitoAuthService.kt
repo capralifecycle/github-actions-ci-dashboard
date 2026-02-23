@@ -13,16 +13,18 @@ import org.http4k.core.with
 import org.http4k.lens.RequestKey
 import org.http4k.lens.RequestLens
 import org.http4k.security.InsecureCookieBasedOAuthPersistence
+import org.http4k.security.OAuthPersistence
 import org.http4k.security.OAuthProvider
 
 class CognitoAuthService(
     private val config: CognitoConfig,
-    private val callbackUri: Uri,
-    private val httpClient: HttpHandler,
+    httpClient: HttpHandler,
 ) {
   private val log = getLogger()
   private val jwtValidator = CognitoJwtValidator(config)
-  private val persistence = InsecureCookieBasedOAuthPersistence("cognito")
+  private val persistence: OAuthPersistence = InsecureCookieBasedOAuthPersistence("cognito")
+
+  private val callbackUri: Uri = Uri.of("${config.appBaseUrl}/admin/oauth/callback")
 
   private val oAuthProvider: OAuthProvider =
       CognitoOAuthProvider.create(
