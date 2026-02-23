@@ -18,6 +18,7 @@ import no.liflig.cidashboard.status_api.FilteredStatusesService
 import no.liflig.cidashboard.webhook.IncomingWebhookService
 import no.liflig.cidashboard.webhook.JdbiCiStatusTransaction
 import no.liflig.logging.getLogger
+import org.http4k.client.JavaHttpClient
 import org.jdbi.v3.core.Jdbi
 
 /**
@@ -72,7 +73,7 @@ class App(val config: Config) {
         config.cognitoConfig?.let { cognitoConfig ->
           CognitoAuthService(
               config = cognitoConfig,
-              httpClient = org.http4k.client.JavaHttpClient(),
+              httpClient = JavaHttpClient(),
           )
         }
 
