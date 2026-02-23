@@ -12,7 +12,6 @@ import no.liflig.cidashboard.admin.gui.CiStatusListEndpoint
 import no.liflig.cidashboard.admin.gui.ConfigListEndpoint
 import no.liflig.cidashboard.admin.gui.IntegrationGuideEndpoint
 import no.liflig.cidashboard.common.config.ApiOptions
-import no.liflig.cidashboard.common.config.CognitoConfig
 import no.liflig.cidashboard.common.config.WebhookOptions
 import no.liflig.cidashboard.common.http4k.httpNoServerVersionHeader
 import no.liflig.cidashboard.dashboard.DashboardUpdatesEndpoint
@@ -52,7 +51,6 @@ import org.http4k.server.asServer
 fun createApiServer(
     options: ApiOptions,
     webhookOptions: WebhookOptions,
-    cognitoConfig: CognitoConfig?,
     services: ApiServices,
 ): RoutingHttpHandler {
   val basicApiSetup =
@@ -87,7 +85,6 @@ fun createApiServer(
                             Method.DELETE to
                             CiStatusDeleteEndpoint(
                                 services.deleteDatabaseRowsService,
-                                options.hotReloadTemplates,
                             ),
                         "/integration" bind
                             Method.GET to

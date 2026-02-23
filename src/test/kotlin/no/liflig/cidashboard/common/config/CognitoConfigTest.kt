@@ -43,9 +43,7 @@ class CognitoConfigTest {
           setProperty("cognito.bypassEnabled", "false")
         }
 
-    assertThrows<IllegalArgumentException> {
-      val config = CognitoConfig.from(props)
-    }
+    assertThrows<IllegalArgumentException> { CognitoConfig.from(props) }
   }
 
   @Test

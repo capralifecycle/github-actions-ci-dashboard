@@ -1,5 +1,6 @@
 package no.liflig.cidashboard.admin.auth
 
+import java.net.URI
 import no.liflig.cidashboard.common.config.CognitoConfig
 import no.liflig.logging.getLogger
 import org.http4k.core.Filter
@@ -17,27 +18,39 @@ import org.http4k.security.OAuthPersistence
 import org.http4k.security.OAuthProvider
 
 class CognitoAuthService(
-    private val config: CognitoConfig,
+    config: CognitoConfig,
     httpClient: HttpHandler,
 ) {
   private val log = getLogger()
-  private val jwtValidator = CognitoJwtValidator(config)
+
+  private val bypassEnabled: Boolean = config.bypassEnabled
+  private val requiredGroup: String = config.requiredGroup
+
+  private val jwtValidator =
+      CognitoJwtValidator(
+          jwksUrl = URI(config.jwksUrl).toURL(),
+          clientId = config.clientId,
+          issuerUrl = config.issuerUrl,
+      )
   private val persistence: OAuthPersistence = InsecureCookieBasedOAuthPersistence("cognito")
 
   private val callbackUri: Uri = Uri.of("${config.appBaseUrl}/admin/oauth/callback")
-
   private val oAuthProvider: OAuthProvider =
       CognitoOAuthProvider.create(
-          config = config,
-          http = httpClient,
+          domain = config.domain,
+          region = config.region,
+          authBaseUrl = config.authBaseUrl,
+          clientId = config.clientId,
+          clientSecret = config.clientSecret,
+          scopes = listOf("openid", "email", "profile"),
           callbackUri = callbackUri,
           persistence = persistence,
-          scopes = listOf("openid", "email", "profile"),
+          http = httpClient,
       )
 
   fun authFilter(): Filter = Filter { next ->
     { request ->
-      if (config.bypassEnabled) {
+      if (bypassEnabled) {
         log.debug { "Cognito auth bypass enabled - skipping authentication" }
         return@Filter next(request.setUser(bypassUser()))
       }
@@ -56,15 +69,15 @@ class CognitoAuthService(
         return@Filter oAuthProvider.authFilter.then(next)(request)
       }
 
-      if (!user.groups.contains(config.requiredGroup)) {
+      if (!user.groups.contains(requiredGroup)) {
         log.warn {
           field("user.username", user.username)
           field("user.groups", user.groups)
-          field("required.group", config.requiredGroup)
+          field("required.group", requiredGroup)
           "User does not have required group"
         }
         return@Filter Response(Status.FORBIDDEN)
-            .body("Access denied. Required group: ${config.requiredGroup}")
+            .body("Access denied. Required group: $requiredGroup")
       }
 
       next(request.setUser(user))
@@ -77,7 +90,7 @@ class CognitoAuthService(
       CognitoUser(
           username = "bypass-user",
           email = "bypass@localhost",
-          groups = listOf(config.requiredGroup),
+          groups = listOf(requiredGroup),
       )
 
   companion object {

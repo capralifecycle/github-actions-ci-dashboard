@@ -1,6 +1,5 @@
 package no.liflig.cidashboard.admin.auth
 
-import no.liflig.cidashboard.common.config.CognitoConfig
 import no.liflig.logging.getLogger
 import org.http4k.core.Credentials
 import org.http4k.core.HttpHandler
@@ -13,24 +12,28 @@ object CognitoOAuthProvider {
   private val log = getLogger()
 
   fun create(
-      config: CognitoConfig,
-      http: HttpHandler,
+      domain: String,
+      region: String,
+      authBaseUrl: String,
+      clientId: String,
+      clientSecret: String,
+      scopes: List<String>,
       callbackUri: Uri,
       persistence: OAuthPersistence,
-      scopes: List<String> = listOf("openid", "email", "profile"),
+      http: HttpHandler,
   ): OAuthProvider {
     log.info {
-      field("cognito.domain", config.domain)
-      field("cognito.region", config.region)
+      field("cognito.domain", domain)
+      field("cognito.region", region)
       "Creating Cognito OAuth provider"
     }
 
     val providerConfig =
         OAuthProviderConfig(
-            authBase = Uri.of(config.authBaseUrl),
+            authBase = Uri.of(authBaseUrl),
             authPath = "/oauth2/authorize",
             tokenPath = "/oauth2/token",
-            credentials = Credentials(config.clientId, config.clientSecret),
+            credentials = Credentials(clientId, clientSecret),
         )
 
     return OAuthProvider(

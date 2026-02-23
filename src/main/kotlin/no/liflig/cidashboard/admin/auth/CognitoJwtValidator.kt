@@ -8,7 +8,6 @@ import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor
 import com.nimbusds.jwt.proc.DefaultJWTProcessor
 import java.net.URL
-import no.liflig.cidashboard.common.config.CognitoConfig
 import no.liflig.logging.getLogger
 
 data class CognitoUser(
@@ -17,13 +16,16 @@ data class CognitoUser(
     val groups: List<String>,
 )
 
-class CognitoJwtValidator(private val config: CognitoConfig) {
+class CognitoJwtValidator(
+    private val jwksUrl: URL,
+    private val clientId: String,
+    private val issuerUrl: String,
+) {
   private val log = getLogger()
 
   private val jwtProcessor: ConfigurableJWTProcessor<SecurityContext> =
       DefaultJWTProcessor<SecurityContext>().apply {
-        val jwkSetUrl = URL(config.jwksUrl)
-        val jwkSource = JWKSourceBuilder.create<SecurityContext>(jwkSetUrl).build()
+        val jwkSource = JWKSourceBuilder.create<SecurityContext>(jwksUrl).build()
         val keySelector = JWSVerificationKeySelector(JWSAlgorithm.RS256, jwkSource)
         setJWSKeySelector(keySelector)
       }
@@ -47,9 +49,9 @@ class CognitoJwtValidator(private val config: CognitoConfig) {
 
   private fun validateClaims(claims: JWTClaimsSet): CognitoUser? {
     val issuer = claims.issuer
-    if (issuer != config.issuerUrl) {
+    if (issuer != issuerUrl) {
       log.warn {
-        field("expected.issuer", config.issuerUrl)
+        field("expected.issuer", issuerUrl)
         field("actual.issuer", issuer)
         "JWT issuer mismatch"
       }
@@ -57,9 +59,9 @@ class CognitoJwtValidator(private val config: CognitoConfig) {
     }
 
     val audience = claims.audience
-    if (!audience.contains(config.clientId)) {
+    if (!audience.contains(clientId)) {
       log.warn {
-        field("expected.audience", config.clientId)
+        field("expected.audience", clientId)
         field("actual.audience", audience)
         "JWT audience mismatch"
       }

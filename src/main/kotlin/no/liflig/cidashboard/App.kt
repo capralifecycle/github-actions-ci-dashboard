@@ -92,7 +92,7 @@ class App(val config: Config) {
         )
 
     val server =
-        createApiServer(apiOptions, config.webhookOptions, config.cognitoConfig, services)
+        createApiServer(apiOptions, config.webhookOptions, services)
             .asJettyServer(config.apiOptions)
     server.start()
     runningTasks.add(server)
