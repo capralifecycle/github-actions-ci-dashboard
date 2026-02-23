@@ -25,8 +25,7 @@ class CognitoWireMock(private val wireMock: WireMockServer) {
 
   private val signer: JWSSigner = RSASSASigner(rsaKey)
 
-  val jwksJson: String
-    get() = JWKSet(listOf(rsaKey.toPublicJWK())).toString()
+  val jwksJson: String = JWKSet(listOf(rsaKey.toPublicJWK())).toString()
 
   val issuer: String
     get() = "${wireMock.baseUrl()}/cognito-idp/eu-north-1_test"
@@ -37,17 +36,13 @@ class CognitoWireMock(private val wireMock: WireMockServer) {
   val domain: String
     get() = wireMock.baseUrl().removePrefix("http://").removePrefix("https://")
 
-  val region: String
-    get() = "eu-north-1"
+  val region: String = "eu-north-1"
 
-  val userPoolId: String
-    get() = "eu-north-1_test"
+  val userPoolId: String = "eu-north-1_test"
 
-  val clientId: String
-    get() = "test-client-id"
+  val clientId: String = "test-client-id"
 
-  val clientSecret: String
-    get() = "test-client-secret"
+  val clientSecret: String = "test-client-secret"
 
   fun setupStubs() {
     wireMock.stubFor(
