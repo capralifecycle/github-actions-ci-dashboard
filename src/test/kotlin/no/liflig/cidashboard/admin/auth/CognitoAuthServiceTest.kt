@@ -6,7 +6,9 @@ import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class CognitoAuthServiceTest {
 
@@ -70,9 +72,7 @@ class CognitoAuthServiceTest {
     val request = Request(Method.GET, "/test")
 
     val exception =
-        org.junit.jupiter.api.Assertions.assertThrows(IllegalStateException::class.java) {
-          CognitoAuthService.requireCognitoUser(request)
-        }
+        assertThrows<IllegalStateException> { CognitoAuthService.requireCognitoUser(request) }
 
     assertThat(exception.message).contains("No Cognito user in request context")
   }
