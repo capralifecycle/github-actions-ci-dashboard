@@ -29,6 +29,7 @@ import no.liflig.http4k.setup.logging.LoggingFilter
 import org.http4k.contract.openapi.v3.ApiServer
 import org.http4k.core.Method
 import org.http4k.core.Response
+import org.http4k.core.Status
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters
 import org.http4k.routing.ResourceLoader.Companion.Classpath
@@ -66,48 +67,7 @@ fun createApiServer(
   val indexEndpoint =
       IndexEndpoint(options.clientSecretToken, options.hotReloadTemplates, options.updatesPollRate)
 
-  val adminGuiRoutes: RoutingHttpHandler =
-      if (services.cognitoAuthService != null) {
-        routes(
-            "/admin/oauth/callback" bind
-                Method.GET to
-                services.cognitoAuthService.callbackHandler(),
-            "/admin" bind
-                routes(
-                        "/" bind Method.GET to AdminIndexEndpoint(),
-                        "/ci-statuses" bind
-                            Method.GET to
-                            CiStatusListEndpoint(
-                                services.adminGuiService,
-                                options.hotReloadTemplates,
-                            ),
-                        "/ci-statuses/{id}" bind
-                            Method.DELETE to
-                            CiStatusDeleteEndpoint(
-                                services.deleteDatabaseRowsService,
-                            ),
-                        "/integration" bind
-                            Method.GET to
-                            IntegrationGuideEndpoint(
-                                webhookOptions.secret,
-                                options.hotReloadTemplates,
-                            ),
-                        "/configs" bind
-                            Method.GET to
-                            ConfigListEndpoint(
-                                services.adminGuiService,
-                                options.hotReloadTemplates,
-                            ),
-                    )
-                    .withFilter(services.cognitoAuthService.authFilter()),
-        )
-      } else {
-        "/admin" bind
-            Method.GET to
-            {
-              Response(org.http4k.core.Status.NOT_FOUND).body("Admin GUI not configured")
-            }
-      }
+  val adminGuiRoutes: RoutingHttpHandler = createAdminGuiRoutes(services, options, webhookOptions)
 
   return coreFilters.then(
       routes(
@@ -142,6 +102,55 @@ fun createApiServer(
           webJars(),
       )
   )
+}
+
+/**
+ * If admin gui is disabled or cognito is not configured, the `/admin` route returns 404.
+ */
+private fun createAdminGuiRoutes(
+  services: ApiServices,
+  options: ApiOptions,
+  webhookOptions: WebhookOptions
+): RoutingHttpHandler = if (services.cognitoAuthService != null) {
+  routes(
+      "/admin/oauth/callback" bind
+          Method.GET to
+          services.cognitoAuthService.callbackHandler(),
+      "/admin" bind
+          routes(
+              "/" bind Method.GET to AdminIndexEndpoint(),
+              "/ci-statuses" bind
+                  Method.GET to
+                  CiStatusListEndpoint(
+                      services.adminGuiService,
+                      options.hotReloadTemplates,
+                  ),
+              "/ci-statuses/{id}" bind
+                  Method.DELETE to
+                  CiStatusDeleteEndpoint(
+                      services.deleteDatabaseRowsService,
+                  ),
+              "/integration" bind
+                  Method.GET to
+                  IntegrationGuideEndpoint(
+                      webhookOptions.secret,
+                      options.hotReloadTemplates,
+                  ),
+              "/configs" bind
+                  Method.GET to
+                  ConfigListEndpoint(
+                      services.adminGuiService,
+                      options.hotReloadTemplates,
+                  ),
+          )
+              .withFilter(services.cognitoAuthService.authFilter()),
+  )
+} else {
+  "/admin" bind
+      Method.GET to
+      {
+        Response(Status.NOT_FOUND).body("Admin GUI not configured")
+      }
 }
 
 fun RoutingHttpHandler.asJettyServer(options: ApiOptions): Http4kServer =
