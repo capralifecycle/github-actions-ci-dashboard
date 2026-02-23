@@ -14,7 +14,6 @@ import no.liflig.cidashboard.dashboard.DashboardUpdatesService
 import no.liflig.cidashboard.dashboard.JdbiCiStatusDatabaseHandle
 import no.liflig.cidashboard.dashboard.JdbiDashboardConfigDatabaseHandle
 import no.liflig.cidashboard.health.HealthService
-import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.status_api.FilteredStatusesService
 import no.liflig.cidashboard.webhook.IncomingWebhookService
 import no.liflig.cidashboard.webhook.JdbiCiStatusTransaction
@@ -63,12 +62,10 @@ class App(val config: Config) {
         )
     val dashboardConfigService = DashboardConfigService(JdbiDashboardConfigTransaction(jdbi))
 
-    val ciStatusHandle = JdbiCiStatusDatabaseHandle<List<CiStatus>>(jdbi)
-    val configHandle = JdbiDashboardConfigDatabaseHandle<List<DashboardConfig>>(jdbi)
     val adminGuiService =
         AdminGuiService(
-            ciStatusRepo = { ciStatusHandle { repo -> repo.getAll() } },
-            configRepo = { configHandle { repo -> repo.getAll() } },
+            ciStatusRepo = JdbiCiStatusDatabaseHandle(jdbi),
+            configRepo = JdbiDashboardConfigDatabaseHandle(jdbi),
         )
 
     val cognitoAuthService =

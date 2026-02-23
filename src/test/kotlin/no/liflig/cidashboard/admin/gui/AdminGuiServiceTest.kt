@@ -1,5 +1,7 @@
 package no.liflig.cidashboard.admin.gui
 
+import io.mockk.every
+import io.mockk.mockk
 import java.time.Instant
 import no.liflig.cidashboard.DashboardConfig
 import no.liflig.cidashboard.DashboardConfigId
@@ -7,7 +9,9 @@ import no.liflig.cidashboard.OrganizationMatcher
 import no.liflig.cidashboard.persistence.BranchName
 import no.liflig.cidashboard.persistence.CiStatus
 import no.liflig.cidashboard.persistence.CiStatusId
+import no.liflig.cidashboard.persistence.CiStatusRepo
 import no.liflig.cidashboard.persistence.Commit
+import no.liflig.cidashboard.persistence.DashboardConfigRepo
 import no.liflig.cidashboard.persistence.Repo
 import no.liflig.cidashboard.persistence.RepoId
 import no.liflig.cidashboard.persistence.RepoName
@@ -73,8 +77,14 @@ class AdminGuiServiceTest {
                 triggeredBy = Username("testuser"),
             ),
         )
+    val ciStatusRepo = mockk<CiStatusRepo> { every { getAll() } returns statuses }
+    val dashboardConfigRepo = mockk<DashboardConfigRepo> { every { getAll() } returns emptyList() }
 
-    val service = AdminGuiService(ciStatusRepo = { statuses }, configRepo = { emptyList() })
+    val service =
+        AdminGuiService(
+            ciStatusRepo = { callback -> callback(ciStatusRepo) },
+            configRepo = { callback -> callback(dashboardConfigRepo) },
+        )
     val rows = service.getCiStatuses()
 
     assertThat(rows).hasSize(2)
@@ -101,8 +111,14 @@ class AdminGuiServiceTest {
                     ),
             ),
         )
+    val ciStatusRepo = mockk<CiStatusRepo> { every { getAll() } returns emptyList() }
+    val dashboardConfigRepo = mockk<DashboardConfigRepo> { every { getAll() } returns configs }
 
-    val service = AdminGuiService(ciStatusRepo = { emptyList() }, configRepo = { configs })
+    val service =
+        AdminGuiService(
+            ciStatusRepo = { callback -> callback(ciStatusRepo) },
+            configRepo = { callback -> callback(dashboardConfigRepo) },
+        )
     val rows = service.getConfigs()
 
     assertThat(rows).hasSize(1)
