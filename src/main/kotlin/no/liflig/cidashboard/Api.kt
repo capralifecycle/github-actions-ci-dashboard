@@ -104,54 +104,47 @@ fun createApiServer(
   )
 }
 
-/**
- * If admin gui is disabled or cognito is not configured, the `/admin` route returns 404.
- */
+/** If admin gui is disabled or cognito is not configured, the `/admin` route returns 404. */
 private fun createAdminGuiRoutes(
-  services: ApiServices,
-  options: ApiOptions,
-  webhookOptions: WebhookOptions
-): RoutingHttpHandler = if (services.cognitoAuthService != null) {
-  routes(
-      "/admin/oauth/callback" bind
-          Method.GET to
-          services.cognitoAuthService.callbackHandler(),
-      "/admin" bind
-          routes(
-              "/" bind Method.GET to AdminIndexEndpoint(),
-              "/ci-statuses" bind
-                  Method.GET to
-                  CiStatusListEndpoint(
-                      services.adminGuiService,
-                      options.hotReloadTemplates,
-                  ),
-              "/ci-statuses/{id}" bind
-                  Method.DELETE to
-                  CiStatusDeleteEndpoint(
-                      services.deleteDatabaseRowsService,
-                  ),
-              "/integration" bind
-                  Method.GET to
-                  IntegrationGuideEndpoint(
-                      webhookOptions.secret,
-                      options.hotReloadTemplates,
-                  ),
-              "/configs" bind
-                  Method.GET to
-                  ConfigListEndpoint(
-                      services.adminGuiService,
-                      options.hotReloadTemplates,
-                  ),
-          )
-              .withFilter(services.cognitoAuthService.authFilter()),
-  )
-} else {
-  "/admin" bind
-      Method.GET to
-      {
-        Response(Status.NOT_FOUND).body("Admin GUI not configured")
-      }
-}
+    services: ApiServices,
+    options: ApiOptions,
+    webhookOptions: WebhookOptions,
+): RoutingHttpHandler =
+    if (services.cognitoAuthService != null) {
+      routes(
+          "/admin/oauth/callback" bind Method.GET to services.cognitoAuthService.callbackHandler(),
+          "/admin" bind
+              routes(
+                      "/" bind Method.GET to AdminIndexEndpoint(),
+                      "/ci-statuses" bind
+                          Method.GET to
+                          CiStatusListEndpoint(
+                              services.adminGuiService,
+                              options.hotReloadTemplates,
+                          ),
+                      "/ci-statuses/{id}" bind
+                          Method.DELETE to
+                          CiStatusDeleteEndpoint(
+                              services.deleteDatabaseRowsService,
+                          ),
+                      "/integration" bind
+                          Method.GET to
+                          IntegrationGuideEndpoint(
+                              webhookOptions.secret,
+                              options.hotReloadTemplates,
+                          ),
+                      "/configs" bind
+                          Method.GET to
+                          ConfigListEndpoint(
+                              services.adminGuiService,
+                              options.hotReloadTemplates,
+                          ),
+                  )
+                  .withFilter(services.cognitoAuthService.authFilter()),
+      )
+    } else {
+      "/admin" bind Method.GET to { Response(Status.NOT_FOUND).body("Admin GUI not configured") }
+    }
 
 fun RoutingHttpHandler.asJettyServer(options: ApiOptions): Http4kServer =
     this.asServer(
