@@ -25,6 +25,9 @@
     .admin-table th { background-color: #f8f8f8; font-weight: 600; color: #666; }
     .admin-table tr:hover { background-color: #f9f9f9; }
     .admin-empty { text-align: center; padding: 2rem; color: #666; }
+    .admin-table__org-matcher { font-weight: 500; margin-bottom: 0.25rem; }
+    .admin-table__repo-list { list-style: none; margin-left: 1rem; margin-bottom: 0.5rem; }
+    .admin-table__repo-item { color: #666; font-size: 0.875rem; }
   </style>
 </head>
 <body>
@@ -64,7 +67,18 @@
       <tr>
         <td><code>{{this.id}}</code></td>
         <td>{{this.displayName}}</td>
-        <td>{{this.orgMatchers}}</td>
+        <td>
+          {{#each this.orgMatchers}}
+            <div class="admin-table__org-matcher">{{this.matcher}}</div>
+            {{#if this.repoMatchers.length}}
+              <ul class="admin-table__repo-list">
+                {{#each this.repoMatchers}}
+                  <li class="admin-table__repo-item">• {{this.matcher}}</li>
+                {{/each}}
+              </ul>
+            {{/if}}
+          {{/each}}
+        </td>
       </tr>
       {{/each}}
       </tbody>
