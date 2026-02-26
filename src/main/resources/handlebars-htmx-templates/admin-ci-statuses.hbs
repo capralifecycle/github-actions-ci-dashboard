@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}} - Admin</title>
+  <script src="/webjars/htmx.org/{{htmxVersion}}/dist/htmx.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; background-color: #f5f5f5; color: #333; line-height: 1.6; }
+    .admin-container { display: flex; min-height: 100vh; }
+    .admin-sidebar { width: 220px; background-color: #2d2d2d; color: #fff; padding: 1rem; }
+    .admin-sidebar__title { font-size: 1.25rem; font-weight: bold; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #444; }
+    .admin-sidebar__nav { list-style: none; }
+    .admin-sidebar__nav-item { margin-bottom: 0.5rem; }
+    .admin-sidebar__nav-link { display: block; padding: 0.5rem 0.75rem; color: #ccc; text-decoration: none; border-radius: 4px; }
+    .admin-sidebar__nav-link:hover { background-color: #3d3d3d; color: #fff; }
+    .admin-sidebar__nav-link--active { background-color: #4a90d9; color: #fff; }
+    .admin-sidebar__user { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #444; font-size: 0.875rem; color: #999; }
+    .admin-main { flex: 1; padding: 1.5rem; }
+    .admin-header { margin-bottom: 1.5rem; }
+    .admin-header__title { font-size: 1.5rem; font-weight: bold; }
+    .admin-table { width: 100%; background-color: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); border-collapse: collapse; }
+    .admin-table th, .admin-table td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #eee; }
+    .admin-table th { background-color: #f8f8f8; font-weight: 600; color: #666; }
+    .admin-table tr:hover { background-color: #f9f9f9; }
+    .admin-btn { display: inline-block; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 4px; border: none; cursor: pointer; text-decoration: none; }
+    .admin-btn--danger { background-color: #dc3545; color: #fff; }
+    .admin-btn--danger:hover { background-color: #c82333; }
+    .admin-btn--secondary { background-color: #6c757d; color: #fff; }
+    .admin-btn--secondary:hover { background-color: #5a6268; }
+    .admin-badge { display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.75rem; font-weight: 600; border-radius: 4px; }
+    .admin-badge--success { background-color: #d4edda; color: #155724; }
+    .admin-badge--danger { background-color: #f8d7da; color: #721c24; }
+    .admin-badge--warning { background-color: #fff3cd; color: #856404; }
+    .admin-badge--info { background-color: #d1ecf1; color: #0c5460; }
+    .admin-empty { text-align: center; padding: 2rem; color: #666; }
+  </style>
+</head>
+<body>
+<div class="admin-container">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__title">CI Dashboard Admin</div>
+    <nav>
+      <ul class="admin-sidebar__nav">
+        <li class="admin-sidebar__nav-item">
+          <a href="/admin/ci-statuses" class="admin-sidebar__nav-link{{#if (eq activePage 'ci-statuses')}} admin-sidebar__nav-link--active{{/if}}">CI Statuses</a>
+        </li>
+        <li class="admin-sidebar__nav-item">
+          <a href="/admin/integration" class="admin-sidebar__nav-link{{#if (eq activePage 'integration')}} admin-sidebar__nav-link--active{{/if}}">Integration Guide</a>
+        </li>
+        <li class="admin-sidebar__nav-item">
+          <a href="/admin/configs" class="admin-sidebar__nav-link{{#if (eq activePage 'configs')}} admin-sidebar__nav-link--active{{/if}}">Configurations</a>
+        </li>
+      </ul>
+    </nav>
+    <div class="admin-sidebar__user">Logged in as: {{user.username}}</div>
+  </aside>
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1 class="admin-header__title">{{title}}</h1>
+    </div>
+    <div id="ci-status-list">
+      {{#if statuses.length}}
+      <table class="admin-table">
+        <thead>
+        <tr>
+          <th>Repository</th>
+          <th>Branch</th>
+          <th>Status</th>
+          <th>Last Updated</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each statuses}}
+        <tr>
+          <td><strong>{{this.repoOwner}}/{{this.repoName}}</strong></td>
+          <td>{{this.branch}}</td>
+          <td>
+            {{#if (eq this.status 'SUCCEEDED')}}<span class="admin-badge admin-badge--success">{{this.status}}</span>
+            {{else if (eq this.status 'FAILED')}}<span class="admin-badge admin-badge--danger">{{this.status}}</span>
+            {{else if (eq this.status 'IN_PROGRESS')}}<span class="admin-badge admin-badge--info">{{this.status}}</span>
+            {{else if (eq this.status 'QUEUED')}}<span class="admin-badge admin-badge--warning">{{this.status}}</span>
+            {{else}}<span class="admin-badge">{{this.status}}</span>{{/if}}
+          </td>
+          <td>{{this.lastUpdated}}</td>
+          <td>
+            <button class="admin-btn admin-btn--danger" hx-delete="/admin/ci-statuses/{{this.id}}" hx-target="closest tr" hx-swap="outerHTML" hx-confirm="Are you sure you want to delete this status? This action cannot be undone.">Delete</button>
+          </td>
+        </tr>
+        {{/each}}
+        </tbody>
+      </table>
+      {{else}}
+      <div class="admin-empty"><p>No CI statuses found.</p></div>
+      {{/if}}
+    </div>
+  </main>
+</div>
+</body>
+</html>

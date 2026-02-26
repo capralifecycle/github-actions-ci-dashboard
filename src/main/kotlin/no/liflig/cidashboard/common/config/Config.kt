@@ -14,6 +14,7 @@ data class Config(
     val apiOptions: ApiOptions = ApiOptions.from(properties),
     val database: DbConfig = DbConfig.from(properties),
     val webhookOptions: WebhookOptions = WebhookOptions.from(properties),
+    val cognitoConfig: CognitoConfig? = CognitoConfig.from(properties),
 ) {
 
   companion object {
