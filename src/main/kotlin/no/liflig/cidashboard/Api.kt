@@ -1,9 +1,16 @@
 package no.liflig.cidashboard
 
+import no.liflig.cidashboard.admin.auth.CognitoAuthService
 import no.liflig.cidashboard.admin.config.DashboardConfigEndpoint
 import no.liflig.cidashboard.admin.config.DashboardConfigService
 import no.liflig.cidashboard.admin.database.DeleteCiStatusEndpoint
 import no.liflig.cidashboard.admin.database.DeleteDatabaseRowsService
+import no.liflig.cidashboard.admin.gui.AdminGuiService
+import no.liflig.cidashboard.admin.gui.AdminIndexEndpoint
+import no.liflig.cidashboard.admin.gui.CiStatusDeleteEndpoint
+import no.liflig.cidashboard.admin.gui.CiStatusListEndpoint
+import no.liflig.cidashboard.admin.gui.ConfigListEndpoint
+import no.liflig.cidashboard.admin.gui.IntegrationGuideEndpoint
 import no.liflig.cidashboard.common.config.ApiOptions
 import no.liflig.cidashboard.common.config.WebhookOptions
 import no.liflig.cidashboard.common.http4k.httpNoServerVersionHeader
@@ -21,6 +28,8 @@ import no.liflig.http4k.setup.LifligBasicApiSetup
 import no.liflig.http4k.setup.logging.LoggingFilter
 import org.http4k.contract.openapi.v3.ApiServer
 import org.http4k.core.Method
+import org.http4k.core.Response
+import org.http4k.core.Status
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters
 import org.http4k.routing.ResourceLoader.Companion.Classpath
@@ -57,6 +66,9 @@ fun createApiServer(
 
   val indexEndpoint =
       IndexEndpoint(options.clientSecretToken, options.hotReloadTemplates, options.updatesPollRate)
+
+  val adminGuiRoutes: RoutingHttpHandler = createAdminGuiRoutes(services, options, webhookOptions)
+
   return coreFilters.then(
       routes(
           "/" bind Method.GET to indexEndpoint,
@@ -77,9 +89,6 @@ fun createApiServer(
               Method.GET to
               ServerFilters.BearerAuth(options.devtoolSecretToken.value)
                   .then(FetchStatusesEndpoint(services.filteredStatusesService)),
-          /*"/admin/nuke" bind
-          Method.POST to
-          DeleteAllDatabaseRowsEndpoint(services.deleteDatabaseRowsService),*/
           "/admin/delete" bind
               Method.DELETE to
               ServerFilters.BearerAuth(token = options.adminSecretToken.value)
@@ -88,11 +97,54 @@ fun createApiServer(
               Method.POST to
               ServerFilters.BearerAuth(token = options.adminSecretToken.value)
                   .then(DashboardConfigEndpoint(services.dashboardConfigService)),
+          adminGuiRoutes,
           static(Classpath("/static")),
           webJars(),
       )
   )
 }
+
+/** If admin gui is disabled or cognito is not configured, the `/admin` route returns 404. */
+private fun createAdminGuiRoutes(
+    services: ApiServices,
+    options: ApiOptions,
+    webhookOptions: WebhookOptions,
+): RoutingHttpHandler =
+    if (services.cognitoAuthService != null) {
+      routes(
+          "/admin/oauth/callback" bind Method.GET to services.cognitoAuthService.callbackHandler(),
+          "/admin" bind
+              routes(
+                      "/" bind Method.GET to AdminIndexEndpoint(),
+                      "/ci-statuses" bind
+                          Method.GET to
+                          CiStatusListEndpoint(
+                              services.adminGuiService,
+                              options.hotReloadTemplates,
+                          ),
+                      "/ci-statuses/{id}" bind
+                          Method.DELETE to
+                          CiStatusDeleteEndpoint(
+                              services.deleteDatabaseRowsService,
+                          ),
+                      "/integration" bind
+                          Method.GET to
+                          IntegrationGuideEndpoint(
+                              webhookOptions.secret,
+                              options.hotReloadTemplates,
+                          ),
+                      "/configs" bind
+                          Method.GET to
+                          ConfigListEndpoint(
+                              services.adminGuiService,
+                              options.hotReloadTemplates,
+                          ),
+                  )
+                  .withFilter(services.cognitoAuthService.authFilter()),
+      )
+    } else {
+      "/admin" bind Method.GET to { Response(Status.NOT_FOUND).body("Admin GUI not configured") }
+    }
 
 fun RoutingHttpHandler.asJettyServer(options: ApiOptions): Http4kServer =
     this.asServer(
@@ -107,4 +159,6 @@ data class ApiServices(
     val dashboardConfigService: DashboardConfigService,
     val deleteDatabaseRowsService: DeleteDatabaseRowsService,
     val filteredStatusesService: FilteredStatusesService,
+    val adminGuiService: AdminGuiService,
+    val cognitoAuthService: CognitoAuthService?,
 )
