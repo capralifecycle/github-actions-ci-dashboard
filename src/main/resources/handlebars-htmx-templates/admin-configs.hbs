@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}} - Admin</title>
+  <script src="/webjars/htmx.org/{{htmxVersion}}/dist/htmx.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; background-color: #f5f5f5; color: #333; line-height: 1.6; }
+    .admin-container { display: flex; min-height: 100vh; }
+    .admin-sidebar { width: 220px; background-color: #2d2d2d; color: #fff; padding: 1rem; }
+    .admin-sidebar__title { font-size: 1.25rem; font-weight: bold; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #444; }
+    .admin-sidebar__nav { list-style: none; }
+    .admin-sidebar__nav-item { margin-bottom: 0.5rem; }
+    .admin-sidebar__nav-link { display: block; padding: 0.5rem 0.75rem; color: #ccc; text-decoration: none; border-radius: 4px; }
+    .admin-sidebar__nav-link:hover { background-color: #3d3d3d; color: #fff; }
+    .admin-sidebar__nav-link--active { background-color: #4a90d9; color: #fff; }
+    .admin-sidebar__user { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #444; font-size: 0.875rem; color: #999; }
+    .admin-main { flex: 1; padding: 1.5rem; }
+    .admin-header { margin-bottom: 1.5rem; }
+    .admin-header__title { font-size: 1.5rem; font-weight: bold; }
+    .admin-table { width: 100%; background-color: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); border-collapse: collapse; }
+    .admin-table th, .admin-table td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #eee; }
+    .admin-table th { background-color: #f8f8f8; font-weight: 600; color: #666; }
+    .admin-table tr:hover { background-color: #f9f9f9; }
+    .admin-empty { text-align: center; padding: 2rem; color: #666; }
+    .admin-table__org-matcher { font-weight: 500; margin-bottom: 0.25rem; }
+    .admin-table__repo-list { list-style: none; margin-left: 1rem; margin-bottom: 0.5rem; }
+    .admin-table__repo-item { color: #666; font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+<div class="admin-container">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__title">CI Dashboard Admin</div>
+    <nav>
+      <ul class="admin-sidebar__nav">
+        <li class="admin-sidebar__nav-item">
+          <a href="/admin/ci-statuses" class="admin-sidebar__nav-link{{#if (eq activePage 'ci-statuses')}} admin-sidebar__nav-link--active{{/if}}">CI Statuses</a>
+        </li>
+        <li class="admin-sidebar__nav-item">
+          <a href="/admin/integration" class="admin-sidebar__nav-link{{#if (eq activePage 'integration')}} admin-sidebar__nav-link--active{{/if}}">Integration Guide</a>
+        </li>
+        <li class="admin-sidebar__nav-item">
+          <a href="/admin/configs" class="admin-sidebar__nav-link{{#if (eq activePage 'configs')}} admin-sidebar__nav-link--active{{/if}}">Configurations</a>
+        </li>
+      </ul>
+    </nav>
+    <div class="admin-sidebar__user">Logged in as: {{user.username}}</div>
+  </aside>
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1 class="admin-header__title">{{title}}</h1>
+    </div>
+    {{#if configs.length}}
+    <table class="admin-table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Display Name</th>
+        <th>Organization Matchers</th>
+      </tr>
+      </thead>
+      <tbody>
+      {{#each configs}}
+      <tr>
+        <td><code>{{this.id}}</code></td>
+        <td>{{this.displayName}}</td>
+        <td>
+          {{#each this.orgMatchers}}
+            <div class="admin-table__org-matcher">{{this.matcher}}</div>
+            {{#if this.repoMatchers.length}}
+              <ul class="admin-table__repo-list">
+                {{#each this.repoMatchers}}
+                  <li class="admin-table__repo-item">• {{this.matcher}}</li>
+                {{/each}}
+              </ul>
+            {{/if}}
+          {{/each}}
+        </td>
+      </tr>
+      {{/each}}
+      </tbody>
+    </table>
+    {{else}}
+    <div class="admin-empty"><p>No dashboard configurations found.</p></div>
+    {{/if}}
+  </main>
+</div>
+</body>
+</html>

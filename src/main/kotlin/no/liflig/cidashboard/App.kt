@@ -1,8 +1,10 @@
 package no.liflig.cidashboard
 
+import no.liflig.cidashboard.admin.auth.CognitoAuthService
 import no.liflig.cidashboard.admin.config.DashboardConfigService
 import no.liflig.cidashboard.admin.config.JdbiDashboardConfigTransaction
 import no.liflig.cidashboard.admin.database.DeleteDatabaseRowsService
+import no.liflig.cidashboard.admin.gui.AdminGuiService
 import no.liflig.cidashboard.common.config.Config
 import no.liflig.cidashboard.common.database.DatabaseConfigurator
 import no.liflig.cidashboard.common.database.DbPassword
@@ -16,10 +18,11 @@ import no.liflig.cidashboard.status_api.FilteredStatusesService
 import no.liflig.cidashboard.webhook.IncomingWebhookService
 import no.liflig.cidashboard.webhook.JdbiCiStatusTransaction
 import no.liflig.logging.getLogger
+import org.http4k.client.JavaHttpClient
 import org.jdbi.v3.core.Jdbi
 
 /**
- * The main entry point for the application. Should be started from [Main].
+ * The main entry point for the application. Should be started from [main].
  *
  * @param config any options like ports and urls should be set here. Override values in the config
  *   when doing testing of [App].
@@ -60,6 +63,20 @@ class App(val config: Config) {
         )
     val dashboardConfigService = DashboardConfigService(JdbiDashboardConfigTransaction(jdbi))
 
+    val adminGuiService =
+        AdminGuiService(
+            ciStatusRepo = JdbiCiStatusDatabaseHandle(jdbi),
+            configRepo = JdbiDashboardConfigDatabaseHandle(jdbi),
+        )
+
+    val cognitoAuthService =
+        config.cognitoConfig?.let { cognitoConfig ->
+          CognitoAuthService(
+              config = cognitoConfig,
+              httpClient = JavaHttpClient(),
+          )
+        }
+
     val services =
         ApiServices(
             healthService,
@@ -68,6 +85,8 @@ class App(val config: Config) {
             dashboardConfigService,
             DeleteDatabaseRowsService(JdbiCiStatusDatabaseHandle(jdbi)),
             FilteredStatusesService(JdbiCiStatusDatabaseHandle(jdbi)),
+            adminGuiService,
+            cognitoAuthService,
         )
 
     val server =

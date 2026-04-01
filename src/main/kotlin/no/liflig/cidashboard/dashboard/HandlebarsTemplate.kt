@@ -82,4 +82,10 @@ object CustomHelpers {
       else -> false
     }
   }
+
+  @Suppress("unused")
+  @JvmName("eq")
+  fun eq(left: Any?, right: Any?): Boolean {
+    return left == right
+  }
 }
