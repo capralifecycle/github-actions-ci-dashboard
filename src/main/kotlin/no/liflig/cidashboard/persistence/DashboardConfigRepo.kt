@@ -52,4 +52,12 @@ class DashboardConfigRepo(private val databaseHandle: Handle) {
         .getOrNull()
         .also { log.debug { "Fetched ${it?.id} from ${TABLE_NAME}" } }
   }
+
+  fun getAll(): List<DashboardConfig> {
+    return databaseHandle
+        .select("SELECT data FROM $TABLE_NAME ORDER BY id")
+        .map { rs: ResultSet, _ -> DashboardConfig.fromJson(rs.getString("data")) }
+        .list()
+        .also { log.debug { "Fetched ${it.size} configs from $TABLE_NAME" } }
+  }
 }
