@@ -42,8 +42,10 @@ import org.testcontainers.containers.PostgreSQLContainer
  * To test at this high level and end-to-end, the system requires infrastructure or mocks/simulators
  * to properly interact with external systems.
  */
-class AcceptanceTestExtension(val fastPoll: Boolean = true) :
-    Extension, BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+class AcceptanceTestExtension(
+    val fastPoll: Boolean = true,
+    private val clientSecrets: Map<String, String> = emptyMap(),
+) : Extension, BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
 
   lateinit var app: App
 
@@ -65,6 +67,7 @@ class AcceptanceTestExtension(val fastPoll: Boolean = true) :
                 it
               }
             }
+            .let { applyClientSecrets(it) }
 
     app = App(config)
     app.start()
@@ -73,6 +76,7 @@ class AcceptanceTestExtension(val fastPoll: Boolean = true) :
         port = config.apiOptions.serverPort,
         webhookPath = config.webhookOptions.path,
         webhookSecret = config.webhookOptions.secret,
+        clientSecrets = config.webhookOptions.clientSecrets,
     )
 
     tvBrowser.initialize(
@@ -104,19 +108,32 @@ class AcceptanceTestExtension(val fastPoll: Boolean = true) :
     return config.copy(apiOptions = config.apiOptions.copy(updatesPollRate = 500.milliseconds))
   }
 
+  private fun applyClientSecrets(config: Config): Config {
+    if (clientSecrets.isEmpty()) return config
+    val secrets = clientSecrets.mapValues { (_, secret) -> WebhookOptions.Secret(secret) }
+    return config.copy(webhookOptions = config.webhookOptions.copy(clientSecrets = secrets))
+  }
+
   class GitHub {
     private val log = getLogger()
 
     private var webhookDestinationPort: Port = Port(8080)
     private lateinit var webhookPath: String
     private var webhookSecret: WebhookOptions.Secret = WebhookOptions.Secret("unknown")
+    private var clientSecrets: Map<String, WebhookOptions.Secret> = emptyMap()
 
     private lateinit var webhookPostRequest: RequestSpecification
 
-    fun initialize(port: Port, webhookPath: String, webhookSecret: WebhookOptions.Secret) {
+    fun initialize(
+        port: Port,
+        webhookPath: String,
+        webhookSecret: WebhookOptions.Secret,
+        clientSecrets: Map<String, WebhookOptions.Secret> = emptyMap(),
+    ) {
       this.webhookDestinationPort = port
       this.webhookPath = webhookPath
       this.webhookSecret = webhookSecret
+      this.clientSecrets = clientSecrets
 
       webhookPostRequest =
           RequestSpecBuilder()
@@ -126,11 +143,11 @@ class AcceptanceTestExtension(val fastPoll: Boolean = true) :
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    private fun sign(body: String): Header {
+    private fun sign(body: String, secret: WebhookOptions.Secret = webhookSecret): Header {
       return Header(
           "X-Hub-Signature-256",
           "sha256=" +
-              HmacSha256.hmacSHA256(webhookSecret.value.toByteArray(Charsets.UTF_8), body)
+              HmacSha256.hmacSHA256(secret.value.toByteArray(Charsets.UTF_8), body)
                   .toHexString(HexFormat.Default),
       )
     }
@@ -151,6 +168,32 @@ class AcceptanceTestExtension(val fastPoll: Boolean = true) :
           .log()
           .headers()
           .post(webhookPath)
+          .then()
+          .statusCode(200)
+          .log()
+          .ifError()
+    }
+
+    fun sendWebhookWithClientId(payload: WebhookPayload, clientId: String) {
+      val secret =
+          clientSecrets[clientId]
+              ?: throw IllegalArgumentException("No secret configured for client '$clientId'")
+
+      log.info { "Sending webhook $payload to client $clientId ..." }
+
+      val body = payload.asJson()
+
+      RestAssured.given(webhookPostRequest)
+          .body(body)
+          .header(sign(body, secret))
+          .header("X-GitHub-Event", payload.type)
+          .log()
+          .method()
+          .log()
+          .uri()
+          .log()
+          .headers()
+          .post("$webhookPath/$clientId")
           .then()
           .statusCode(200)
           .log()

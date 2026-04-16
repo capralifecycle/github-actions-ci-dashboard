@@ -23,6 +23,8 @@ import org.http4k.contract.openapi.v3.ApiServer
 import org.http4k.core.Method
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters
+import org.http4k.lens.Path
+import org.http4k.lens.nonBlankString
 import org.http4k.routing.ResourceLoader.Companion.Classpath
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
@@ -55,6 +57,9 @@ fun createApiServer(
   val coreFilters =
       basicApiSetup.create(principalLog = { null }).coreFilters.then(ServerFilters.GZip())
 
+  val clientIdLens = Path.nonBlankString().of("clientId")
+  val webhookEndpoint = WebhookEndpoint(services.incomingWebhookService)
+
   val indexEndpoint =
       IndexEndpoint(options.clientSecretToken, options.hotReloadTemplates, options.updatesPollRate)
   return coreFilters.then(
@@ -70,8 +75,14 @@ fun createApiServer(
               ),
           webhookOptions.path bind
               Method.POST to
-              WebhookSecretValidatorFilter(webhookOptions.secret)
-                  .then(WebhookEndpoint(services.incomingWebhookService)),
+              WebhookSecretValidatorFilter(webhookOptions.secret).then(webhookEndpoint),
+          "${webhookOptions.path}/{clientId}" bind
+              Method.POST to
+              WebhookSecretValidatorFilter { request ->
+                    val clientId = clientIdLens(request)
+                    webhookOptions.clientSecrets[clientId]
+                  }
+                  .then(webhookEndpoint),
           "/health" bind Method.GET to HealthEndpoint(services.healthService),
           "/api/statuses" bind
               Method.GET to

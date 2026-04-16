@@ -28,8 +28,38 @@ X-Hub-Signature-256: sha256=5c5134a624883d7df34eae110bf37f78a0620b159fd884760c40
 { "requestBody": "goes here" }
 ```
 
-## Rotating secret
-Note: This process will result in approximately 10 minutes of downtime for github-actions-ci-dashboards.
+## Per-client secrets (recommended)
+
+Instead of a single shared secret, each GitHub organization can have its own webhook secret
+via a dedicated endpoint: `POST /webhook/{clientId}`.
+
+The `clientId` is the GitHub organization name (e.g. `capralifecycle`). Each client has its
+own secret stored in AWS Secrets Manager.
+
+### Adding a new client
+
+1. Generate a secret: `openssl rand -base64 32`
+2. Add the secret to `load-secrets-github-actions-ci-dashboard.ts` in liflig-experiments-infra
+   with name `webhook.client.<org-name>.secret`
+3. Add the parameter to `ci-dashboard-stack.ts`
+4. Run the load-secrets script to provision the secret in AWS Secrets Manager
+5. Deploy the dashboard
+6. Configure the GitHub webhook URL to `https://ci-dashboard.liflig.io/webhook/<org-name>`
+
+### Rotating a per-client secret
+
+1. Generate a new secret
+2. Update it in AWS Secrets Manager (via the load-secrets script)
+3. Redeploy the dashboard to pick up the new secret
+4. Update the secret in the GitHub organization webhook config
+5. Done
+
+## Rotating the legacy shared secret
+
+> **Note:** This applies to the legacy `/webhook` endpoint. Prefer migrating to per-client
+> secrets above.
+
+This process will result in approximately 10 minutes of downtime for github-actions-ci-dashboards.
 
 ### When to Use
 If the GitHub signing secret is compromised, it is necessary to rotate the secret. All GitHub organizations and repositories using this secret must be updated simultaneously, as this project does not support staggered secret updates (expand and contract).

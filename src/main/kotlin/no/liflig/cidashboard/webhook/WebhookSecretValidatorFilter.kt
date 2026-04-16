@@ -18,9 +18,17 @@ import org.http4k.security.HmacSha256
  * Prevents unsigned webhook requests with a 401 Unauthorized. GitHub will always sign its POST
  * requests with a secret and a header.
  *
+ * Accepts a [secretResolver] function to support both the shared webhook secret (legacy) and
+ * per-client secrets. If the resolver returns null (unknown client), responds with 404.
+ *
  * See `/docs/webhooks-and-secrets.md`.
  */
-class WebhookSecretValidatorFilter(private val secret: WebhookOptions.Secret) : Filter {
+class WebhookSecretValidatorFilter(
+    private val secretResolver: (Request) -> WebhookOptions.Secret?,
+) : Filter {
+
+  /** Convenience constructor for a single shared secret (legacy endpoint). */
+  constructor(secret: WebhookOptions.Secret) : this({ secret })
 
   companion object {
     private val log = getLogger()
@@ -39,18 +47,25 @@ class WebhookSecretValidatorFilter(private val secret: WebhookOptions.Secret) : 
   }
 
   override fun invoke(next: HttpHandler): HttpHandler = { request: Request ->
-    try {
-      val signature = webhookSignature(request)
+    val secret = secretResolver(request)
 
-      if (verified(secret, signature, request.bodyString())) {
-        next(request)
-      } else {
-        log.warn { "Webhook did not pass signature validation: Invalid signature header value." }
+    if (secret == null) {
+      log.warn { "Webhook request for unknown client." }
+      Response(Status.NOT_FOUND).body("Unknown client")
+    } else {
+      try {
+        val signature = webhookSignature(request)
+
+        if (verified(secret, signature, request.bodyString())) {
+          next(request)
+        } else {
+          log.warn { "Webhook did not pass signature validation: Invalid signature header value." }
+          Response(Status.UNAUTHORIZED).body("Unauthorized")
+        }
+      } catch (missingHeader: LensFailure) {
+        log.warn { "Webhook did not pass signature validation: Missing signature header." }
         Response(Status.UNAUTHORIZED).body("Unauthorized")
       }
-    } catch (missingHeader: LensFailure) {
-      log.warn { "Webhook did not pass signature validation: Missing signature header." }
-      Response(Status.UNAUTHORIZED).body("Unauthorized")
     }
   }
 
