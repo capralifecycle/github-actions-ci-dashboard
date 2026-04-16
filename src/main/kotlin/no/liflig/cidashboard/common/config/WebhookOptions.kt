@@ -10,6 +10,16 @@ data class WebhookOptions(
     /** Full path to webhook. Must start with `/`. */
     val path: String,
     val secret: Secret,
+    /**
+     * Per-client webhook secrets, keyed by client ID (e.g. GitHub organization name like
+     * "capralifecycle"). Each client can have its own secret, allowing independent secret rotation
+     * without downtime.
+     *
+     * Clients POST to `/webhook/{clientId}` instead of `/webhook`.
+     *
+     * See `/docs/webhooks-and-secrets.md`.
+     */
+    val clientSecrets: Map<String, Secret>,
     val branchWhitelist: BranchWhitelist,
     val workflowNameWhitelist: WorkflowNameWhitelist,
 ) {
@@ -36,10 +46,14 @@ data class WebhookOptions(
   }
 
   companion object {
+    private const val CLIENT_SECRET_PREFIX = "webhook.client."
+    private const val CLIENT_SECRET_SUFFIX = ".secret"
+
     fun from(properties: Properties): WebhookOptions =
         WebhookOptions(
             path = properties.stringNotEmpty("webhook.path"),
             secret = Secret(properties.stringNotEmpty("webhook.secret")),
+            clientSecrets = clientSecretsFrom(properties),
             branchWhitelist =
                 properties
                     .string("webhook.branchWhitelist")
@@ -55,5 +69,19 @@ data class WebhookOptions(
                     ?.filter { it.isNotBlank() }
                     ?.let { WorkflowNameWhitelist(it) } ?: WorkflowNameWhitelist(emptyList()),
         )
+
+    private fun clientSecretsFrom(properties: Properties): Map<String, Secret> =
+        properties
+            .stringPropertyNames()
+            .filter { it.startsWith(CLIENT_SECRET_PREFIX) && it.endsWith(CLIENT_SECRET_SUFFIX) }
+            .associate { key ->
+              val clientId =
+                  key.removePrefix(CLIENT_SECRET_PREFIX).removeSuffix(CLIENT_SECRET_SUFFIX)
+              val secretValue = properties.getProperty(key)
+              require(secretValue.isNotBlank()) {
+                "Secret for client '$clientId' (property '$key') cannot be blank"
+              }
+              clientId to Secret(secretValue)
+            }
   }
 }
