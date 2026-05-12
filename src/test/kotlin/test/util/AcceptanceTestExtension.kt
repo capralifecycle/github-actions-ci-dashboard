@@ -75,7 +75,6 @@ class AcceptanceTestExtension(
     gitHub.initialize(
         port = config.apiOptions.serverPort,
         webhookPath = config.webhookOptions.path,
-        webhookSecret = config.webhookOptions.secret,
         clientSecrets = config.webhookOptions.clientSecrets,
     )
 
@@ -119,7 +118,6 @@ class AcceptanceTestExtension(
 
     private var webhookDestinationPort: Port = Port(8080)
     private lateinit var webhookPath: String
-    private var webhookSecret: WebhookOptions.Secret = WebhookOptions.Secret("unknown")
     private var clientSecrets: Map<String, WebhookOptions.Secret> = emptyMap()
 
     private lateinit var webhookPostRequest: RequestSpecification
@@ -127,12 +125,10 @@ class AcceptanceTestExtension(
     fun initialize(
         port: Port,
         webhookPath: String,
-        webhookSecret: WebhookOptions.Secret,
         clientSecrets: Map<String, WebhookOptions.Secret> = emptyMap(),
     ) {
       this.webhookDestinationPort = port
       this.webhookPath = webhookPath
-      this.webhookSecret = webhookSecret
       this.clientSecrets = clientSecrets
 
       webhookPostRequest =
@@ -143,7 +139,7 @@ class AcceptanceTestExtension(
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    private fun sign(body: String, secret: WebhookOptions.Secret = webhookSecret): Header {
+    private fun sign(body: String, secret: WebhookOptions.Secret): Header {
       return Header(
           "X-Hub-Signature-256",
           "sha256=" +
@@ -152,29 +148,7 @@ class AcceptanceTestExtension(
       )
     }
 
-    fun sendWebhook(payload: WebhookPayload) {
-      log.info { "Sending webhook $payload ..." }
-
-      val body = payload.asJson()
-
-      RestAssured.given(webhookPostRequest)
-          .body(body)
-          .header(sign(body))
-          .header("X-GitHub-Event", payload.type)
-          .log()
-          .method()
-          .log()
-          .uri()
-          .log()
-          .headers()
-          .post(webhookPath)
-          .then()
-          .statusCode(200)
-          .log()
-          .ifError()
-    }
-
-    fun sendWebhookWithClientId(payload: WebhookPayload, clientId: String) {
+    fun sendWebhook(payload: WebhookPayload, clientId: String) {
       val secret =
           clientSecrets[clientId]
               ?: throw IllegalArgumentException("No secret configured for client '$clientId'")

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.extension.RegisterExtension
 import test.util.AcceptanceTestExtension
 import test.util.FileWebhookPayload
 import test.util.Integration
+import test.util.TestConstants.TEST_CLIENT_ID
+import test.util.TestConstants.TEST_CLIENT_SECRET
 
 @Integration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -15,9 +17,6 @@ import test.util.Integration
 class PerClientWebhookTest {
 
   companion object {
-    const val TEST_CLIENT_ID = "test-org"
-    const val TEST_CLIENT_SECRET = "test-client-secret"
-
     @JvmField
     @RegisterExtension
     val infra =
@@ -27,11 +26,11 @@ class PerClientWebhookTest {
   }
 
   @Test
-  fun `should accept webhook via per-client endpoint`() {
+  fun `webhook is accepted and status becomes visible`() {
     infra.tvBrowser.navigateToDashboard()
     infra.tvBrowser.verifyDashboardIsEmpty()
 
-    infra.gitHub.sendWebhookWithClientId(
+    infra.gitHub.sendWebhook(
         FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_REQUESTED,
         TEST_CLIENT_ID,
     )

@@ -73,9 +73,6 @@ fun createApiServer(
                   options.clientSecretToken,
                   options.hotReloadTemplates,
               ),
-          webhookOptions.path bind
-              Method.POST to
-              WebhookSecretValidatorFilter(webhookOptions.secret).then(webhookEndpoint),
           "${webhookOptions.path}/{clientId}" bind
               Method.POST to
               WebhookSecretValidatorFilter { request ->

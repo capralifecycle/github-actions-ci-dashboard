@@ -9,13 +9,12 @@ import no.liflig.properties.stringNotEmpty
 data class WebhookOptions(
     /** Full path to webhook. Must start with `/`. */
     val path: String,
-    val secret: Secret,
     /**
      * Per-client webhook secrets, keyed by client ID (e.g. GitHub organization name like
      * "capralifecycle"). Each client can have its own secret, allowing independent secret rotation
      * without downtime.
      *
-     * Clients POST to `/webhook/{clientId}` instead of `/webhook`.
+     * Clients POST to `/webhook/{clientId}`.
      *
      * See `/docs/webhooks-and-secrets.md`.
      */
@@ -52,7 +51,6 @@ data class WebhookOptions(
     fun from(properties: Properties): WebhookOptions =
         WebhookOptions(
             path = properties.stringNotEmpty("webhook.path"),
-            secret = Secret(properties.stringNotEmpty("webhook.secret")),
             clientSecrets = clientSecretsFrom(properties),
             branchWhitelist =
                 properties
