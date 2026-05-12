@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.RegisterExtension
 import test.util.AcceptanceTestExtension
 import test.util.FileWebhookPayload
 import test.util.Integration
+import test.util.TestConstants.TEST_CLIENT_ID
+import test.util.TestConstants.TEST_CLIENT_SECRET
 
 @Integration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -18,7 +20,12 @@ import test.util.Integration
 class CiDashboardTest {
 
   companion object {
-    @JvmField @RegisterExtension val infra = AcceptanceTestExtension()
+    @JvmField
+    @RegisterExtension
+    val infra =
+        AcceptanceTestExtension(
+            clientSecrets = mapOf(TEST_CLIENT_ID to TEST_CLIENT_SECRET),
+        )
   }
 
   @Test
@@ -26,20 +33,32 @@ class CiDashboardTest {
     infra.tvBrowser.navigateToDashboard()
     infra.tvBrowser.verifyDashboardIsEmpty()
 
-    infra.gitHub.sendWebhook(FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_REQUESTED)
+    infra.gitHub.sendWebhook(
+        FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_REQUESTED,
+        TEST_CLIENT_ID,
+    )
     infra.tvBrowser.verifyDashboardHasRepoInStatus(FileWebhookPayload.ExampleRepo.repoName, QUEUED)
 
-    infra.gitHub.sendWebhook(FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_IN_PROGRESS)
+    infra.gitHub.sendWebhook(
+        FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_IN_PROGRESS,
+        TEST_CLIENT_ID,
+    )
     infra.tvBrowser.verifyDashboardHasRepoInStatus(
         FileWebhookPayload.ExampleRepo.repoName,
         IN_PROGRESS,
     )
 
-    infra.gitHub.sendWebhook(FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_FAILURE)
+    infra.gitHub.sendWebhook(
+        FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_FAILURE,
+        TEST_CLIENT_ID,
+    )
     infra.tvBrowser.verifyDashboardHasRepoInStatus(FileWebhookPayload.ExampleRepo.repoName, FAILED)
     infra.tvBrowser.verifyAllFailedBuildsIsListingRepo(FileWebhookPayload.ExampleRepo.repoName)
 
-    infra.gitHub.sendWebhook(FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_SUCCESS)
+    infra.gitHub.sendWebhook(
+        FileWebhookPayload.ExampleRepo.WORKFLOW_RUN_1_COMPLETED_SUCCESS,
+        TEST_CLIENT_ID,
+    )
     infra.tvBrowser.verifyDashboardHasRepoInStatus(
         FileWebhookPayload.ExampleRepo.repoName,
         SUCCEEDED,
@@ -47,13 +66,15 @@ class CiDashboardTest {
 
     // Create a screenshot for Readme with some more data.
     infra.gitHub.sendWebhook(
-        FileWebhookPayload.DataForScreenshots.LIFLIG_PROPERTIES_WORKFLOW_RUN_1_COMPLETED_FAILURE
+        FileWebhookPayload.DataForScreenshots.LIFLIG_PROPERTIES_WORKFLOW_RUN_1_COMPLETED_FAILURE,
+        TEST_CLIENT_ID,
     )
     infra.tvBrowser.verifyAllFailedBuildsIsListingRepo(
         FileWebhookPayload.DataForScreenshots.repoNameLifligProperties
     )
     infra.gitHub.sendWebhook(
-        FileWebhookPayload.DataForScreenshots.LIFLIG_CDK_WORKFLOW_RUN_2_IN_PROGRESS
+        FileWebhookPayload.DataForScreenshots.LIFLIG_CDK_WORKFLOW_RUN_2_IN_PROGRESS,
+        TEST_CLIENT_ID,
     )
     infra.tvBrowser.verifyDashboardHasRepoInStatus(
         FileWebhookPayload.DataForScreenshots.repoNameLifligCdk,

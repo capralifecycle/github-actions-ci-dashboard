@@ -11,6 +11,8 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.RegisterExtension
 import test.util.AcceptanceTestExtension
 import test.util.Integration
+import test.util.TestConstants.TEST_CLIENT_ID
+import test.util.TestConstants.TEST_CLIENT_SECRET
 import test.util.WebhookPayload
 import test.util.loadResource
 
@@ -20,7 +22,13 @@ import test.util.loadResource
 class DevelopmentAid {
 
   companion object {
-    @JvmField @RegisterExtension val infra = AcceptanceTestExtension(fastPoll = false)
+    @JvmField
+    @RegisterExtension
+    val infra =
+        AcceptanceTestExtension(
+            fastPoll = false,
+            clientSecrets = mapOf(TEST_CLIENT_ID to TEST_CLIENT_SECRET),
+        )
   }
 
   @Test
@@ -31,24 +39,46 @@ class DevelopmentAid {
     val testWithManyRepos = true
     if (testWithManyRepos) {
       repeat(40) {
-        infra.gitHub.sendWebhook(createPayload("repo-x$it", CiStatus.PipelineStatus.SUCCEEDED))
+        infra.gitHub.sendWebhook(
+            createPayload("repo-x$it", CiStatus.PipelineStatus.SUCCEEDED),
+            TEST_CLIENT_ID,
+        )
       }
       repeat(5) {
-        infra.gitHub.sendWebhook(createPayload("repo-y$it", CiStatus.PipelineStatus.FAILED))
+        infra.gitHub.sendWebhook(
+            createPayload("repo-y$it", CiStatus.PipelineStatus.FAILED),
+            TEST_CLIENT_ID,
+        )
       }
     }
 
-    infra.gitHub.sendWebhook(createPayload("repo-c", CiStatus.PipelineStatus.SUCCEEDED))
-    infra.gitHub.sendWebhook(createPayload("repo-d", CiStatus.PipelineStatus.FAILED))
-    infra.gitHub.sendWebhook(createPayload("repo-e", CiStatus.PipelineStatus.CANCELLED))
-
-    // Give it a previous success runtime, to measure progress
-    infra.gitHub.sendWebhook(createPayload("repo-b", CiStatus.PipelineStatus.SUCCEEDED))
     infra.gitHub.sendWebhook(
-        createPayload("repo-b", CiStatus.PipelineStatus.IN_PROGRESS, startedAt = Instant.now())
+        createPayload("repo-c", CiStatus.PipelineStatus.SUCCEEDED),
+        TEST_CLIENT_ID,
+    )
+    infra.gitHub.sendWebhook(
+        createPayload("repo-d", CiStatus.PipelineStatus.FAILED),
+        TEST_CLIENT_ID,
+    )
+    infra.gitHub.sendWebhook(
+        createPayload("repo-e", CiStatus.PipelineStatus.CANCELLED),
+        TEST_CLIENT_ID,
     )
 
-    infra.gitHub.sendWebhook(createPayload("repo-a", CiStatus.PipelineStatus.QUEUED))
+    // Give it a previous success runtime, to measure progress
+    infra.gitHub.sendWebhook(
+        createPayload("repo-b", CiStatus.PipelineStatus.SUCCEEDED),
+        TEST_CLIENT_ID,
+    )
+    infra.gitHub.sendWebhook(
+        createPayload("repo-b", CiStatus.PipelineStatus.IN_PROGRESS, startedAt = Instant.now()),
+        TEST_CLIENT_ID,
+    )
+
+    infra.gitHub.sendWebhook(
+        createPayload("repo-a", CiStatus.PipelineStatus.QUEUED),
+        TEST_CLIENT_ID,
+    )
 
     println(
         "\n".repeat(10) +
