@@ -44,6 +44,30 @@ X-Hub-Signature-256: sha256=5c5134a624883d7df34eae110bf37f78a0620b159fd884760c40
 4. Update the secret in the GitHub organization webhook config
 5. Done
 
+## Rotating the admin token
+
+The `admin.secretToken` guards `POST /admin/config` and `DELETE /admin/delete`. Consumers
+store it as the GitHub Actions secret `CI_DASHBOARD_ADMIN_CONFIG_TOKEN` (see
+[update-ci-dashboard.yaml](update-ci-dashboard.yaml)).
+
+1. Generate a new secret: `openssl rand -base64 32`
+2. Update `admin.secretToken` in AWS Secrets Manager
+3. Force a new ECS deployment so the service picks up the new value
+4. Update `CI_DASHBOARD_ADMIN_CONFIG_TOKEN` in resources-definition
+5. Trigger trigger a consumer workflow and confirm workflow runs as expected
+
+## Rotating the devtool token
+
+The `api.devtool.secret` guards `GET /api/statuses` and is used in local scripts like
+the [XBar plugin](Xbar-plugin.md). There is no central consumer to update, affected
+users update their local config.
+
+1. Generate a new secret: `openssl rand -base64 32`
+2. Update `api.devtool.secret` in AWS Secrets Manager
+3. Force a new ECS deployment (see admin rotation above)
+4. Update the corresponding secret in 1Password
+5. Notify developers about updating their local secrets with the new value from 1Password
+
 ## References
 
 - [HMAC signature header (GitHub Docs)](https://docs.github.com/en/webhooks/webhook-events-and-payloads#delivery-headers)
