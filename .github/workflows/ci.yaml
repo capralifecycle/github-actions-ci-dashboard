@@ -54,7 +54,7 @@ jobs:
 
       - name: build and test
         env:
-          SONARCLOUD_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONARCLOUD_TOKEN: ${{ secrets.SHARED_SONAR_TOKEN_PUBLIC }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIT_COMMIT_SHA: ${{ github.sha }}
           RUN_NUMBER: ${{ github.run_number }}
