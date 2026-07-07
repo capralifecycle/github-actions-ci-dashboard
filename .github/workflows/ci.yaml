@@ -31,9 +31,9 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
-      - uses: capralifecycle/actions-lib/check-runtime-dependencies@720c52304c0cbc65a26c18f55a8f182cc0d33d84 # v1.7.1
+      - uses: capralifecycle/actions-lib/check-runtime-dependencies@1457d51592743644e6adc8557c89e77571a6d07c # v1.8.0
 
-      - uses: capralifecycle/actions-lib/parse-config@720c52304c0cbc65a26c18f55a8f182cc0d33d84 # v1.7.1
+      - uses: capralifecycle/actions-lib/parse-config@1457d51592743644e6adc8557c89e77571a6d07c # v1.8.0
         id: config
         with:
           config-file: ".ldp.json"
@@ -78,7 +78,7 @@ jobs:
             echo '---' >> $GITHUB_STEP_SUMMARY
           done < "${FAILS_FILE}"
 
-      - uses: capralifecycle/actions-lib/configure-aws-credentials@720c52304c0cbc65a26c18f55a8f182cc0d33d84 # v1.7.1
+      - uses: capralifecycle/actions-lib/configure-aws-credentials@1457d51592743644e6adc8557c89e77571a6d07c # v1.8.0
         id: aws
         with:
           aws-account-id: ${{ steps.config.outputs.accountId }}
@@ -86,7 +86,7 @@ jobs:
           aws-iam-role-name: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && steps.config.outputs.roleName || steps.config.outputs.limitedRoleName }}
           authenticate-to-ecr: true
 
-      - uses: capralifecycle/actions-lib/generate-tag@720c52304c0cbc65a26c18f55a8f182cc0d33d84 # v1.7.1
+      - uses: capralifecycle/actions-lib/generate-tag@1457d51592743644e6adc8557c89e77571a6d07c # v1.8.0
         id: tag
         with:
           tag-prefix: "${{ env.APPLICATION_NAME }}"
@@ -105,7 +105,7 @@ jobs:
           fi
 
       - name: trigger production deployment pipelines
-        uses: capralifecycle/actions-lib/trigger-deployment-pipeline@720c52304c0cbc65a26c18f55a8f182cc0d33d84 # v1.7.1
+        uses: capralifecycle/actions-lib/trigger-deployment-pipeline@1457d51592743644e6adc8557c89e77571a6d07c # v1.8.0
         if: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
         env:
           AWS_ACCESS_KEY_ID: ${{ steps.aws.outputs.aws-access-key-id }}
@@ -117,13 +117,13 @@ jobs:
           trigger-type: "artifact"
           artifact-parameters: "prod${{ env.CDK_ECR_TAG_NAME }}EcrTag=${{ steps.tag.outputs.tag }}"
 
-      - uses: capralifecycle/actions-lib/slack-notify@720c52304c0cbc65a26c18f55a8f182cc0d33d84 # v1.7.1
+      - uses: capralifecycle/actions-lib/slack-notify@1457d51592743644e6adc8557c89e77571a6d07c # v1.8.0
         # NOTE: We only want to be notified about failures on the default branch
         if: ${{ failure() && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
         with:
           bot-token: ${{ secrets.SHARED_SLACK_BOT_TOKEN }}
           channel: ${{ env.BUILD_FAILURE_SLACK_CHANNEL }}
 
-      - uses: capralifecycle/actions-lib/configure-github-deployment@720c52304c0cbc65a26c18f55a8f182cc0d33d84 # v1.7.1
+      - uses: capralifecycle/actions-lib/configure-github-deployment@1457d51592743644e6adc8557c89e77571a6d07c # v1.8.0
         # NOTE: Create GitHub deployment on default branch regardless of job status
         if: ${{ always() && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
