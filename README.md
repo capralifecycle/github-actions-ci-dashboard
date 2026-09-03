@@ -6,8 +6,8 @@
 <br>
 </h1>
 
-![Java Badge](https://img.shields.io/badge/java-17-blue?logo=java)
-![Kotlin Badge](https://img.shields.io/badge/kotlin--blue?logo=kotlin)
+![Java Badge](https://img.shields.io/badge/java-21-blue?logo=java)
+![Kotlin Badge](https://img.shields.io/badge/kotlin-2.4-blue?logo=kotlin)
 [![Build Status](https://github.com/capralifecycle/github-actions-ci-dashboard/actions/workflows/ci.yaml/badge.svg)](https://github.com/capralifecycle/github-actions-ci-dashboard/actions/workflows/ci.yaml)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=capralifecycle_github-actions-ci-dashboard&metric=sqale_index&token=c098b4d25bf2f8a05ee55cb9aeb4b84eb1329689)](https://sonarcloud.io/summary/new_code?id=capralifecycle_github-actions-ci-dashboard)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=capralifecycle_github-actions-ci-dashboard&metric=code_smells&token=c098b4d25bf2f8a05ee55cb9aeb4b84eb1329689)](https://sonarcloud.io/summary/new_code?id=capralifecycle_github-actions-ci-dashboard)
@@ -47,15 +47,16 @@ You need to install:
 
 - Docker
 - Maven (or run maven through IntelliJ)
-- JDK 17
-  - `brew tap homebrew/cask-versions` and then`brew install --cask temurin17`
+- JDK 21 or newer
+
+Toolchain versions are pinned in [mise.toml](./mise.toml), so `mise install` gives you the JDK and
+Maven versions the project is built with.
 
 #### Developer machine setup
 
-0. [Authenticate to Github Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry)
-   for internal maven
-   repos.
-1. Create an `overrides.properties` by running
+1. [Authenticate to GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry)
+   for internal maven repos.
+2. Create an `overrides.properties` by running
     ```shell
     ./init-local-env.sh
     ```
@@ -63,7 +64,7 @@ You need to install:
 
 ### Running the application
 
-1. Start the `db` in [docker-compose.yml](./docker-compose.yml)
+1. Start the `db` in [docker-compose.yml](./docker-compose.yml): `docker compose up db`
 2. Run the [main method from intelliJ](./src/main/kotlin/no/liflig/cidashboard/Main.kt)
 3. Watch the logs for which port is being used.
 4. Visit `http://localhost:PORT/?token=TOKEN_HERE`
@@ -71,7 +72,7 @@ You need to install:
 You can test the API
 with [src/test/http/health.http](src/test/http/health.http), [webhook.http](src/test/http/webhook.http).
 
-### Running tests
+### Building and running tests
 
 ```shell
 mvn verify
@@ -80,6 +81,14 @@ mvn verify
 - Add `-DskipTests` to `mvn` to disable all tests.
 - Add `-DskipITs` to only disable integration tests.
 - Add `-DREGENERATE_FAILED_SNAPSHOTS=true` to update snapshot tests.
+
+The [Makefile](./Makefile) wraps the same commands for convenience:
+
+```shell
+make             # mvn clean verify, then docker build
+make maven-build # mvn clean verify only
+make clean
+```
 
 ### Linting
 
