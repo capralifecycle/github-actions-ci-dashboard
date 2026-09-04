@@ -36,6 +36,7 @@ data class DashboardConfig(
 
   companion object {
 
+    val bodyLens = Body.auto<DashboardConfig>().toLens()
     val bodyLensOfList = Body.auto<List<DashboardConfig>>().toLens()
 
     private val json = Json {
@@ -59,6 +60,9 @@ value class DashboardConfigId(val value: String) {
     val queryLens =
         Query.map(nextIn = { DashboardConfigId(it) }, nextOut = { it.value })
             .required("dashboardConfigId", "Id of config dashboard")
+    val optionalQueryLens =
+        Query.map(nextIn = { DashboardConfigId(it) }, nextOut = { it.value })
+            .optional("dashboardConfigId", "Id of config dashboard")
   }
 }
 

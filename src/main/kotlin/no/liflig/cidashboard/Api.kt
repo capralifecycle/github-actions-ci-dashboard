@@ -2,6 +2,7 @@ package no.liflig.cidashboard
 
 import no.liflig.cidashboard.admin.config.DashboardConfigEndpoint
 import no.liflig.cidashboard.admin.config.DashboardConfigService
+import no.liflig.cidashboard.admin.config.GetDashboardConfigEndpoint
 import no.liflig.cidashboard.admin.database.DeleteCiStatusEndpoint
 import no.liflig.cidashboard.admin.database.DeleteDatabaseRowsService
 import no.liflig.cidashboard.common.config.ApiOptions
@@ -96,6 +97,10 @@ fun createApiServer(
               Method.POST to
               ServerFilters.BearerAuth(token = options.adminSecretToken.value)
                   .then(DashboardConfigEndpoint(services.dashboardConfigService)),
+          "/admin/config" bind
+              Method.GET to
+              ServerFilters.BearerAuth(token = options.adminSecretToken.value)
+                  .then(GetDashboardConfigEndpoint(services.dashboardConfigService)),
           static(Classpath("/static")),
           webJars(),
       )

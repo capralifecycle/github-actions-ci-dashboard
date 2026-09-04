@@ -41,6 +41,26 @@ TV, where `dashboardId=a3` links it to this config.
 
 Since the POST payload is a list, you can specify multiple configurations at once.
 
+## Reading the config
+
+Use the same `/admin/config` endpoint with `GET` to read back the currently stored configs.
+
+Get all dashboard configs:
+
+```http request
+GET http://localhost:8080/admin/config
+Authorization: Bearer very-very-secret-admin-token
+```
+
+Get a specific dashboard config by its `id`:
+
+```http request
+GET http://localhost:8080/admin/config?dashboardConfigId=a3
+Authorization: Bearer very-very-secret-admin-token
+```
+
+The latter returns `404 Not Found` if no config exists with the given `dashboardConfigId`.
+
 ## Automatic Reconfiguration
 
 Keep your configs in a `github-actions-ci-dashboards.json` file in a repo. Then use the GitHub Actions

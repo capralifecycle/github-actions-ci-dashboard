@@ -43,6 +43,14 @@ class DashboardConfigRepo(private val databaseHandle: Handle) {
     }
   }
 
+  fun getAll(): List<DashboardConfig> {
+    return databaseHandle
+        .select("SELECT data FROM $TABLE_NAME ORDER BY id")
+        .map { rs: ResultSet, _ -> DashboardConfig.fromJson(rs.getString("data")) }
+        .list()
+        .also { log.debug { "Fetched ${it.size} configs from $TABLE_NAME" } }
+  }
+
   fun getById(id: DashboardConfigId): DashboardConfig? {
     return databaseHandle
         .select("SELECT data FROM $TABLE_NAME WHERE id = :id")

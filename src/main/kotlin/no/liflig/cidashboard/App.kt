@@ -58,7 +58,11 @@ class App(val config: Config) {
             JdbiCiStatusDatabaseHandle(jdbi),
             JdbiDashboardConfigDatabaseHandle(jdbi),
         )
-    val dashboardConfigService = DashboardConfigService(JdbiDashboardConfigTransaction(jdbi))
+    val dashboardConfigService =
+        DashboardConfigService(
+            JdbiDashboardConfigTransaction(jdbi),
+            JdbiDashboardConfigDatabaseHandle(jdbi),
+        )
 
     val services =
         ApiServices(

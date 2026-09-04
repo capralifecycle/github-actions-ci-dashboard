@@ -19,7 +19,11 @@ class DashboardConfigEndpointTest {
 
     // Given
     val configRepo = mockk<DashboardConfigRepo> { every { save(any()) } just Runs }
-    val service = DashboardConfigService { callback -> callback(configRepo) }
+    val service =
+        DashboardConfigService(
+            inTransaction = { callback -> callback(configRepo) },
+            useDashboardConfigRepo = { callback -> callback(configRepo) },
+        )
     val endpoint = DashboardConfigEndpoint(service)
 
     val dashboards = List(3) { index -> DashboardConfig("$index", listOf()) }

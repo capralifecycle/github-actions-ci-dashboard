@@ -23,3 +23,13 @@ Authorization: Bearer very-very-secret-admin-token
     }
   ]
 }]
+
+### Get all dashboard configs
+
+GET http://localhost:8080/admin/config
+Authorization: Bearer very-very-secret-admin-token
+
+### Get a specific dashboard config
+
+GET http://localhost:8080/admin/config?dashboardConfigId=a3
+Authorization: Bearer very-very-secret-admin-token
