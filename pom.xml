@@ -79,7 +79,7 @@
     <maven-failsafe-plugin.version>3.6.0</maven-failsafe-plugin.version>
     <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
     <sonar.version>5.8.0.7211</sonar.version>
-    <tools-jackson-core.jackson-databind.version>3.2.2</tools-jackson-core.jackson-databind.version>
+    <tools-jackson-core.jackson-databind.version>3.2.3</tools-jackson-core.jackson-databind.version>
   </properties>
 
   <profiles>
