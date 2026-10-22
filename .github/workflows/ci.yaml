@@ -44,7 +44,7 @@ jobs:
           java-version: "21"
           java-package: jdk
 
-      - name: Block compromised eMudhra intermediate CAs
+      - name: Distrust compromised eMudhra CAs
         run: |
           f="$JAVA_HOME/lib/security/blocked.certs"
           test -f "$f"
@@ -66,6 +66,16 @@ jobs:
             '4B2460A466F95FD40113BCDCCA2CEB29B3B093921DE45474DA7DF48874C630B1' \
             '84112972B8E59D14560AE7E7119654474AAD119990CF3722BFC1E3B91615E1FD' \
             >> "$f"
+          roots='^Owner: CN=(emSign ECC Root CA - G3|AAA Certificate Services),'
+          "$JAVA_HOME/bin/keytool" -list -v -cacerts -storepass changeit \
+            | awk -v r="$roots" '/^Alias name: /{a=substr($0, 13)} $0 ~ r {print a}' \
+            | while IFS= read -r alias; do
+                "$JAVA_HOME/bin/keytool" -delete -cacerts -storepass changeit -alias "$alias"
+              done
+          if "$JAVA_HOME/bin/keytool" -list -v -cacerts -storepass changeit | grep -E "$roots"; then
+            echo "eMudhra roots still trusted" >&2
+            exit 1
+          fi
 
       - name: cache mvn
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
