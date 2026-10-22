@@ -13,8 +13,7 @@ WORKDIR /
 
 COPY ./target/app.jar /app.jar
 
-# Block the eMudhra intermediate CAs whose keys were compromised (2026-10-20),
-# without distrusting the Sectigo AAA root that cross-signed some of them.
+# Block the eMudhra intermediate CAs whose keys were compromised (2026-10-20).
 RUN f="${JAVA_HOME:-$(dirname "$(dirname "$(readlink -f "$(command -v java)")")")}/lib/security/blocked.certs" \
  && test -f "$f" \
  && printf '%s\n' '' '# eMudhra compromised intermediate CAs (2026-10-20)' \
@@ -35,6 +34,19 @@ RUN f="${JAVA_HOME:-$(dirname "$(dirname "$(readlink -f "$(command -v java)")")"
     '4B2460A466F95FD40113BCDCCA2CEB29B3B093921DE45474DA7DF48874C630B1' \
     '84112972B8E59D14560AE7E7119654474AAD119990CF3722BFC1E3B91615E1FD' \
     >> "$f"
+
+# blocked.certs matches exact encodings, so re-encoded copies of the intermediates
+# still pass (CVE-2026-91403); distrust the roots that signed them as well.
+RUN set -eu; \
+    roots='^Owner: CN=(emSign ECC Root CA - G3|AAA Certificate Services),'; \
+    keytool -list -v -cacerts -storepass changeit \
+      | awk -v r="$roots" '/^Alias name: /{a=substr($0, 13)} $0 ~ r {print a}' \
+      | while IFS= read -r alias; do \
+          keytool -delete -cacerts -storepass changeit -alias "$alias"; \
+        done; \
+    if keytool -list -v -cacerts -storepass changeit | grep -E "$roots"; then \
+      echo "eMudhra roots still trusted" >&2; exit 1; \
+    fi
 
 USER app
 
