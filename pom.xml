@@ -54,7 +54,7 @@
     <liflig-snapshot-test.version>1.20261005.103954</liflig-snapshot-test.version>
 
     <!-- App -->
-    <kotlinx-serialization.version>1.11.0</kotlinx-serialization.version>
+    <kotlinx-serialization.version>1.12.0</kotlinx-serialization.version>
     <slf4j.version>2.0.20</slf4j.version>
     <logback-classic.version>1.6.5</logback-classic.version>
     <logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
