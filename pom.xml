@@ -75,7 +75,7 @@
 
     <!-- Maven -->
     <ktfmt.version>0.58</ktfmt.version>
-    <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.16</jacoco-maven-plugin.version>
     <maven-failsafe-plugin.version>3.6.1</maven-failsafe-plugin.version>
     <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
     <sonar.version>5.8.0.7211</sonar.version>
