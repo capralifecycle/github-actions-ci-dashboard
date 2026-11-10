@@ -67,7 +67,7 @@
 
     <!-- Test-dependencies -->
     <junit.version>6.1.3</junit.version>
-    <mockk.version>1.14.11</mockk.version>
+    <mockk.version>1.14.12</mockk.version>
     <assertj-core.version>3.27.7</assertj-core.version>
     <rest-assured.version>6.3.0</rest-assured.version>
     <testcontainers.postgresql.version>1.21.4</testcontainers.postgresql.version>
